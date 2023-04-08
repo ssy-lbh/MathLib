@@ -1,0 +1,36 @@
+Start testing: Mar 09 16:06 ?赤角∩?¯??～?米o㊣那℅?那㊣??
+----------------------------------------------------------
+1/2 Testing: mod
+1/2 Test: mod
+Command: "D:/Code/C++/Math/build/tests/mod.exe"
+Directory: D:/Code/C++/Math/build/tests
+"mod" start time: Mar 09 16:06 ?赤角∩?¯??～?米o㊣那℅?那㊣??
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"mod" end time: Mar 09 16:06 ?赤角∩?¯??～?米o㊣那℅?那㊣??
+"mod" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/2 Testing: algo
+2/2 Test: algo
+Command: "D:/Code/C++/Math/build/tests/algo.exe"
+Directory: D:/Code/C++/Math/build/tests
+"algo" start time: Mar 09 16:06 ?赤角∩?¯??～?米o㊣那℅?那㊣??
+Output:
+----------------------------------------------------------
+[1 -1]
+[[1 1]]
+[[-8.43572e-10 1]]
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"algo" end time: Mar 09 16:06 ?赤角∩?¯??～?米o㊣那℅?那㊣??
+"algo" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Mar 09 16:06 ?赤角∩?¯??～?米o㊣那℅?那㊣??

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="(empty)"
+	BuildStamp="20230220-0106-Experimental"
+	Name="(empty)"
+	Generator="ctest-3.22.0-rc2"
+	CompilerName=""
+	CompilerVersion=""
+	OSName="Windows"
+	Hostname="lbh-lenovo"
+	OSRelease=" Personal"
+	OSVersion=" (Build 22000)"
+	OSPlatform="AMD64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="10"
+	ProcessorCacheSize="-1"
+	NumberOfLogicalCPU="20"
+	NumberOfPhysicalCPU="14"
+	TotalVirtualMemory="33404"
+	TotalPhysicalMemory="16124"
+	LogicalProcessorsPerPhysical="1"
+	ProcessorClockFrequency="2688"
+	>
+	<Testing>
+		<StartDateTime>Feb 20 18:27 ?[NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xAA][NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xA4][NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xE4]?[NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC2]??[NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xE3]?[NON-UTF-8-BYTE-0xA6][NON-UTF-8-BYTE-0xCC]o[NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC0][NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xBA][NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC1]?[NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xBA][NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC0]??</StartDateTime>
+		<StartTestTime>1676888859</StartTestTime>
+		<TestList>
+			<Test>./tests/algo</Test>
+			<Test>./tests/mod</Test>
+		</TestList>
+		<Test Status="passed">
+			<Name>algo</Name>
+			<Path>./tests</Path>
+			<FullName>./tests/algo</FullName>
+			<FullCommandLine>D:\Code\C++\Math\build\tests\algo.exe</FullCommandLine>
+			<Results>
+				<NamedMeasurement type="numeric/double" name="Execution Time">
+					<Value>0.0146917</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="numeric/double" name="Processors">
+					<Value>1</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Completion Status">
+					<Value>Completed</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Command Line">
+					<Value>D:\Code\C++\Math\build\tests\algo.exe</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Environment">
+					<Value>#CTEST_RESOURCE_GROUP_COUNT=</Value>
+				</NamedMeasurement>
+				<Measurement>
+					<Value></Value>
+				</Measurement>
+			</Results>
+		</Test>
+		<Test Status="passed">
+			<Name>mod</Name>
+			<Path>./tests</Path>
+			<FullName>./tests/mod</FullName>
+			<FullCommandLine>D:\Code\C++\Math\build\tests\mod.exe</FullCommandLine>
+			<Results>
+				<NamedMeasurement type="numeric/double" name="Execution Time">
+					<Value>0.0103871</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="numeric/double" name="Processors">
+					<Value>1</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Completion Status">
+					<Value>Completed</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Command Line">
+					<Value>D:\Code\C++\Math\build\tests\mod.exe</Value>
+				</NamedMeasurement>
+				<NamedMeasurement type="text/string" name="Environment">
+					<Value>#CTEST_RESOURCE_GROUP_COUNT=</Value>
+				</NamedMeasurement>
+				<Measurement>
+					<Value>1291728307716
+</Value>
+				</Measurement>
+			</Results>
+		</Test>
+		<EndDateTime>Feb 20 18:27 ?[NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xAA][NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xA4][NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xE4]?[NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC2]??[NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xE3]?[NON-UTF-8-BYTE-0xA6][NON-UTF-8-BYTE-0xCC]o[NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC0][NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xBA][NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC1]?[NON-UTF-8-BYTE-0xA8][NON-UTF-8-BYTE-0xBA][NON-UTF-8-BYTE-0xA1][NON-UTF-8-BYTE-0xC0]??</EndDateTime>
+		<EndTestTime>1676888860</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>
