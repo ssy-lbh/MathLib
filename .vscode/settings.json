@@ -44,7 +44,12 @@
         "atomic": "cpp",
         "ctime": "cpp",
         "memory": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "deque": "cpp",
+        "iterator": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     },
     "CppHelper.HeaderGuardPattern": "_{FILE}_H",
     "CppHelper.ContextCreateHeaderGuard": true

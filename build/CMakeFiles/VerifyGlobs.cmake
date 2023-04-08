@@ -3,29 +3,31 @@
 cmake_policy(SET CMP0009 NEW)
 
 # math_lib_src at lib/CMakeLists.txt:3 (file)
-file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "D:/Code/C++/Math/lib/*.cpp")
+file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "D:/Code/C++/MathLib/lib/*.cpp")
 set(OLD_GLOB
-  "D:/Code/C++/Math/lib/math/cipolla.cpp"
-  "D:/Code/C++/Math/lib/math/crt.cpp"
-  "D:/Code/C++/Math/lib/math/math_base.cpp"
-  "D:/Code/C++/Math/lib/math/miller_rabin.cpp"
-  "D:/Code/C++/Math/lib/math/pollard_rho.cpp"
-  "D:/Code/C++/Math/lib/math/totient.cpp"
+  "D:/Code/C++/MathLib/lib/math/cipolla.cpp"
+  "D:/Code/C++/MathLib/lib/math/crt.cpp"
+  "D:/Code/C++/MathLib/lib/math/discrete_log.cpp"
+  "D:/Code/C++/MathLib/lib/math/math_base.cpp"
+  "D:/Code/C++/MathLib/lib/math/miller_rabin.cpp"
+  "D:/Code/C++/MathLib/lib/math/pollard_rho.cpp"
+  "D:/Code/C++/MathLib/lib/math/primitive_root.cpp"
+  "D:/Code/C++/MathLib/lib/math/totient.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
-  file(TOUCH_NOCREATE "D:/Code/C++/Math/build/CMakeFiles/cmake.verify_globs")
+  file(TOUCH_NOCREATE "D:/Code/C++/MathLib/build/CMakeFiles/cmake.verify_globs")
 endif()
 
 # math_lib_src at lib/CMakeLists.txt:3 (file)
-file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "D:/Code/C++/Math/lib/*c")
+file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "D:/Code/C++/MathLib/lib/*c")
 set(OLD_GLOB
-  "D:/Code/C++/Math/lib/hash/sha1.c"
-  "D:/Code/C++/Math/lib/hash/sha256.c"
-  "D:/Code/C++/Math/lib/string/kmp.c"
-  "D:/Code/C++/Math/lib/util/zipmap.c"
+  "D:/Code/C++/MathLib/lib/hash/sha1.c"
+  "D:/Code/C++/MathLib/lib/hash/sha256.c"
+  "D:/Code/C++/MathLib/lib/string/kmp.c"
+  "D:/Code/C++/MathLib/lib/util/zipmap.c"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
-  file(TOUCH_NOCREATE "D:/Code/C++/Math/build/CMakeFiles/cmake.verify_globs")
+  file(TOUCH_NOCREATE "D:/Code/C++/MathLib/build/CMakeFiles/cmake.verify_globs")
 endif()

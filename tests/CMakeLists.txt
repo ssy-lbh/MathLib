@@ -9,3 +9,4 @@ endfunction(add_math_test)
 
 add_math_test(mod)
 add_math_test(algo)
+add_math_test(prime)

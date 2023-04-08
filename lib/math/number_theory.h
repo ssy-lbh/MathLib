@@ -36,8 +36,16 @@ constexpr uint64_t fact(uint32_t x){
     return r;
 }
 
+constexpr uint32_t gcd(uint32_t x, uint32_t y){
+    return (x == 0) ? y : gcd(y % x, x);
+}
+
 constexpr uint64_t gcd(uint64_t x, uint64_t y){
     return (x == 0) ? y : gcd(y % x, x);
+}
+
+constexpr uint32_t lcm(uint32_t x, uint32_t y){
+    return x / gcd(x, y) * y;
 }
 
 constexpr uint64_t lcm(uint64_t x, uint64_t y){
@@ -70,6 +78,14 @@ inline uint64_t rand(uint64_t l, uint64_t h){
     return l + rand(h - l + 1);
 }
 
+inline uint32_t rand(uint32_t mod){
+    return ((uint32_t)rand() << 30) | (rand() << 15) | rand();
+}
+
+inline uint32_t rand(uint32_t l, uint32_t h){
+    return l + rand(h - l + 1);
+}
+
 constexpr uint64_t mul(uint64_t a, uint64_t b, uint64_t mod){
     uint64_t c = (long double)a / mod * b;
     uint64_t res = (uint64_t)a * b - (uint64_t)c * mod;
@@ -89,11 +105,25 @@ constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
 
 uint64_t cpow(uint64_t x, uint64_t w2, uint64_t n, uint64_t mod);
 uint64_t cipolla(uint64_t x, uint64_t mod);
+
 // @return is_prime?
 bool miller_rabin(uint32_t n);
 bool miller_rabin(uint64_t n);
+
 uint64_t pollard_rho(uint64_t n);
+uint32_t pollard_rho(uint64_t n, uint64_t factor[], uint32_t exp[], uint32_t len);
+
 uint64_t totient(uint64_t n);
+
+bool check_root(uint64_t x, uint64_t p, uint64_t pm1_prime[], uint32_t cnt);
+uint64_t find_root(uint64_t p, uint64_t pm1_prime[], uint32_t cnt);
+bool has_root(uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
+
+// a^x === b (mod p)
+uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p);
+// g^x === b (mod p)
+uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p);
+uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
 
 // 有限循环群, 可以获取生成元, 目前的种类有
 // 1. Zn, 模N同余群, 有限循环群

@@ -1,4 +1,4 @@
-# Install script for directory: D:/Code/C++/Math/tests
+# Install script for directory: D:/Code/C++/MathLib/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

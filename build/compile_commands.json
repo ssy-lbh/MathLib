@@ -1,62 +1,77 @@
 [
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\hash\\sha1.c.obj -c D:\\Code\\C++\\Math\\lib\\hash\\sha1.c",
-  "file": "D:\\Code\\C++\\Math\\lib\\hash\\sha1.c"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\hash\\sha1.c.obj -c D:\\Code\\C++\\MathLib\\lib\\hash\\sha1.c",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\hash\\sha1.c"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\hash\\sha256.c.obj -c D:\\Code\\C++\\Math\\lib\\hash\\sha256.c",
-  "file": "D:\\Code\\C++\\Math\\lib\\hash\\sha256.c"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\hash\\sha256.c.obj -c D:\\Code\\C++\\MathLib\\lib\\hash\\sha256.c",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\hash\\sha256.c"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\cipolla.cpp.obj -c D:\\Code\\C++\\Math\\lib\\math\\cipolla.cpp",
-  "file": "D:\\Code\\C++\\Math\\lib\\math\\cipolla.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\cipolla.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\cipolla.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\cipolla.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\crt.cpp.obj -c D:\\Code\\C++\\Math\\lib\\math\\crt.cpp",
-  "file": "D:\\Code\\C++\\Math\\lib\\math\\crt.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\crt.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\crt.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\crt.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\math_base.cpp.obj -c D:\\Code\\C++\\Math\\lib\\math\\math_base.cpp",
-  "file": "D:\\Code\\C++\\Math\\lib\\math\\math_base.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\discrete_log.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\discrete_log.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\discrete_log.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\miller_rabin.cpp.obj -c D:\\Code\\C++\\Math\\lib\\math\\miller_rabin.cpp",
-  "file": "D:\\Code\\C++\\Math\\lib\\math\\miller_rabin.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\math_base.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\math_base.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\math_base.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\pollard_rho.cpp.obj -c D:\\Code\\C++\\Math\\lib\\math\\pollard_rho.cpp",
-  "file": "D:\\Code\\C++\\Math\\lib\\math\\pollard_rho.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\miller_rabin.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\miller_rabin.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\miller_rabin.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\totient.cpp.obj -c D:\\Code\\C++\\Math\\lib\\math\\totient.cpp",
-  "file": "D:\\Code\\C++\\Math\\lib\\math\\totient.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\pollard_rho.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\pollard_rho.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\pollard_rho.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\string\\kmp.c.obj -c D:\\Code\\C++\\Math\\lib\\string\\kmp.c",
-  "file": "D:\\Code\\C++\\Math\\lib\\string\\kmp.c"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\primitive_root.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\primitive_root.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\primitive_root.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/Math/lib -g -o lib\\CMakeFiles\\math_lib.dir\\util\\zipmap.c.obj -c D:\\Code\\C++\\Math\\lib\\util\\zipmap.c",
-  "file": "D:\\Code\\C++\\Math\\lib\\util\\zipmap.c"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\totient.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\totient.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\totient.cpp"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o tests\\CMakeFiles\\mod.dir\\mod.cpp.obj -c D:\\Code\\C++\\Math\\tests\\mod.cpp",
-  "file": "D:\\Code\\C++\\Math\\tests\\mod.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\string\\kmp.c.obj -c D:\\Code\\C++\\MathLib\\lib\\string\\kmp.c",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\string\\kmp.c"
 },
 {
-  "directory": "D:/Code/C++/Math/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/Math/lib -g -o tests\\CMakeFiles\\algo.dir\\algo.cpp.obj -c D:\\Code\\C++\\Math\\tests\\algo.cpp",
-  "file": "D:\\Code\\C++\\Math\\tests\\algo.cpp"
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\gcc.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\util\\zipmap.c.obj -c D:\\Code\\C++\\MathLib\\lib\\util\\zipmap.c",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\util\\zipmap.c"
+},
+{
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o tests\\CMakeFiles\\mod.dir\\mod.cpp.obj -c D:\\Code\\C++\\MathLib\\tests\\mod.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\tests\\mod.cpp"
+},
+{
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o tests\\CMakeFiles\\algo.dir\\algo.cpp.obj -c D:\\Code\\C++\\MathLib\\tests\\algo.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\tests\\algo.cpp"
+},
+{
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o tests\\CMakeFiles\\prime.dir\\prime.cpp.obj -c D:\\Code\\C++\\MathLib\\tests\\prime.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\tests\\prime.cpp"
 }
 ]

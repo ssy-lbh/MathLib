@@ -39,13 +39,13 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = D$:/Code/C++/Math/build/
+cmake_ninja_workdir = D$:/Code/C++/MathLib/build/
 
 #############################################
 # Utility command for test
 
 build CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build && "E:\Program Files\CMake\bin\ctest.exe" --force-new-ctest-process "
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build && "E:\Program Files\CMake\bin\ctest.exe" --force-new-ctest-process "
   DESC = Running tests...
   pool = console
   restat = 1
@@ -57,7 +57,7 @@ build test: phony CMakeFiles/test.util
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build && "E:\Program Files\CMake\bin\cmake-gui.exe" -SD:\Code\C++\Math -BD:\Code\C++\Math\build"
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build && "E:\Program Files\CMake\bin\cmake-gui.exe" -SD:\Code\C++\MathLib -BD:\Code\C++\MathLib\build"
   DESC = Running CMake cache editor...
   pool = console
   restat = 1
@@ -69,7 +69,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build && "E:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\Code\C++\Math -BD:\Code\C++\Math\build"
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build && "E:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\Code\C++\MathLib -BD:\Code\C++\MathLib\build"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -78,7 +78,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# D:/Code/C++/Math/CMakeLists.txt
+# D:/Code/C++/MathLib/CMakeLists.txt
 # =============================================================================
 
 # =============================================================================
@@ -90,73 +90,87 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_math_lib: phony || lib/CMakeFiles/math_lib.dir
 
-build lib/CMakeFiles/math_lib.dir/hash/sha1.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/hash/sha1.c || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/hash/sha1.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/hash/sha1.c || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\hash\sha1.c.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\hash
 
-build lib/CMakeFiles/math_lib.dir/hash/sha256.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/hash/sha256.c || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/hash/sha256.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/hash/sha256.c || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\hash\sha256.c.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\hash
 
-build lib/CMakeFiles/math_lib.dir/math/cipolla.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/math/cipolla.cpp || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/math/cipolla.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/cipolla.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\cipolla.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/math/crt.cpp || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/crt.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\crt.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/math/math_base.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/math/math_base.cpp || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/math/discrete_log.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/discrete_log.cpp || cmake_object_order_depends_target_math_lib
+  DEP_FILE = lib\CMakeFiles\math_lib.dir\math\discrete_log.cpp.obj.d
+  FLAGS = -g
+  INCLUDES = -ID:/Code/C++/MathLib/lib
+  OBJECT_DIR = lib\CMakeFiles\math_lib.dir
+  OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
+
+build lib/CMakeFiles/math_lib.dir/math/math_base.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/math_base.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\math_base.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/math/miller_rabin.cpp || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/miller_rabin.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\miller_rabin.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/math/pollard_rho.cpp || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/pollard_rho.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\pollard_rho.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/math/totient.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/math/totient.cpp || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/math/primitive_root.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/primitive_root.cpp || cmake_object_order_depends_target_math_lib
+  DEP_FILE = lib\CMakeFiles\math_lib.dir\math\primitive_root.cpp.obj.d
+  FLAGS = -g
+  INCLUDES = -ID:/Code/C++/MathLib/lib
+  OBJECT_DIR = lib\CMakeFiles\math_lib.dir
+  OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
+
+build lib/CMakeFiles/math_lib.dir/math/totient.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/totient.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\totient.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/string/kmp.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/string/kmp.c || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/string/kmp.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/string/kmp.c || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\string\kmp.c.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\string
 
-build lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/Math/lib/util/zipmap.c || cmake_object_order_depends_target_math_lib
+build lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj: C_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/util/zipmap.c || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\util\zipmap.c.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\util
 
@@ -168,7 +182,7 @@ build lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj: C_COMPILER__math_lib_Debug 
 #############################################
 # Link the static library lib\libmath_lib.a
 
-build lib/libmath_lib.a: CXX_STATIC_LIBRARY_LINKER__math_lib_Debug lib/CMakeFiles/math_lib.dir/hash/sha1.c.obj lib/CMakeFiles/math_lib.dir/hash/sha256.c.obj lib/CMakeFiles/math_lib.dir/math/cipolla.cpp.obj lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj lib/CMakeFiles/math_lib.dir/math/math_base.cpp.obj lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj lib/CMakeFiles/math_lib.dir/math/totient.cpp.obj lib/CMakeFiles/math_lib.dir/string/kmp.c.obj lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj
+build lib/libmath_lib.a: CXX_STATIC_LIBRARY_LINKER__math_lib_Debug lib/CMakeFiles/math_lib.dir/hash/sha1.c.obj lib/CMakeFiles/math_lib.dir/hash/sha256.c.obj lib/CMakeFiles/math_lib.dir/math/cipolla.cpp.obj lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj lib/CMakeFiles/math_lib.dir/math/discrete_log.cpp.obj lib/CMakeFiles/math_lib.dir/math/math_base.cpp.obj lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj lib/CMakeFiles/math_lib.dir/math/primitive_root.cpp.obj lib/CMakeFiles/math_lib.dir/math/totient.cpp.obj lib/CMakeFiles/math_lib.dir/string/kmp.c.obj lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   POST_BUILD = cd .
@@ -181,7 +195,7 @@ build lib/libmath_lib.a: CXX_STATIC_LIBRARY_LINKER__math_lib_Debug lib/CMakeFile
 # Utility command for test
 
 build lib/CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build\lib && "E:\Program Files\CMake\bin\ctest.exe" --force-new-ctest-process "
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build\lib && "E:\Program Files\CMake\bin\ctest.exe" --force-new-ctest-process "
   DESC = Running tests...
   pool = console
   restat = 1
@@ -193,7 +207,7 @@ build lib/test: phony lib/CMakeFiles/test.util
 # Utility command for edit_cache
 
 build lib/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build\lib && "E:\Program Files\CMake\bin\cmake-gui.exe" -SD:\Code\C++\Math -BD:\Code\C++\Math\build"
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build\lib && "E:\Program Files\CMake\bin\cmake-gui.exe" -SD:\Code\C++\MathLib -BD:\Code\C++\MathLib\build"
   DESC = Running CMake cache editor...
   pool = console
   restat = 1
@@ -205,7 +219,7 @@ build lib/edit_cache: phony lib/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build lib/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build\lib && "E:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\Code\C++\Math -BD:\Code\C++\Math\build"
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build\lib && "E:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\Code\C++\MathLib -BD:\Code\C++\MathLib\build"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -214,7 +228,7 @@ build lib/rebuild_cache: phony lib/CMakeFiles/rebuild_cache.util
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# D:/Code/C++/Math/CMakeLists.txt
+# D:/Code/C++/MathLib/CMakeLists.txt
 # =============================================================================
 
 # =============================================================================
@@ -226,10 +240,10 @@ build lib/rebuild_cache: phony lib/CMakeFiles/rebuild_cache.util
 
 build cmake_object_order_depends_target_mod: phony || cmake_object_order_depends_target_math_lib
 
-build tests/CMakeFiles/mod.dir/mod.cpp.obj: CXX_COMPILER__mod_Debug D$:/Code/C++/Math/tests/mod.cpp || cmake_object_order_depends_target_mod
+build tests/CMakeFiles/mod.dir/mod.cpp.obj: CXX_COMPILER__mod_Debug D$:/Code/C++/MathLib/tests/mod.cpp || cmake_object_order_depends_target_mod
   DEP_FILE = tests\CMakeFiles\mod.dir\mod.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = tests\CMakeFiles\mod.dir
   OBJECT_FILE_DIR = tests\CMakeFiles\mod.dir
 
@@ -260,10 +274,10 @@ build tests/mod.exe: CXX_EXECUTABLE_LINKER__mod_Debug tests/CMakeFiles/mod.dir/m
 
 build cmake_object_order_depends_target_algo: phony || cmake_object_order_depends_target_math_lib
 
-build tests/CMakeFiles/algo.dir/algo.cpp.obj: CXX_COMPILER__algo_Debug D$:/Code/C++/Math/tests/algo.cpp || cmake_object_order_depends_target_algo
+build tests/CMakeFiles/algo.dir/algo.cpp.obj: CXX_COMPILER__algo_Debug D$:/Code/C++/MathLib/tests/algo.cpp || cmake_object_order_depends_target_algo
   DEP_FILE = tests\CMakeFiles\algo.dir\algo.cpp.obj.d
   FLAGS = -g
-  INCLUDES = -ID:/Code/C++/Math/lib
+  INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = tests\CMakeFiles\algo.dir
   OBJECT_FILE_DIR = tests\CMakeFiles\algo.dir
 
@@ -285,12 +299,46 @@ build tests/algo.exe: CXX_EXECUTABLE_LINKER__algo_Debug tests/CMakeFiles/algo.di
   TARGET_IMPLIB = tests\libalgo.dll.a
   TARGET_PDB = algo.exe.dbg
 
+# =============================================================================
+# Object build statements for EXECUTABLE target prime
+
+
+#############################################
+# Order-only phony target for prime
+
+build cmake_object_order_depends_target_prime: phony || cmake_object_order_depends_target_math_lib
+
+build tests/CMakeFiles/prime.dir/prime.cpp.obj: CXX_COMPILER__prime_Debug D$:/Code/C++/MathLib/tests/prime.cpp || cmake_object_order_depends_target_prime
+  DEP_FILE = tests\CMakeFiles\prime.dir\prime.cpp.obj.d
+  FLAGS = -g
+  INCLUDES = -ID:/Code/C++/MathLib/lib
+  OBJECT_DIR = tests\CMakeFiles\prime.dir
+  OBJECT_FILE_DIR = tests\CMakeFiles\prime.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target prime
+
+
+#############################################
+# Link the executable tests\prime.exe
+
+build tests/prime.exe: CXX_EXECUTABLE_LINKER__prime_Debug tests/CMakeFiles/prime.dir/prime.cpp.obj | lib/libmath_lib.a || lib/libmath_lib.a
+  FLAGS = -g
+  LINK_LIBRARIES = lib/libmath_lib.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
+  OBJECT_DIR = tests\CMakeFiles\prime.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_FILE = tests\prime.exe
+  TARGET_IMPLIB = tests\libprime.dll.a
+  TARGET_PDB = prime.exe.dbg
+
 
 #############################################
 # Utility command for test
 
 build tests/CMakeFiles/test.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build\tests && "E:\Program Files\CMake\bin\ctest.exe" --force-new-ctest-process "
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build\tests && "E:\Program Files\CMake\bin\ctest.exe" --force-new-ctest-process "
   DESC = Running tests...
   pool = console
   restat = 1
@@ -302,7 +350,7 @@ build tests/test: phony tests/CMakeFiles/test.util
 # Utility command for edit_cache
 
 build tests/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build\tests && "E:\Program Files\CMake\bin\cmake-gui.exe" -SD:\Code\C++\Math -BD:\Code\C++\Math\build"
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build\tests && "E:\Program Files\CMake\bin\cmake-gui.exe" -SD:\Code\C++\MathLib -BD:\Code\C++\MathLib\build"
   DESC = Running CMake cache editor...
   pool = console
   restat = 1
@@ -314,7 +362,7 @@ build tests/edit_cache: phony tests/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build tests/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D D:\Code\C++\Math\build\tests && "E:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\Code\C++\Math -BD:\Code\C++\Math\build"
+  COMMAND = cmd.exe /C "cd /D D:\Code\C++\MathLib\build\tests && "E:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SD:\Code\C++\MathLib -BD:\Code\C++\MathLib\build"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -336,29 +384,33 @@ build mod: phony tests/mod.exe
 
 build mod.exe: phony tests/mod.exe
 
+build prime: phony tests/prime.exe
+
+build prime.exe: phony tests/prime.exe
+
 # =============================================================================
 # Folder targets.
 
 # =============================================================================
 
 #############################################
-# Folder: D:/Code/C++/Math/build
+# Folder: D:/Code/C++/MathLib/build
 
 build all: phony lib/all tests/all
 
 # =============================================================================
 
 #############################################
-# Folder: D:/Code/C++/Math/build/lib
+# Folder: D:/Code/C++/MathLib/build/lib
 
 build lib/all: phony lib/libmath_lib.a
 
 # =============================================================================
 
 #############################################
-# Folder: D:/Code/C++/Math/build/tests
+# Folder: D:/Code/C++/MathLib/build/tests
 
-build tests/all: phony tests/mod.exe tests/algo.exe
+build tests/all: phony tests/mod.exe tests/algo.exe tests/prime.exe
 
 # =============================================================================
 # Built-in targets
@@ -367,13 +419,13 @@ build tests/all: phony tests/mod.exe tests/algo.exe
 #############################################
 # Phony target to force glob verification run.
 
-build D$:/Code/C++/Math/build/CMakeFiles/VerifyGlobs.cmake_force: phony
+build D$:/Code/C++/MathLib/build/CMakeFiles/VerifyGlobs.cmake_force: phony
 
 
 #############################################
 # Re-run CMake to check if globbed directories changed.
 
-build D$:/Code/C++/Math/build/CMakeFiles/cmake.verify_globs: VERIFY_GLOBS | D$:/Code/C++/Math/build/CMakeFiles/VerifyGlobs.cmake_force
+build D$:/Code/C++/MathLib/build/CMakeFiles/cmake.verify_globs: VERIFY_GLOBS | D$:/Code/C++/MathLib/build/CMakeFiles/VerifyGlobs.cmake_force
   pool = console
   restat = 1
 
@@ -381,14 +433,14 @@ build D$:/Code/C++/Math/build/CMakeFiles/cmake.verify_globs: VERIFY_GLOBS | D$:/
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE D$:/Code/C++/Math/build/CMakeFiles/cmake.verify_globs | ../CMakeLists.txt ../lib/CMakeLists.txt ../tests/CMakeLists.txt CMakeCache.txt CMakeFiles/3.22.0-rc2/CMakeCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeCXXCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeRCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeSystem.cmake D$:/Code/C++/Math/build/CMakeFiles/VerifyGlobs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCXXInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeGenericSystem.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeRCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-windres.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/WindowsPaths.cmake
+build build.ninja: RERUN_CMAKE D$:/Code/C++/MathLib/build/CMakeFiles/cmake.verify_globs | ../CMakeLists.txt ../lib/CMakeLists.txt ../tests/CMakeLists.txt CMakeCache.txt CMakeFiles/3.22.0-rc2/CMakeCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeCXXCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeRCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeSystem.cmake D$:/Code/C++/MathLib/build/CMakeFiles/VerifyGlobs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCXXInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeGenericSystem.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeRCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-windres.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/WindowsPaths.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build ../CMakeLists.txt ../lib/CMakeLists.txt ../tests/CMakeLists.txt CMakeCache.txt CMakeFiles/3.22.0-rc2/CMakeCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeCXXCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeRCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeSystem.cmake D$:/Code/C++/Math/build/CMakeFiles/VerifyGlobs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCXXInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeGenericSystem.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeRCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-windres.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/WindowsPaths.cmake: phony
+build ../CMakeLists.txt ../lib/CMakeLists.txt ../tests/CMakeLists.txt CMakeCache.txt CMakeFiles/3.22.0-rc2/CMakeCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeCXXCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeRCCompiler.cmake CMakeFiles/3.22.0-rc2/CMakeSystem.cmake D$:/Code/C++/MathLib/build/CMakeFiles/VerifyGlobs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCXXInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeGenericSystem.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeRCInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Compiler/GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-C.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX-ABI.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU-CXX.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-GNU.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows-windres.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/Windows.cmake E$:/Program$ Files/CMake/share/cmake-3.22/Modules/Platform/WindowsPaths.cmake: phony
 
 
 #############################################
