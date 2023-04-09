@@ -29,6 +29,17 @@ constexpr uint64_t pow(uint64_t x, uint32_t y, uint32_t mod){
     return r;
 }
 
+constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
+    uint64_t r = 1;
+    while (y){
+        if (y & 1)
+            r = mul(r, x, mod);
+        x = mul(x, x, mod);
+        y >>= 1;
+    }
+    return r;
+}
+
 constexpr uint64_t fact(uint32_t x){
     uint64_t r = 1;
     for (uint32_t i = 2; i <= x; i++)
@@ -71,7 +82,7 @@ constexpr uint64_t inv(uint64_t x, uint64_t mod){
 }
 
 inline uint64_t rand(uint64_t mod){
-    return ((uint64_t)rand() << 60) | ((uint64_t)rand() << 45) | ((uint64_t)rand() << 30) | (rand() << 15) | rand();
+    return (((uint64_t)rand() << 60) | ((uint64_t)rand() << 45) | ((uint64_t)rand() << 30) | (rand() << 15) | rand()) % mod;
 }
 
 inline uint64_t rand(uint64_t l, uint64_t h){
@@ -79,7 +90,7 @@ inline uint64_t rand(uint64_t l, uint64_t h){
 }
 
 inline uint32_t rand(uint32_t mod){
-    return ((uint32_t)rand() << 30) | (rand() << 15) | rand();
+    return (((uint32_t)rand() << 30) | (rand() << 15) | rand()) % mod;
 }
 
 inline uint32_t rand(uint32_t l, uint32_t h){
