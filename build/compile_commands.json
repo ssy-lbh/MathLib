@@ -21,8 +21,8 @@
 },
 {
   "directory": "D:/Code/C++/MathLib/build",
-  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\discrete_log.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\discrete_log.cpp",
-  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\discrete_log.cpp"
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\index_calculus.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\index_calculus.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\index_calculus.cpp"
 },
 {
   "directory": "D:/Code/C++/MathLib/build",
@@ -36,6 +36,11 @@
 },
 {
   "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\pohlig_hellman.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\pohlig_hellman.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\pohlig_hellman.cpp"
+},
+{
+  "directory": "D:/Code/C++/MathLib/build",
   "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\pollard_rho.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\pollard_rho.cpp",
   "file": "D:\\Code\\C++\\MathLib\\lib\\math\\pollard_rho.cpp"
 },
@@ -43,6 +48,11 @@
   "directory": "D:/Code/C++/MathLib/build",
   "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\primitive_root.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\primitive_root.cpp",
   "file": "D:\\Code\\C++\\MathLib\\lib\\math\\primitive_root.cpp"
+},
+{
+  "directory": "D:/Code/C++/MathLib/build",
+  "command": "\"E:\\Program Files\\C++\\mingw64\\bin\\g++.exe\" -ID:/Code/C++/MathLib/lib -g -o lib\\CMakeFiles\\math_lib.dir\\math\\sieves.cpp.obj -c D:\\Code\\C++\\MathLib\\lib\\math\\sieves.cpp",
+  "file": "D:\\Code\\C++\\MathLib\\lib\\math\\sieves.cpp"
 },
 {
   "directory": "D:/Code/C++/MathLib/build",

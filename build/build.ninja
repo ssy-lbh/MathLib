@@ -118,8 +118,8 @@ build lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj: CXX_COMPILER__math_lib_Debug
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
-build lib/CMakeFiles/math_lib.dir/math/discrete_log.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/discrete_log.cpp || cmake_object_order_depends_target_math_lib
-  DEP_FILE = lib\CMakeFiles\math_lib.dir\math\discrete_log.cpp.obj.d
+build lib/CMakeFiles/math_lib.dir/math/index_calculus.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/index_calculus.cpp || cmake_object_order_depends_target_math_lib
+  DEP_FILE = lib\CMakeFiles\math_lib.dir\math\index_calculus.cpp.obj.d
   FLAGS = -g
   INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
@@ -139,6 +139,13 @@ build lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj: CXX_COMPILER__math_
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
 
+build lib/CMakeFiles/math_lib.dir/math/pohlig_hellman.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/pohlig_hellman.cpp || cmake_object_order_depends_target_math_lib
+  DEP_FILE = lib\CMakeFiles\math_lib.dir\math\pohlig_hellman.cpp.obj.d
+  FLAGS = -g
+  INCLUDES = -ID:/Code/C++/MathLib/lib
+  OBJECT_DIR = lib\CMakeFiles\math_lib.dir
+  OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
+
 build lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/pollard_rho.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\pollard_rho.cpp.obj.d
   FLAGS = -g
@@ -148,6 +155,13 @@ build lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj: CXX_COMPILER__math_l
 
 build lib/CMakeFiles/math_lib.dir/math/primitive_root.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/primitive_root.cpp || cmake_object_order_depends_target_math_lib
   DEP_FILE = lib\CMakeFiles\math_lib.dir\math\primitive_root.cpp.obj.d
+  FLAGS = -g
+  INCLUDES = -ID:/Code/C++/MathLib/lib
+  OBJECT_DIR = lib\CMakeFiles\math_lib.dir
+  OBJECT_FILE_DIR = lib\CMakeFiles\math_lib.dir\math
+
+build lib/CMakeFiles/math_lib.dir/math/sieves.cpp.obj: CXX_COMPILER__math_lib_Debug D$:/Code/C++/MathLib/lib/math/sieves.cpp || cmake_object_order_depends_target_math_lib
+  DEP_FILE = lib\CMakeFiles\math_lib.dir\math\sieves.cpp.obj.d
   FLAGS = -g
   INCLUDES = -ID:/Code/C++/MathLib/lib
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
@@ -182,7 +196,7 @@ build lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj: C_COMPILER__math_lib_Debug 
 #############################################
 # Link the static library lib\libmath_lib.a
 
-build lib/libmath_lib.a: CXX_STATIC_LIBRARY_LINKER__math_lib_Debug lib/CMakeFiles/math_lib.dir/hash/sha1.c.obj lib/CMakeFiles/math_lib.dir/hash/sha256.c.obj lib/CMakeFiles/math_lib.dir/math/cipolla.cpp.obj lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj lib/CMakeFiles/math_lib.dir/math/discrete_log.cpp.obj lib/CMakeFiles/math_lib.dir/math/math_base.cpp.obj lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj lib/CMakeFiles/math_lib.dir/math/primitive_root.cpp.obj lib/CMakeFiles/math_lib.dir/math/totient.cpp.obj lib/CMakeFiles/math_lib.dir/string/kmp.c.obj lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj
+build lib/libmath_lib.a: CXX_STATIC_LIBRARY_LINKER__math_lib_Debug lib/CMakeFiles/math_lib.dir/hash/sha1.c.obj lib/CMakeFiles/math_lib.dir/hash/sha256.c.obj lib/CMakeFiles/math_lib.dir/math/cipolla.cpp.obj lib/CMakeFiles/math_lib.dir/math/crt.cpp.obj lib/CMakeFiles/math_lib.dir/math/index_calculus.cpp.obj lib/CMakeFiles/math_lib.dir/math/math_base.cpp.obj lib/CMakeFiles/math_lib.dir/math/miller_rabin.cpp.obj lib/CMakeFiles/math_lib.dir/math/pohlig_hellman.cpp.obj lib/CMakeFiles/math_lib.dir/math/pollard_rho.cpp.obj lib/CMakeFiles/math_lib.dir/math/primitive_root.cpp.obj lib/CMakeFiles/math_lib.dir/math/sieves.cpp.obj lib/CMakeFiles/math_lib.dir/math/totient.cpp.obj lib/CMakeFiles/math_lib.dir/string/kmp.c.obj lib/CMakeFiles/math_lib.dir/util/zipmap.c.obj
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = lib\CMakeFiles\math_lib.dir
   POST_BUILD = cd .

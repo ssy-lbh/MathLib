@@ -7,26 +7,21 @@
 #include <cassert>
 #include <cstdint>
 
-constexpr uint64_t pow(uint64_t x, uint32_t y){
-    uint64_t r = 1;
-    while (y){
-        if (y & 1)
-            r *= x;
-        x *= x;
-        y >>= 1;
-    }
-    return r;
+constexpr uint64_t mul(uint64_t a, uint64_t b, uint64_t mod){
+    uint64_t c = (uint64_t)((long double)a / mod * b);
+    uint64_t res = (uint64_t)a * b - (uint64_t)c * mod;
+    return (res + mod) % mod;
 }
 
-constexpr uint64_t pow(uint64_t x, uint32_t y, uint32_t mod){
+constexpr uint32_t pow(uint32_t x, uint32_t y, uint32_t mod){
     uint64_t r = 1;
     while (y){
         if (y & 1)
             r = (r * x) % mod;
-        x = (x * x) % mod;
+        x = (1ULL * x * x) % mod;
         y >>= 1;
     }
-    return r;
+    return (uint32_t)r;
 }
 
 constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
@@ -40,28 +35,16 @@ constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
     return r;
 }
 
-constexpr uint64_t fact(uint32_t x){
-    uint64_t r = 1;
-    for (uint32_t i = 2; i <= x; i++)
+// 浮点数对于1的精确性可以容许
+template <typename T> constexpr T fact(T x){
+    T r = ident(T());
+    for (T i = 2; i <= x; i++)
         r *= i;
     return r;
 }
 
-constexpr uint32_t gcd(uint32_t x, uint32_t y){
-    return (x == 0) ? y : gcd(y % x, x);
-}
-
-constexpr uint64_t gcd(uint64_t x, uint64_t y){
-    return (x == 0) ? y : gcd(y % x, x);
-}
-
-constexpr uint32_t lcm(uint32_t x, uint32_t y){
-    return x / gcd(x, y) * y;
-}
-
-constexpr uint64_t lcm(uint64_t x, uint64_t y){
-    return x / gcd(x, y) * y;
-}
+template <typename T> constexpr T gcd(T x, T y){ return (x == zero(T())) ? y : gcd(y % x, x); }
+template <typename T> constexpr T lcm(T x, T y){ return x / gcd(x, y) * y; }
 
 // 扩展欧几里得, ax + by = gcd(a, b)
 constexpr uint64_t exgcd(uint64_t a, uint64_t b, int64_t& x, int64_t& y){
@@ -97,21 +80,22 @@ inline uint32_t rand(uint32_t l, uint32_t h){
     return l + rand(h - l + 1);
 }
 
-constexpr uint64_t mul(uint64_t a, uint64_t b, uint64_t mod){
-    uint64_t c = (long double)a / mod * b;
-    uint64_t res = (uint64_t)a * b - (uint64_t)c * mod;
-    return (res + mod) % mod;
+inline uint64_t sqrt_ceil(uint64_t x){
+    uint64_t r = (uint64_t)sqrtl((long double)x);
+    return r * r == x ? r : r + 1;
 }
 
-constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
-    uint64_t r = 1;
-    while (y){
-        if (y & 1)
-            r = mul(r, x, mod);
-        x = mul(x, x, mod);
-        y >>= 1;
-    }
-    return r;
+inline uint64_t sqrt_floor(uint64_t x){
+    return (uint64_t)sqrtl((long double)x);
+}
+
+inline uint64_t cbrt_ceil(uint64_t x){
+    uint64_t r = (uint64_t)cbrtl((long double)x);
+    return r * r * r == x ? r : r + 1;
+}
+
+inline uint64_t cbrt_floor(uint64_t x){
+    return (uint64_t)cbrtl((long double)x);
 }
 
 uint64_t cpow(uint64_t x, uint64_t w2, uint64_t n, uint64_t mod);
@@ -135,6 +119,11 @@ uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p);
 // g^x === b (mod p)
 uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p);
 uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
+
+// a^x === b (mod p)
+uint64_t index_calculus_log(uint64_t a, uint64_t b, uint64_t g, uint64_t p);
+// g^x === a (mod p)
+uint64_t index_calculus_log(uint64_t a, uint64_t g, uint64_t p);
 
 // 有限循环群, 可以获取生成元, 目前的种类有
 // 1. Zn, 模N同余群, 有限循环群
@@ -227,7 +216,7 @@ template <int N> constexpr TMod<N> pow(TMod<N> x, uint32_t n) { return pow(x.n, 
 
 template <int N> constexpr TMod<N> sqrt(const TMod<N>& x) {
     TMod<N> r;
-    r.n = cipolla(x.n, N);
+    r.n = (uint32_t)cipolla(x.n, N);
     return r;
 }
 

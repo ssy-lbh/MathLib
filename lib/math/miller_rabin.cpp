@@ -11,7 +11,7 @@ bool miller_rabin(uint32_t n){
         uint32_t x = pow(a, d, n);
         if (x == 1 || x == n - 1 || x == 0)
             continue;
-        for (int i = 0; i < s; i++){
+        for (uint32_t i = 0; i < s; i++){
             x = (uint64_t)x * x % n;
             if (x == n - 1 && i != s - 1)
                 goto next;

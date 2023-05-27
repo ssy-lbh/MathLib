@@ -64,7 +64,7 @@ void fht(TTensor<T, N>& s, bool ifht = false){
             s[i3] = t3;
         }
         const float angle = 2.0f * (float)PI / (float)s1;
-        const float sv = sinf(ifht ? -angle : angle), cv = cosf(angle);
+        const float sv = sin(ifht ? -angle : angle), cv = cos(angle);
         float sk = sv, ck = cv;
         for (int j = 1; j < s4; j++){
             for (int k = 0; k < N; k += s1){

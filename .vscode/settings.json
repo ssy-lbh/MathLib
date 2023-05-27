@@ -49,8 +49,28 @@
         "iterator": "cpp",
         "queue": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "complex": "cpp",
+        "cstdarg": "cpp",
+        "cwctype": "cpp",
+        "memory_resource": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "system_error": "cpp",
+        "numbers": "cpp",
+        "stdexcept": "cpp"
     },
     "CppHelper.HeaderGuardPattern": "_{FILE}_H",
-    "CppHelper.ContextCreateHeaderGuard": true
+    "CppHelper.ContextCreateHeaderGuard": true,
+    "cmake.configureOnOpen": true
 }

@@ -44,7 +44,7 @@ void algo_matacc(){
         auto a = B[0][0]; // * [1(0), 0(-1)]
         auto b = calc_fab(n);
         if (a != b){
-            printf("%u %u %u\n", n, a, b);
+            printf("%u %u %u\n", n, a.n, b.n);
             print(B);
             assert(false);
         }

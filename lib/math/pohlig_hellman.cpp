@@ -6,11 +6,11 @@ constexpr uint32_t N = 16;
 
 // g^x === b (mod p)
 uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt){
-    uint64_t numc = 0;
+    uint32_t numc = 0;
     uint64_t crta[N];
     uint64_t crtb[N];
     uint64_t pow_prime[64];
-    uint32_t factor[64];
+    uint64_t factor[64];
 
     uint64_t phi = p - 1;
 

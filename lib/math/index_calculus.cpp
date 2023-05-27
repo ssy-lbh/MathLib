@@ -2,27 +2,30 @@
 
 #include "sieves.h"
 
+#include <algorithm>
+
 struct IndexCalculusContext {
-    constexpr static uint32_t N = 717;
-    constexpr static uint32_t M = 239;
+    constexpr static uint32_t M = 239; // 239 -> uint32_t, 35000 -> uint64_t
+    constexpr static uint32_t N = 3 * M;
 
     uint64_t a[N][M];
-    uint32_t n, m;
+    uint32_t n;
+    uint32_t m;
 
     bool tag[M];
-    uint32_t prime[M];
-    uint32_t inv_prime[M];
-    uint32_t ind[M];
+    uint64_t prime[M];
+    uint64_t inv_prime[M];
+    uint64_t ind[M];
 };
 
-static uint64_t get_opti_value(uint64_t mod){
+static uint32_t get_opti_value(uint64_t mod){
     double lgmod = log(mod);
-    return (uint64_t) exp(sqrt(lgmod * log(lgmod)) * 0.5 + 1.0);
+    return (uint32_t)exp(sqrt(lgmod * log(lgmod)) * 0.5 + 1.0);
 }
 
 uint32_t index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
     uint64_t limit = get_opti_value(mod);
-    uint32_t cnt = egypt_sieve(limit, ctx.tag, ctx.prime);
+    uint32_t cnt = (uint32_t)egypt_sieve(limit, ctx.tag, ctx.prime);
     for (uint32_t i = 0; i < cnt; i++)
         ctx.inv_prime[i] = inv(ctx.prime[i], mod);
     return cnt;
@@ -71,7 +74,7 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p, uin
         uint32_t i = 0;
         for (uint64_t j = rand(phi), k = pow(g, j, p); i < limit; j = rand(phi), k = pow(g, j, p)){
             for (uint64_t l = k, x = 1; x < phi; l = mul(l, k, p), x++){
-                uint32_t t1 = __builtin_ctzll(l);
+                uint32_t t1 = ctzl(l);
                 uint64_t t2 = l >> t1;
                 for (uint32_t y = 1; y < cnt && t2 > 1; y++){
                     if ((y == 9 && t2 > 1e15) || (y == 29 && t2 > 1e12))
@@ -99,7 +102,7 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p, uin
         }
     } while (!gauss(ctx, phi));
     for (uint32_t i = 0; i < cnt; i++){
-        ctx.ind[i] = ctx.a[i][cnt-1];
+        ctx.ind[i] = ctx.a[i][cnt - 1];
     }
 }
 
@@ -113,7 +116,7 @@ inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g
         for (uint64_t k = j, l = 1; l < phi; k = pow(k, j, p), l++){
             uint32_t t1;
             uint64_t t2 = mul(a, k, p), t3;
-            t1 = __builtin_ctzll(t2);
+            t1 = ctzl(t2);
             t2 >>= t1;
             t3 = t2;
             for (uint32_t x = 1; x < cnt && t2 > 1; x++){

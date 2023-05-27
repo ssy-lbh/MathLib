@@ -97,7 +97,7 @@ template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, bool> is
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> ident(T) { return 1; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> zero(T) { return 0; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> conj(T x) { return x; }
-template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> inv(T x) { return 1.0 / x; }
+template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> inv(T x) { return (T)(1.0 / x); }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> norm(T x) { return x; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> norm2(T x) { return x * x; }
 template <typename T> constexpr std::enable_if_t<std::is_scalar_v<T>, int> line(T) { return 1; }
@@ -126,6 +126,8 @@ inline void print(float x, int) { printf("%g", x); }
 inline void print(double x, int) { printf("%lg", x); }
 inline void print(long double x, int) { printf("%Lg", x); }
 
+template <typename T> inline std::enable_if_t<std::is_enum_v<T>, void> print(T x, int) { printf("%d", x); }
+
 template <typename T>
 void print(const T& x) {
     int s = line(T());
@@ -142,6 +144,17 @@ void println(const T& x) {
     }
 }
 
+template <typename T, typename I> constexpr std::enable_if_t<std::is_integral_v<I>, T> pow(T x, I y){
+    T r = ident(T());
+    while (y){
+        if (y & 1)
+            r *= x;
+        x *= x;
+        y >>= 1;
+    }
+    return r;
+}
+
 int ffsi(int);
 int ffsl(long long);
 int ctzi(int);
@@ -150,5 +163,9 @@ int clzi(int);
 int clzl(long long);
 int popcnti(int);
 int popcntl(long long);
+
+template <typename T, typename E> constexpr bool equal(const T& x, const T& y, E epsilon) { return norm2(x - y) <= epsilon * epsilon; }
+
+template <typename T1, typename T2> constexpr std::enable_if_t<std::is_scalar_v<T1> && std::is_scalar_v<T2>, void> convert(T1& x, const T2& y) { x = y; }
 
 #endif /* MATH_BASE_H */

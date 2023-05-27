@@ -69,18 +69,7 @@ template <typename T, int H, int W> constexpr TMatrix<T, W, H> inv(const TMatrix
     return inv(xt * x) * xt;
 }
 
-template <typename T, int L> constexpr TMatrix<T, L, L> pow(const TMatrix<T, L, L>& x, int y){
-    TMatrix<T, L, L> m = ident(TMatrix<T, L, L>());
-    TMatrix<T, L, L> t = x;
-    while (y){
-        if (y & 1)
-            m *= t;
-        t *= t;
-        y >>= 1;
-    }
-    return m;
-}
-
+// input: l, u is zeros
 template <typename T, int L> constexpr void lu_decom(const TMatrix<T, L, L>& x, TMatrix<T, L, L>& l, TMatrix<T, L, L>& u) {
     static_assert(is_dividable(T()), "items in matrix must be dividable");
     for (int i = 0; i < L; i++){
@@ -99,6 +88,41 @@ template <typename T, int L> constexpr void lu_decom(const TMatrix<T, L, L>& x, 
         }
         l[i][i] = ident(T());
     }
+}
+
+template <typename T, int H, int W> constexpr void gauss_elim(TMatrix<T, H, W>& x) {
+    static_assert(is_dividable(T()), "items in matrix must be dividable");
+    bool tag[H] = {false};
+    TVector<T, W> row;
+    for (int i = 0; i < W, i++){
+        for (int j = 0; j < H; j++){
+            if (!tag[j] && x[j][i] != zero(T())){
+                tag[j] = true;
+                T finv = inv(x[j][i]);
+                for (int k = i + 1; k < W; k++)
+                    row[k] = finv * x[j][k];
+                for (int k = 0; k < H; k++){
+                    if (!tag[k] && x[k][i] != zero(T())){
+                        for (int l = i + 1; l < W; l++)
+                            x[k][l] -= x[k][i] * row[l];
+                        x[k][i] = zero(T());
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
+
+template <typename T, int H, int W> constexpr int rank(const TMatrix<T, H, W>& x) {
+    TMatrix<T, H, W> t = x;
+    gauss_elim(t);
+    int res = 0;
+    for (int i = 0; i < H; i++){
+        if (t[i][W - 1] != zero(T()))
+            res++;
+    }
+    return res;
 }
 
 template <typename T, int L> constexpr T det(const TMatrix<T, L, L>& x) {

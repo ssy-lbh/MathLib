@@ -239,6 +239,22 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> operator-
     return t;
 }
 
+template <typename T> constexpr bool operator!=(const TTensor<T>& x, const TTensor<T>& y){
+    return x.n != y.n;
+}
+
+template <typename T, int CL, int... L> constexpr bool operator!=(const TTensor<T>& x, const TTensor<T>& y){
+    for (int i = 0; i < CL; i++){
+        if (x[i] != y[i])
+            return true;
+    }
+    return false;
+}
+
+template <typename T, int CL, int... L> constexpr bool operator==(const TTensor<T>& x, const TTensor<T>& y){
+    return !(x != y);
+}
+
 template <typename T> constexpr TTensor<T> zero(TTensor<T>) {
     return TTensor<T>(zero(T()));
 }

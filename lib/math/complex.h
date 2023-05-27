@@ -25,9 +25,9 @@ public:
 
     using base_type = typename complex_base<T>::type;
 
-    constexpr TComplex<T>();
-    constexpr TComplex<T>(const T&);
-    constexpr TComplex<T>(const T&, const T&);
+    constexpr TComplex<T>() : w(zero(T())), i(zero(T())) {}
+    constexpr TComplex<T>(const T& x) : w(x), i(zero(T())) {}
+    constexpr TComplex<T>(const T& x, const T& y) : w(x), i(y) {}
     constexpr TComplex<T>(const TComplex<T>&) = default;
     constexpr TComplex<T> &operator=(const TComplex<T>&) = default;
     constexpr base_type& operator[](int i) { return ((base_type*)this)[i]; }
@@ -73,11 +73,6 @@ template <typename T> constexpr bool is_alternative(TComplex<T>) { return is_ass
 template <typename T> constexpr bool is_unital(TComplex<T>) { return is_unital(T()); }
 template <typename T> constexpr bool is_dividable(TComplex<T>) { return true; }
 
-// complex, 复数与超复数
-template <typename T> constexpr TComplex<T>::TComplex() : w(zero(T())), i(zero(T())) {}
-template <typename T> constexpr TComplex<T>::TComplex(const T& x) : w(x), i(zero(T())) {}
-template <typename T> constexpr TComplex<T>::TComplex(const T& x, const T& y) : w(x), i(y) {}
-
 template <typename T1, typename T2>
 struct complex_cmp_level { static constexpr int value = 0; }; // 0: T1 == T2, 1: T1 < T2, 2: T2 < T1
 template <typename T1, typename T2>
@@ -108,6 +103,10 @@ template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const TC
 template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const TComplex<T>& y) { x = x / y; return x; }
 template <typename T> constexpr TComplex<T> operator+(const TComplex<T>& x) { return x; }
 template <typename T> constexpr TComplex<T> operator-(const TComplex<T>& x) { return TComplex<T>(-x.w, -x.i); }
+
+template <typename T> constexpr bool operator==(const TComplex<T>& x, const TComplex<T>& y) { return x.w == y.w && x.i == y.i; }
+template <typename T> constexpr bool operator!=(const TComplex<T>& x, const TComplex<T>& y) { return !(x == y); }
+
 // 请注意
 // 1. 以下运算符的优先级较低, 请使用括号
 // 2. 八元数及以上不满足结合律, 十六元数及以上不满足交错率
@@ -135,6 +134,7 @@ using Complex = TComplex<default_type>;
 using Quaternion = TComplex<Complex>;
 using Octonion = TComplex<Quaternion>;
 using Sedenion = TComplex<Octonion>;
+using Deduciliion = TComplex<Sedenion>;
 
 template <typename T>
 using TQuaternion = TComplex<TComplex<T>>;
@@ -142,6 +142,8 @@ template <typename T>
 using TOctonion = TComplex<TQuaternion<T>>;
 template <typename T>
 using TSedenion = TComplex<TOctonion<T>>;
+template <typename T>
+using TDeducilion = TComplex<TSedenion<T>>;
 // 想要更多超复数再加
 
 constexpr Complex operator ""_i(long double x) { return Complex(0.0, (default_type)x); }
