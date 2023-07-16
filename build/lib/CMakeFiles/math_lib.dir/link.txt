@@ -1,2 +1,0 @@
-"E:\Program Files\C++\mingw64\bin\ar.exe" qc libmath_lib.a CMakeFiles/math_lib.dir/number_theory.cpp.obj
-"E:\Program Files\C++\mingw64\bin\ranlib.exe" libmath_lib.a
