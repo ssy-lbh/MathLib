@@ -98,7 +98,8 @@ template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> ide
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> zero(T) { return 0; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> conj(T x) { return x; }
 template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> inv(T x) { return (T)(1.0 / x); }
-template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> norm(T x) { return x; }
+template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, T> norm(T x) { return abs(x); }
+template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> norm(T x) { return fabs(x); }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> norm2(T x) { return x * x; }
 template <typename T> constexpr std::enable_if_t<std::is_scalar_v<T>, int> line(T) { return 1; }
 

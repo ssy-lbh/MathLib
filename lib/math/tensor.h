@@ -14,23 +14,18 @@ template <typename T, int CL, int... L>
 class TTensor<T, CL, L...> {
 public:
     static constexpr int order = sizeof...(L) + 1;
-    using elem_type = std::conditional_t<order == 1, T, TTensor<T, L...>>;
+    using base_type = std::conditional_t<order == 1, T, TTensor<T, L...>>;
 
     TTensor<T, L...> n[CL];
 
     constexpr TTensor<T, CL, L...>() = default;
     constexpr TTensor<T, CL, L...>(const TTensor<T, CL, L...>&) = default;
     constexpr TTensor<T, CL, L...> &operator=(const TTensor<T, CL, L...>&) = default;
-    constexpr elem_type& operator[](int i) { return *(elem_type*)&n[i]; }
-    constexpr const elem_type& operator[](int i) const { return *(elem_type*)&n[i]; }
+    constexpr base_type& operator[](int i) { return *(base_type*)&n[i]; }
+    constexpr const base_type& operator[](int i) const { return *(base_type*)&n[i]; }
 
-    constexpr TTensor<T, CL, L...>(const std::initializer_list<TTensor<T, L...>>& l) {
-        memcpy(n, l.begin(),  (l.size() > CL ? CL : l.size()) * sizeof(TTensor<T, L...>));
-    }
-
-    // 直接一维数组填充
-    constexpr TTensor<T, CL, L...>(const std::initializer_list<T>& l) {
-        memcpy(n, l.begin(), (l.size() * sizeof(T)) > sizeof(TTensor<T, CL, L...>) ? sizeof(TTensor<T, CL, L...>) : (l.size() * sizeof(T)));
+    constexpr TTensor<T, CL, L...>(const std::initializer_list<base_type>& l) {
+        memcpy(n, l.begin(),  (l.size() > CL ? CL : l.size()) * sizeof(base_type));
     }
 
     template <typename U>
@@ -247,7 +242,7 @@ template <typename T> constexpr bool operator!=(const TTensor<T>& x, const TTens
     return x.n != y.n;
 }
 
-template <typename T, int CL, int... L> constexpr bool operator!=(const TTensor<T>& x, const TTensor<T>& y){
+template <typename T, int CL, int... L> constexpr bool operator!=(const TTensor<T, CL, L...>& x, const TTensor<T, CL, L...>& y){
     for (int i = 0; i < CL; i++){
         if (x[i] != y[i])
             return true;
@@ -256,6 +251,10 @@ template <typename T, int CL, int... L> constexpr bool operator!=(const TTensor<
 }
 
 template <typename T, int CL, int... L> constexpr bool operator==(const TTensor<T>& x, const TTensor<T>& y){
+    return !(x != y);
+}
+
+template <typename T, int CL, int... L> constexpr bool operator==(const TTensor<T, CL, L...>& x, const TTensor<T, CL, L...>& y){
     return !(x != y);
 }
 
@@ -281,7 +280,7 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> conj(cons
     return t;
 }
 
-template <typename T, int CL, int... L> constexpr auto norm(const TTensor<T, CL, L...>& x) { return (T)sqrt(norm2(x)); }
+template <typename T, int CL, int... L> constexpr auto norm(const TTensor<T, CL, L...>& x) { return sqrt(norm2(x)); }
 
 template <typename T> constexpr auto norm2(const TTensor<T>& x) {
     return norm2(x.n);
@@ -303,6 +302,42 @@ template <typename T, int CL, int... L> constexpr T dot(const TTensor<T, CL, L..
     for (int i = 0; i < CL; i++)
         d += x[i] * y[i];
     return d;
+}
+
+template <typename T> constexpr T sum(const TTensor<T>& x) {
+    return x.n;
+}
+
+template <typename T, int L> constexpr T sum(const TTensor<T, L>& x) {
+    T s = zero(T());
+    for (int i = 0; i < L; i++)
+        s += x[i];
+    return s;
+}
+
+template <typename T, int CL1, int CL2, int... L> constexpr T sum(const TTensor<T, CL1, CL2, L...>& x) {
+    T s = zero(T());
+    for (int i = 0; i < CL1; i++)
+        s += sum(x[i]);
+    return s;
+}
+
+template <typename T> constexpr T prod(const TTensor<T>& x) {
+    return x.n;
+}
+
+template <typename T, int L> constexpr T prod(const TTensor<T, L>& x) {
+    T s = ident(T());
+    for (int i = 0; i < L; i++)
+        s *= x[i];
+    return s;
+}
+
+template <typename T, int CL1, int CL2, int... L> constexpr T prod(const TTensor<T, CL1, CL2, L...>& x) {
+    T s = ident(T());
+    for (int i = 0; i < CL1; i++)
+        s *= prod(x[i]);
+    return s;
 }
 
 template <typename T, int CL, int... L> constexpr T area(const TTensor<T, CL, L...>& x, const TTensor<T, CL, L...>& y) {

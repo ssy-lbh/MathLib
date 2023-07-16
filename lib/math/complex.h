@@ -30,14 +30,12 @@ public:
     constexpr TComplex<T>(const T& x, const T& y) : w(x), i(y) {}
     constexpr TComplex<T>(const TComplex<T>&) = default;
     constexpr TComplex<T> &operator=(const TComplex<T>&) = default;
+    constexpr TComplex<T> &operator=(const T& x) { w = x; i = zero(T()); return *this; }
     constexpr base_type& operator[](int i) { return ((base_type*)this)[i]; }
-
-    constexpr TComplex<T>(const T& x) : w(x), i(0) {}
-    constexpr TComplex<T> &operator=(const T& x) { w = x; i = 0; return *this; }
 };
 
 template <typename T, int N>
-struct nth_complex { using type = TComplex<typename nth_complex<N - 1>::type>; };
+struct nth_complex { using type = TComplex<typename nth_complex<T, N - 1>::type>; };
 template <typename T>
 struct nth_complex<T, 0> { using type = T; };
 template <typename T, int N>
@@ -45,7 +43,7 @@ using nth_complex_t = typename nth_complex<T, N>::type;
 
 // 使用前需要static_assert判断N是否为2的幂
 template <typename T, int N>
-struct lg2_nth_complex { using type = TComplex<typename lg2_nth_complex<(N >> 1)>::type>; };
+struct lg2_nth_complex { using type = TComplex<typename lg2_nth_complex<T, (N >> 1)>::type>; };
 template <typename T>
 struct lg2_nth_complex<T, 1> { using type = T; };
 template <typename T, int N>
@@ -83,7 +81,15 @@ template <typename T1, typename T2>
 struct complex_cmp_level<TComplex<T1>, T2> : complex_cmp_level<T1, T2> { static constexpr int value = 2; };
 
 template <typename T> constexpr TComplex<T> operator+(const TComplex<T>& x, const TComplex<T>& y) { return TComplex<T>(x.w + y.w, x.i + y.i); }
+template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level<T1, T2>::value != 2, TComplex<decltype(T1() + T2())>>
+    operator+(const T1& x, const TComplex<T2>& y) { return TComplex<decltype(T1() + T2())>(x + y.w, y.i); }
+template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level<T1, T2>::value != 1, TComplex<decltype(T1() + T2())>>
+    operator+(const TComplex<T1>& x, const T2& y) { return TComplex<decltype(T1() + T2())>(x.w + y, x.i); }
 template <typename T> constexpr TComplex<T> operator-(const TComplex<T>& x, const TComplex<T>& y) { return TComplex<T>(x.w - y.w, x.i - y.i); }
+template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level<T1, T2>::value != 2, TComplex<decltype(T1() - T2())>>
+    operator-(const T1& x, const TComplex<T2>& y) { return TComplex<decltype(T1() - T2())>(x - y.w, -y.i); }
+template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level<T1, T2>::value != 1, TComplex<decltype(T1() - T2())>>
+    operator-(const TComplex<T1>& x, const T2& y) { return TComplex<decltype(T1() - T2())>(x.w - y, x.i); }
 // 凯莱-迪克松构造
 // 其中体现的特性有
 // 1. 若自己的共轭与自己不相等，则高一级无交换律
@@ -100,7 +106,9 @@ template <typename T1, typename T2> constexpr TComplex<T1> operator/(const TComp
 template <typename T> constexpr TComplex<T>& operator+=(TComplex<T>& x, const TComplex<T>& y) { x.w += y.w; x.i += y.i; return x; }
 template <typename T> constexpr TComplex<T>& operator-=(TComplex<T>& x, const TComplex<T>& y) { x.w -= y.w; x.i -= y.i; return x; }
 template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const TComplex<T>& y) { x = y * x; return x; }
+template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const T& y) { x.w *= y; x.i *= y; return x; }
 template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const TComplex<T>& y) { x = x / y; return x; }
+template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const T& y) { x.w /= y; x.i /= y; return x; }
 template <typename T> constexpr TComplex<T> operator+(const TComplex<T>& x) { return x; }
 template <typename T> constexpr TComplex<T> operator-(const TComplex<T>& x) { return TComplex<T>(-x.w, -x.i); }
 
@@ -118,7 +126,7 @@ template <int N, typename T> constexpr TComplex<T> gen(TComplex<T>){ return TCom
 template <typename T> constexpr TComplex<T> gen(TComplex<T>, int n){ return TComplex<T>(cos(2.0 * PI / n), sin(2.0 * PI / n)); }
 template <typename T> constexpr TComplex<T> conj(const TComplex<T>& x) { return TComplex<T>(conj(x.w), -x.i); }
 template <typename T> constexpr TComplex<T> inv(const TComplex<T>& x) { return conj(x) / norm2(x); }
-template <typename T> constexpr auto norm(const TComplex<T>& x) { return (T)sqrt(norm2(x)); }
+template <typename T> constexpr auto norm(const TComplex<T>& x) { return sqrt(norm2(x)); }
 template <typename T> constexpr auto norm2(const TComplex<T>& x) { return norm2(x.w) + norm2(x.i); }
 template <typename T> constexpr int line(TComplex<T>) { return line(T()); }
 
@@ -185,8 +193,8 @@ template <typename T> constexpr TComplex<T> log(const TComplex<T>& x) {
         TComplex<T> t = x;
         T w = t[0]; t[0] = zero(T());
         auto n2 = norm2(t);
-        auto n = sqrt(n2);
-        t *= atan2(n, w) / n; t[0] = (log(norm2(w) + n2) * 0.5) * ident(T());
+        decltype(n2) n = sqrt(n2);
+        t *= (decltype(n2))atan2(n, w) / n; t[0] = (log(norm2(w) + n2) * 0.5) * ident(T());
         return t;
     }
     return TComplex<T>(log(norm2(x)) * 0.5, atan2(x.i, x.w));
@@ -211,16 +219,11 @@ template <typename T> constexpr TComplex<T> acos(const TComplex<T>& x) {
 }
 
 template <typename T> constexpr TComplex<T> atan(const TComplex<T>& x) {
-    return TComplex<T>(zero(T()), -ident(T())) * log((TComplex<T>(ident(T())) + TComplex<T>(zero(T()), ident(T())) * x) / (TComplex<T>(ident(T())) - TComplex<T>(zero(T()), ident(T())) * x)) * 0.5;
+    return TComplex<T>(zero(T()), -ident(T()) * 0.5) * log((TComplex<T>(ident(T())) + TComplex<T>(zero(T()), ident(T())) * x) / (TComplex<T>(ident(T())) - TComplex<T>(zero(T()), ident(T())) * x));
 }
 
-template <typename T>
-void print(const T& x){
-    int l = line(x);
-    for (int i = 0; i < l; i++){
-        print(x, i);
-        putchar('\n');
-    }
+template <typename T> constexpr TComplex<T> atan2(const TComplex<T>& y, const TComplex<T>& x) {
+    return TComplex<T>(zero(T()), -ident(T()) * 0.5) * log((x + TComplex<T>(zero(T()), ident(T())) * y) / (x - TComplex<T>(zero(T()), ident(T())) * y));
 }
 
 #endif /* COMPLEX_H */

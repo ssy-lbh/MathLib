@@ -4,6 +4,9 @@
 #include "math/matrix.h"
 #include "math/number_theory.h"
 #include "math/fft.h"
+#include "math/fraction.h"
+
+#include "math/complex.h"
 
 void algo_fftmul(){
     TTensor<TMod<998244353>, 8> a = {5, 6, 1, 9, 0, 0, 0, 0};
@@ -52,21 +55,34 @@ void algo_matacc(){
 }
 
 void algo_eigen(){
+    const default_type eps = 1e-6;
+
     Matrix<2, 2> A = {{1, 1}, {1, 0}};
 
     Tensor<2> E;
     Matrix<2, 2> V;
     jacobi_eigen(A, E, V);
-    println(E);
-    println(V);
+    assert(norm(A * V[0] - E[0] * V[0]) < eps);
+    assert(norm(A * V[1] - E[1] * V[1]) < eps);
+    assert(norm(A - inv(V) * diag(E) * V) < eps);
+    assert(norm(trace(A) - sum(E)) < eps);
+    assert(norm(det(A) - prod(E)) < eps);
+}
 
-    Matrix<2, 2> B = A * ~A;
-    println(exp(log(B) * 1.5f));
+void algo_frac_inv(){
+    TMatrix<Fraction, 2, 2> A = {{8_f, 5_f}, {1_f, 4_f}};
+    assert(det(A) == 27_f);
+    assert(inv(A) * A == ident(A));
+
+    TMatrix<Fraction, 2, 2> L, U;
+    lu_decom(A, L, U);
+    assert(L * U == A);
 }
 
 int main(){
     algo_fftmul();
     algo_matacc();
     algo_eigen();
+    algo_frac_inv();
     return 0;
 }

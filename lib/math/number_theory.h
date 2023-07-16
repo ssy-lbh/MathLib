@@ -7,6 +7,9 @@
 #include <cassert>
 #include <cstdint>
 
+using default_int = int64_t;
+using default_uint = uint64_t;
+
 constexpr uint32_t mul(uint32_t a, uint32_t b, uint32_t mod){
     return (uint32_t)((uint64_t)a * b % mod);
 }
@@ -249,5 +252,17 @@ template <int N> constexpr TMod<N> sqrt(const TMod<N>& x) {
 
 template <int N> void print(const TMod<N>& x, int) { printf("%d", x.n); }
 template <int N> void print(const TMod<N>& x) { printf("%d\n", x.n); }
+
+template <int N> TMod<N> rand(TMod<N>) { return TMod<N>(rand((uint32_t)N)); }
+
+template <int N> int legendre(TMod<N> x){
+    return x == 0 ? 0 : pow(x.n, (N - 1) / 2, N) == 1 ? 1 : -1;
+}
+
+int jacobi(uint64_t a, uint64_t n);
+
+template <int N> int jacobi(TMod<N> x){
+    return jacobi(x.n, N);
+}
 
 #endif /* NUMBER_THEORY_H */
