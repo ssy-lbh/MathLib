@@ -107,8 +107,8 @@ template <typename T> constexpr TComplex<T>& operator+=(TComplex<T>& x, const TC
 template <typename T> constexpr TComplex<T>& operator-=(TComplex<T>& x, const TComplex<T>& y) { x.w -= y.w; x.i -= y.i; return x; }
 template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const TComplex<T>& y) { x = y * x; return x; }
 template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const T& y) { x.w *= y; x.i *= y; return x; }
-template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const TComplex<T>& y) { x = x / y; return x; }
-template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const T& y) { x.w /= y; x.i /= y; return x; }
+template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const TComplex<T>& y) { return x = x / y; }
+template <typename T1, typename T2> constexpr TComplex<T1>& operator/=(TComplex<T1>& x, const T2& y) { return x = x / y; }
 template <typename T> constexpr TComplex<T> operator+(const TComplex<T>& x) { return x; }
 template <typename T> constexpr TComplex<T> operator-(const TComplex<T>& x) { return TComplex<T>(-x.w, -x.i); }
 

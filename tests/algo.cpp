@@ -5,7 +5,6 @@
 #include "math/number_theory.h"
 #include "math/fft.h"
 #include "math/fraction.h"
-
 #include "math/complex.h"
 
 void algo_fftmul(){
@@ -70,7 +69,7 @@ void algo_eigen(){
 }
 
 void algo_frac_inv(){
-    TMatrix<Fraction, 2, 2> A = {{8_f, 5_f}, {1_f, 4_f}};
+    TMatrix<Fraction, 2, 2> A = {{8, 5}, {1, 4}};
     assert(det(A) == 27_f);
     assert(inv(A) * A == ident(A));
 

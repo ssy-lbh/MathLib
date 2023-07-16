@@ -46,6 +46,7 @@ template <typename T> constexpr TFraction<T>& operator/=(TFraction<T>& a, const 
 template <typename T> constexpr TFraction<T>& operator/=(TFraction<T>& a, const T& b) { return a = a / b; }
 template <typename T> constexpr TFraction<T> operator+(const TFraction<T>& a) { return a; }
 template <typename T> constexpr TFraction<T> operator-(const TFraction<T>& a) { return TFraction<T>(-a.x, a.y); }
+template <typename T> constexpr TFraction<T> operator^(const TFraction<T>& a, int n) { return pow(a, n); }
 
 template <typename T> constexpr bool operator==(const TFraction<T>& a, const TFraction<T>& b) { return a.x == b.x && a.y == b.y; }
 template <typename T> constexpr bool operator==(const TFraction<T>& a, const T& b) { return a.x == b * a.y; }

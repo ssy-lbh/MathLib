@@ -108,19 +108,21 @@ template <typename T, int L> constexpr void qr_decom(const TMatrix<T, L, L>& x, 
             r[i][j] = zero(T());
             q[i] -= r[j][i] * q[j];
         }
-        q[i] /= norm(q[i]);
+        q[i] /= T(norm(q[i]));
         r[i][i] = dot(q[i], x[i]);
     }
 }
 
-template <typename T, int H, int W> constexpr void gauss_elim(TMatrix<T, H, W>& x) {
+template <typename T, int H, int W> constexpr int gauss_elim(TMatrix<T, H, W>& x) {
     static_assert(is_dividable(T()), "items in matrix must be dividable");
     bool tag[H] = {false};
+    int cnt = 0;
     TTensor<T, W> row;
     for (int i = 0; i < W; i++){
         for (int j = 0; j < H; j++){
             if (!tag[j] && x[j][i] != zero(T())){
                 tag[j] = true;
+                cnt++;
                 T finv = inv(x[j][i]);
                 for (int k = i + 1; k < W; k++)
                     row[k] = finv * x[j][k];
@@ -135,17 +137,12 @@ template <typename T, int H, int W> constexpr void gauss_elim(TMatrix<T, H, W>& 
             }
         }
     }
+    return cnt;
 }
 
 template <typename T, int H, int W> constexpr int rank(const TMatrix<T, H, W>& x) {
     TMatrix<T, H, W> t = x;
-    gauss_elim(t);
-    int res = 0;
-    for (int i = 0; i < H; i++){
-        if (t[i][W - 1] != zero(T()))
-            res++;
-    }
-    return res;
+    return gauss_elim(t);
 }
 
 template <typename T, int L> constexpr T trace(const TMatrix<T, L, L>& x) {
@@ -200,7 +197,7 @@ template <typename T> constexpr T det(const TMatrix<T, 3, 3>& x){
 */
 // 无法解决复数矩阵的特征值问题
 template <typename T, int L>
-void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, double precision, int max_iter){
+constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, double precision, int max_iter){
     V = ident(TMatrix<T, L, L>());
 
 	int cnt = 0; // current iteration
@@ -281,17 +278,29 @@ void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, dou
 // 2. 1e-8, 12 * L * (L - 1)
 // 3. 1e-10, 15 * L * (L - 1)
 template <typename T, int L>
-void jacobi_eigen(const TMatrix<T, L, L>& X, TTensor<T, L>& E, TMatrix<T, L, L>& V){
+constexpr void jacobi_eigen(const TMatrix<T, L, L>& X, TTensor<T, L>& E, TMatrix<T, L, L>& V){
     jacobi_eigen(X, E, V, 1e-6, 9 * L * (L - 1));
 }
 
+// QR分解法求解特征值
+// 无法解决复数矩阵的特征值问题
 template <typename T, int L>
-void calc_eigen(const TMatrix<T, L, L>& A, TTensor<T, L>& E, TMatrix<T, L, L>& V) {
+constexpr void qr_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, int max_iter){
+    for (int i = 0; i < max_iter; i++){
+        TMatrix<T, L, L> q, r;
+        qr_decom(X, q, r);
+        X = r * q;
+    }
+    E = diag(X);
+}
+
+template <typename T, int L>
+constexpr void calc_eigen(const TMatrix<T, L, L>& A, TTensor<T, L>& E, TMatrix<T, L, L>& V) {
     jacobi_eigen(A, E, V);
 }
 
 template <typename T, int H, int W>
-void sort_svd(TMatrix<T, H, H>& U, TMatrix<T, H, W>& S, TMatrix<T, W, W>& V) {
+constexpr void sort_svd(TMatrix<T, H, H>& U, TMatrix<T, H, W>& S, TMatrix<T, W, W>& V) {
     constexpr int N = (H > W ? W : H);
     for (int i = 0; i < N; i++) {
         int idx = i;
@@ -317,7 +326,7 @@ void sort_svd(TMatrix<T, H, H>& U, TMatrix<T, H, W>& S, TMatrix<T, W, W>& V) {
 }
 
 template <typename T, int H, int W>
-void calc_svd(TMatrix<T, H, W>& A, TMatrix<T, H, H>& U, TMatrix<T, W, W>& V) {
+constexpr void calc_svd(TMatrix<T, H, W>& A, TMatrix<T, H, H>& U, TMatrix<T, W, W>& V) {
     constexpr int N = (H > W ? W : H);
     TMatrix<T, H, W> S;
     // 计算 A^T * A 的特征值和特征向量
@@ -337,7 +346,7 @@ void calc_svd(TMatrix<T, H, W>& A, TMatrix<T, H, H>& U, TMatrix<T, W, W>& V) {
 
 // 将函数(多项式)应用于矩阵运算上
 template <typename T, int L>
-TMatrix<T, L, L> apply_mat(const TMatrix<T, L, L>& X, const std::function<T(T)>& f) {
+constexpr TMatrix<T, L, L> apply_mat(const TMatrix<T, L, L>& X, const std::function<T(T)>& f) {
     TTensor<T, L> E;
     TMatrix<T, L, L> V, IV;
     calc_eigen(X, E, V);
@@ -347,21 +356,21 @@ TMatrix<T, L, L> apply_mat(const TMatrix<T, L, L>& X, const std::function<T(T)>&
     return V * IV;
 }
 
-template <typename T, int L> TMatrix<T, L, L> exp(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)exp(x); })); }
-template <typename T, int L> TMatrix<T, L, L> log(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)log(x); })); }
-template <typename T, int L> TMatrix<T, L, L> pow(const TMatrix<T, L, L>& X, T p) { return apply_mat(X, std::function<T(T)>([p](T x) { return (T)pow(x, p); })); }
-template <typename T, int L> TMatrix<T, L, L> sqrt(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)sqrt(x); })); }
-template <typename T, int L> TMatrix<T, L, L> sin(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)sin(x); })); }
-template <typename T, int L> TMatrix<T, L, L> cos(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)cos(x); })); }
-template <typename T, int L> TMatrix<T, L, L> tan(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)tan(x); })); }
-template <typename T, int L> TMatrix<T, L, L> asin(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)asin(x); })); }
-template <typename T, int L> TMatrix<T, L, L> acos(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)acos(x); })); }
-template <typename T, int L> TMatrix<T, L, L> atan(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)atan(x); })); }
-template <typename T, int L> TMatrix<T, L, L> sinh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)sinh(x); })); }
-template <typename T, int L> TMatrix<T, L, L> cosh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)cosh(x); })); }
-template <typename T, int L> TMatrix<T, L, L> tanh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)tanh(x); })); }
-template <typename T, int L> TMatrix<T, L, L> asinh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)asinh(x); })); }
-template <typename T, int L> TMatrix<T, L, L> acosh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)acosh(x); })); }
-template <typename T, int L> TMatrix<T, L, L> atanh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)atanh(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> exp(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)exp(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> log(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)log(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> pow(const TMatrix<T, L, L>& X, T p) { return apply_mat(X, std::function<T(T)>([p](T x) { return (T)pow(x, p); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> sqrt(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)sqrt(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> sin(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)sin(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> cos(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)cos(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> tan(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)tan(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> asin(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)asin(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> acos(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)acos(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> atan(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)atan(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> sinh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)sinh(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> cosh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)cosh(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> tanh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)tanh(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> asinh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)asinh(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> acosh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)acosh(x); })); }
+template <typename T, int L> constexpr TMatrix<T, L, L> atanh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)atanh(x); })); }
 
 #endif /* MATRIX_H */

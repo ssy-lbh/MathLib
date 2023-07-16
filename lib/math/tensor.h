@@ -294,13 +294,13 @@ template <typename T, int CL, int... L> constexpr auto norm2(const TTensor<T, CL
 }
 
 template <typename T> constexpr T dot(const TTensor<T>& x, const TTensor<T>& y) {
-    return x.n * y.n;
+    return conj(x.n) * y.n;
 }
 
 template <typename T, int CL, int... L> constexpr T dot(const TTensor<T, CL, L...>& x, const TTensor<T, CL, L...>& y) {
     T d = zero(T());
     for (int i = 0; i < CL; i++)
-        d += x[i] * y[i];
+        d += conj(x[i]) * y[i];
     return d;
 }
 
