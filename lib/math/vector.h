@@ -47,4 +47,16 @@ template <typename T> constexpr TVector<T, 3> cross(const TVector<T, 3>& x, cons
     return TVector<T, 3>(x[1] * y[2] - x[2] * y[1], x[2] * y[0] - x[0] * y[2], x[0] * y[1] - x[1] * y[0]);
 }
 
+template <typename T, int L> constexpr TVector<T, L> unit(const TVector<T, L>& x){
+    return x / norm(x);
+}
+
+template <typename T, int L> constexpr TVector<T, L> proj(const TVector<T, L>& x, const TVector<T, L>& t){
+    return t * dot(x, t) / norm2(t);
+}
+
+template <typename T, int L> constexpr TVector<T, L> proj_unit(const TVector<T, L>& x, const TVector<T, L>& u){
+    return u * dot(x, u);
+}
+
 #endif /* VECTOR_H */

@@ -6,12 +6,15 @@ cmake_policy(SET CMP0009 NEW)
 file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "D:/Code/C++/MathLib/lib/*.cpp")
 set(OLD_GLOB
   "D:/Code/C++/MathLib/lib/math/cipolla.cpp"
+  "D:/Code/C++/MathLib/lib/math/combinatorics.cpp"
   "D:/Code/C++/MathLib/lib/math/crt.cpp"
   "D:/Code/C++/MathLib/lib/math/index_calculus.cpp"
   "D:/Code/C++/MathLib/lib/math/math_base.cpp"
   "D:/Code/C++/MathLib/lib/math/miller_rabin.cpp"
+  "D:/Code/C++/MathLib/lib/math/number_theory.cpp"
   "D:/Code/C++/MathLib/lib/math/pohlig_hellman.cpp"
   "D:/Code/C++/MathLib/lib/math/pollard_rho.cpp"
+  "D:/Code/C++/MathLib/lib/math/polynomial.cpp"
   "D:/Code/C++/MathLib/lib/math/prime_count.cpp"
   "D:/Code/C++/MathLib/lib/math/primitive_root.cpp"
   "D:/Code/C++/MathLib/lib/math/sieves.cpp"

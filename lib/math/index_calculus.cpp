@@ -126,7 +126,7 @@ inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g
                     t2 *= ctx.inv_prime[x];
             }
             if (t2 == 1){
-                uint64_t ans = (mul(t1, ctx.ind[1], phi) - mul(i, l, phi) + phi) % phi;
+                uint64_t ans = (mul((uint64_t)t1, ctx.ind[1], phi) - mul(i, l, phi) + phi) % phi;
                 for (uint32_t x = 1; x < cnt && t3 > 1; x++){
                     while (t3 % ctx.prime[x] == 0){
                         t3 *= ctx.inv_prime[x];

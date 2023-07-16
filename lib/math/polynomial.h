@@ -3,9 +3,10 @@
 
 #include "math_base.h"
 #include "tensor.h"
+#include "number_theory.h"
 
-// ¶àÏîÊ½Ä£°å
-//TODO ¶àÏîÊ½´æ´¢½á¹¹Ó¦¸ù¾İÀàĞÍµÄ½»»»ÂÉ¡¢½áºÏÂÉ¡¢½»´íÂÉÊÇ·ñ´æÔÚ½øĞĞÓÅ»¯
+// ï¿½ï¿½ï¿½ï¿½Ê½Ä£ï¿½ï¿½
+//TODO ï¿½ï¿½ï¿½ï¿½Ê½ï¿½æ´¢ï¿½á¹¹Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÍµÄ½ï¿½ï¿½ï¿½ï¿½É¡ï¿½ï¿½ï¿½ï¿½ï¿½É¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½ï¿½Å»ï¿½
 template <typename T, int... L>
 using TPolynomial = TTensor<T, L...>;
 
@@ -13,5 +14,67 @@ template <int... L>
 using Polynomial = TPolynomial<default_type, L...>;
 
 template <typename T, int... L> constexpr TPolynomial<T, L...> ident(TPolynomial<T, L...>) { return TPolynomial<T, L...>({1}); }
+
+void poly_rev(uint32_t poly[], uint32_t n);
+void poly_ntt(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod, bool intt = false);
+
+void poly_sub(uint32_t poly1[], uint32_t poly2[], uint32_t n);
+void poly_add(uint32_t poly1[], uint32_t poly2[], uint32_t n);
+
+// å¿«é€Ÿæ²ƒå°”ä»€å˜æ¢
+void poly_fwt_or(uint32_t poly[], uint32_t n, bool inv);
+void poly_fwt_and(uint32_t poly[], uint32_t n, bool inv);
+void poly_fwt_xor(uint32_t poly[], uint32_t n, bool inv);
+
+// å¤šé¡¹å¼ä¹˜æ³•
+// len(poly1) = 2n
+// len(poly2) = 2n
+// poly1 <= result
+// poly2 <= ntt(poly2)
+void poly_mul(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t g, uint32_t mod);
+
+// å¤šé¡¹å¼æ±‚é€†
+// len(poly) = 2n
+// len(tmp) = 2n
+// poly <= inv(poly)
+// tmp <= ntt(poly)
+void poly_inv(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t mod);
+
+// å¤šé¡¹å¼é™¤æ³•
+// len(poly1) = 3n
+// len(poly2) = 2n
+// poly1 <= result
+// poly2 <= ntt(poly2)
+void poly_div(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t g, uint32_t mod);
+
+// å¤šé¡¹å¼å¼€æ ¹
+// len(poly) = 2n
+// poly <= sqrt(poly)
+void poly_sqrt(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod, uint32_t inv2 = 0);
+
+// å¤šé¡¹å¼å¾®åˆ†
+// len(poly) = n
+// poly <= diff(poly)
+void poly_diff(uint32_t poly[], uint32_t n, uint32_t mod);
+
+// å¤šé¡¹å¼ç§¯åˆ†
+// len(poly) = n
+// invs = inv(0, 1, 2, ..., n - 1)
+// poly <= int(poly)
+void poly_int(uint32_t poly[], uint32_t invs[], uint32_t n, uint32_t mod);
+void poly_int(uint32_t poly[], uint32_t n, uint32_t mod);
+
+// å¤šé¡¹å¼å¯¹æ•°
+// len(poly) = 2n
+// poly <= log(poly)
+void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t tmp_inv[], uint32_t n, uint32_t g, uint32_t mod);
+void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t n, uint32_t g, uint32_t mod);
+void poly_log(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod);
+
+// å¤šé¡¹å¼å¹‚
+// len(poly) = 2n
+// len(tmp) = 2n
+// poly <= pow(poly, k)
+void poly_pow(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t k, uint32_t g, uint32_t mod);
 
 #endif /* POLYNOMIAL_H */

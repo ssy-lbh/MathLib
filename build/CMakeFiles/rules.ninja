@@ -7,7 +7,7 @@
 
 # =============================================================================
 # Project: math_lib
-# Configurations: Debug
+# Configurations: 
 # =============================================================================
 # =============================================================================
 
@@ -22,7 +22,7 @@ rule CUSTOM_COMMAND
 #############################################
 # Rule for compiling C files.
 
-rule C_COMPILER__math_lib_Debug
+rule C_COMPILER__math_lib_
   depfile = $DEP_FILE
   deps = gcc
   command = "E:\Program Files\C++\mingw64\bin\gcc.exe" $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -32,7 +32,7 @@ rule C_COMPILER__math_lib_Debug
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__math_lib_Debug
+rule CXX_COMPILER__math_lib_
   depfile = $DEP_FILE
   deps = gcc
   command = "E:\Program Files\C++\mingw64\bin\g++.exe" $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -42,7 +42,7 @@ rule CXX_COMPILER__math_lib_Debug
 #############################################
 # Rule for linking CXX static library.
 
-rule CXX_STATIC_LIBRARY_LINKER__math_lib_Debug
+rule CXX_STATIC_LIBRARY_LINKER__math_lib_
   command = cmd.exe /C "$PRE_LINK && "E:\Program Files\CMake\bin\cmake.exe" -E rm -f $TARGET_FILE && "E:\Program Files\C++\mingw64\bin\ar.exe" qc $TARGET_FILE $LINK_FLAGS $in && "E:\Program Files\C++\mingw64\bin\ranlib.exe" $TARGET_FILE && $POST_BUILD"
   description = Linking CXX static library $TARGET_FILE
   restat = $RESTAT
@@ -51,7 +51,7 @@ rule CXX_STATIC_LIBRARY_LINKER__math_lib_Debug
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__mod_Debug
+rule CXX_COMPILER__mod_
   depfile = $DEP_FILE
   deps = gcc
   command = "E:\Program Files\C++\mingw64\bin\g++.exe" $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -61,7 +61,7 @@ rule CXX_COMPILER__mod_Debug
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__mod_Debug
+rule CXX_EXECUTABLE_LINKER__mod_
   command = cmd.exe /C "$PRE_LINK && "E:\Program Files\C++\mingw64\bin\g++.exe" $FLAGS $LINK_FLAGS $in -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -70,7 +70,7 @@ rule CXX_EXECUTABLE_LINKER__mod_Debug
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__algo_Debug
+rule CXX_COMPILER__algo_
   depfile = $DEP_FILE
   deps = gcc
   command = "E:\Program Files\C++\mingw64\bin\g++.exe" $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -80,7 +80,7 @@ rule CXX_COMPILER__algo_Debug
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__algo_Debug
+rule CXX_EXECUTABLE_LINKER__algo_
   command = cmd.exe /C "$PRE_LINK && "E:\Program Files\C++\mingw64\bin\g++.exe" $FLAGS $LINK_FLAGS $in -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT
@@ -89,7 +89,7 @@ rule CXX_EXECUTABLE_LINKER__algo_Debug
 #############################################
 # Rule for compiling CXX files.
 
-rule CXX_COMPILER__prime_Debug
+rule CXX_COMPILER__prime_
   depfile = $DEP_FILE
   deps = gcc
   command = "E:\Program Files\C++\mingw64\bin\g++.exe" $DEFINES $INCLUDES $FLAGS -MD -MT $out -MF $DEP_FILE -o $out -c $in
@@ -99,7 +99,7 @@ rule CXX_COMPILER__prime_Debug
 #############################################
 # Rule for linking CXX executable.
 
-rule CXX_EXECUTABLE_LINKER__prime_Debug
+rule CXX_EXECUTABLE_LINKER__prime_
   command = cmd.exe /C "$PRE_LINK && "E:\Program Files\C++\mingw64\bin\g++.exe" $FLAGS $LINK_FLAGS $in -o $TARGET_FILE -Wl,--out-implib,$TARGET_IMPLIB -Wl,--major-image-version,0,--minor-image-version,0 $LINK_PATH $LINK_LIBRARIES && $POST_BUILD"
   description = Linking CXX executable $TARGET_FILE
   restat = $RESTAT

@@ -224,6 +224,10 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...>& operator
     return x;
 }
 
+template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...>& operator/=(TTensor<T, CL, L...>& x, const T& y){
+    return x *= inv(y);
+}
+
 template <typename T, int... L> constexpr TTensor<T, L...> operator+(const TTensor<T, L...>& x){
     return x;
 }

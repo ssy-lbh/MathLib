@@ -7,6 +7,10 @@
 #include <cassert>
 #include <cstdint>
 
+constexpr uint32_t mul(uint32_t a, uint32_t b, uint32_t mod){
+    return (uint32_t)((uint64_t)a * b % mod);
+}
+
 constexpr uint64_t mul(uint64_t a, uint64_t b, uint64_t mod){
     uint64_t c = (uint64_t)((long double)a / mod * b);
     uint64_t res = (uint64_t)a * b - (uint64_t)c * mod;
@@ -18,7 +22,7 @@ constexpr uint32_t pow(uint32_t x, uint32_t y, uint32_t mod){
     while (y){
         if (y & 1)
             r = (r * x) % mod;
-        x = (1ULL * x * x) % mod;
+        x = ((uint64_t)x * x) % mod;
         y >>= 1;
     }
     return (uint32_t)r;
@@ -47,22 +51,45 @@ template <typename T> constexpr T gcd(T x, T y){ return (x == zero(T())) ? y : g
 template <typename T> constexpr T lcm(T x, T y){ return x / gcd(x, y) * y; }
 
 // 扩展欧几里得, ax + by = gcd(a, b)
+constexpr int32_t exgcd(int32_t a, int32_t b, int32_t& x, int32_t& y){
+    if (b == 0){
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int32_t quot = a / b, rem = a % b;
+    int32_t r = exgcd(b, rem, y, x);
+    y -= quot * x;
+    return r;
+}
+
 constexpr uint64_t exgcd(uint64_t a, uint64_t b, int64_t& x, int64_t& y){
     if (b == 0){
         x = 1;
         y = 0;
         return a;
     }
-    uint64_t r = exgcd(b, a % b, y, x);
-    y -= a / b * x;
+    uint64_t quot = a / b, rem = a % b;
+    uint64_t r = exgcd(b, rem, y, x);
+    y -= quot * x;
     return r;
+}
+
+// 求逆元, ax = 1 (mod m)
+constexpr uint32_t inv(uint32_t x, uint32_t mod){
+    int32_t y = 0, z = 0;
+    exgcd(x, mod, y, z);
+    return (uint32_t)(y < 0 ? y + mod : y);
 }
 
 constexpr uint64_t inv(uint64_t x, uint64_t mod){
     int64_t y = 0, z = 0;
     exgcd(x, mod, y, z);
-    return (y % mod + mod) % mod;
+    return (uint64_t)(y < 0 ? y + mod : y);
 }
+
+void inv(uint32_t vals[], uint32_t n, uint32_t mod);
+void inv(uint64_t vals[], uint64_t n, uint64_t mod);
 
 inline uint64_t rand(uint64_t mod){
     return (((uint64_t)rand() << 60) | ((uint64_t)rand() << 45) | ((uint64_t)rand() << 30) | (rand() << 15) | rand()) % mod;

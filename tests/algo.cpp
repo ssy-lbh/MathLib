@@ -53,11 +53,15 @@ void algo_matacc(){
 
 void algo_eigen(){
     Matrix<2, 2> A = {{1, 1}, {1, 0}};
+
     Tensor<2> E;
     Matrix<2, 2> V;
-    calc_eigen(A, E, V);
+    jacobi_eigen(A, E, V);
     println(E);
     println(V);
+
+    Matrix<2, 2> B = A * ~A;
+    println(exp(log(B) * 1.5f));
 }
 
 int main(){
