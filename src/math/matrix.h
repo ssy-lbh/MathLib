@@ -169,7 +169,10 @@ template <typename T, int L> constexpr TMatrix<T, L, L> diag(const TTensor<T, L>
 template <typename T, int L> constexpr T det(const TMatrix<T, L, L>& x) {
     TMatrix<T, L, L> l, u;
     lu_decom(x, l, u);
-    return prod(diag(u));
+    T res = ident(T());
+    for (int i = 0; i < L; i++)
+        res *= u[i][i];
+    return res;
 }
 
 template <typename T> constexpr T det(const TMatrix<T, 1, 1>& x){
@@ -227,16 +230,16 @@ constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, 
 		T dbApq = X[ridx][cidx];
 		T dbAqq = X[cidx][cidx];
 		// compute rotate angle
-		T dbAngle = T(0.5) * atan2(-2 * dbApq, dbAqq - dbApp);
+		T dbAngle = T(0.5) * atan2(T(-2) * dbApq, dbAqq - dbApp);
 		T dbSinTheta = sin(dbAngle);
 		T dbCosTheta = cos(dbAngle);
-		T dbSin2Theta = sin(2 * dbAngle);
-		T dbCos2Theta = cos(2 * dbAngle);
+		T dbSin2Theta = sin(T(2) * dbAngle);
+		T dbCos2Theta = cos(T(2) * dbAngle);
 
 		X[ridx][ridx] = dbApp * dbCosTheta * dbCosTheta +
-			dbAqq * dbSinTheta * dbSinTheta + 2 * dbApq * dbCosTheta * dbSinTheta;
+			dbAqq * dbSinTheta * dbSinTheta + T(2) * dbApq * dbCosTheta * dbSinTheta;
 		X[cidx][cidx] = dbApp * dbSinTheta * dbSinTheta +
-			dbAqq * dbCosTheta * dbCosTheta - 2 * dbApq * dbCosTheta * dbSinTheta;
+			dbAqq * dbCosTheta * dbCosTheta - T(2) * dbApq * dbCosTheta * dbSinTheta;
 		X[ridx][cidx] = T(0.5) * (dbAqq - dbApp) * dbSin2Theta + dbApq * dbCos2Theta;
 		X[cidx][ridx] = X[ridx][cidx];
 

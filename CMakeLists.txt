@@ -1,9 +1,19 @@
 cmake_minimum_required(VERSION 3.8)
 project(math_lib VERSION 1.0.0 LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+
+set(SOURCE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(LIBRARY_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
-add_subdirectory(lib)
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(gmp)
+
+add_subdirectory(src)
 
 enable_testing()
 add_subdirectory(tests)

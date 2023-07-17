@@ -117,6 +117,7 @@ bool atkin_morain(uint64_t n, EllipticCurve& ec){
                 m_found = true;
                 break;
             }
+        }
     }
     // # if no proper m can be found. Go back to choose_discriminant()
     // If this step fails need to return false.

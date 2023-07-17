@@ -25,7 +25,8 @@ public:
     constexpr const base_type& operator[](int i) const { return *(base_type*)&n[i]; }
 
     constexpr TTensor<T, CL, L...>(const std::initializer_list<base_type>& l) {
-        memcpy(n, l.begin(),  (l.size() > CL ? CL : l.size()) * sizeof(base_type));
+        for (size_t i = 0; i < l.size(); i++)
+            n[i] = l.begin()[i];
     }
 
     template <typename U>

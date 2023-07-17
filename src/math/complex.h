@@ -222,6 +222,18 @@ template <typename T> constexpr TComplex<T> atan(const TComplex<T>& x) {
     return TComplex<T>(zero(T()), -ident(T()) * 0.5) * log((TComplex<T>(ident(T())) + TComplex<T>(zero(T()), ident(T())) * x) / (TComplex<T>(ident(T())) - TComplex<T>(zero(T()), ident(T())) * x));
 }
 
+template <typename T> constexpr TComplex<T> asinh(const TComplex<T>& x) {
+    return log(x + sqrt(x * x + TComplex<T>(ident(T()))));
+}
+
+template <typename T> constexpr TComplex<T> acosh(const TComplex<T>& x) {
+    return log(x + sqrt(x * x - TComplex<T>(ident(T()))));
+}
+
+template <typename T> constexpr TComplex<T> atanh(const TComplex<T>& x) {
+    return TComplex<T>(zero(T()), ident(T()) * 0.5) * log((TComplex<T>(ident(T())) + x) / (TComplex<T>(ident(T())) - x));
+}
+
 template <typename T> constexpr TComplex<T> atan2(const TComplex<T>& y, const TComplex<T>& x) {
     return TComplex<T>(zero(T()), -ident(T()) * 0.5) * log((x + TComplex<T>(zero(T()), ident(T())) * y) / (x - TComplex<T>(zero(T()), ident(T())) * y));
 }
