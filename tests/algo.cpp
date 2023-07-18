@@ -41,7 +41,7 @@ void algo_matacc(){
     };
     TMatrix<TMod<998244353>, 2, 2> A = {{1, 1}, {1, 0}};
     for (int i = 0; i < 20; i++){
-        int n = rand() % 1000 + 1;
+        int n = rand(1000u);
         auto B = pow(A, n);
         auto a = B[0][0]; // * [1(0), 0(-1)]
         auto b = calc_fab(n);
@@ -57,10 +57,11 @@ void algo_eigen(){
     const default_type eps = 1e-6;
 
     Matrix<2, 2> A = {{1, 1}, {1, 0}};
-
     Tensor<2> E;
     Matrix<2, 2> V;
+
     jacobi_eigen(A, E, V);
+    
     assert(norm(A * V[0] - E[0] * V[0]) < eps);
     assert(norm(A * V[1] - E[1] * V[1]) < eps);
     assert(norm(A - inv(V) * diag(E) * V) < eps);

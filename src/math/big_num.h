@@ -22,6 +22,20 @@ public:
     static const BigInt zero;
     static const BigInt one;
 
+    class Random {
+    public:
+        gmp_randstate_t state;
+
+    public:
+        Random();
+        Random(const Random& r);
+        Random(unsigned long seed);
+        ~Random();
+
+        BigInt operator()(const BigInt& n); // [0, n)
+        BigInt operator()(const BigInt& a, const BigInt& b); // [a, b)
+    };
+
     BigInt();
     BigInt(const BigInt& b);
     BigInt(const char* s);
@@ -45,47 +59,21 @@ public:
     BigInt& operator=(const unsigned long long& x);
     BigInt& operator=(const BigFrac& x);
     BigInt& operator=(const BigFloat& x);
-    BigInt& operator+=(const BigInt& b);
-    BigInt& operator-=(const BigInt& b);
-    BigInt& operator*=(const BigInt& b);
-    BigInt& operator/=(const BigInt& b);
-    BigInt& operator%=(const BigInt& b);
-    BigInt& operator<<=(const unsigned long& b);
-    BigInt& operator>>=(const unsigned long& b);
-    BigInt& operator&=(const BigInt& b);
-    BigInt& operator|=(const BigInt& b);
-    BigInt& operator^=(const BigInt& b);
     BigInt& operator++();
     BigInt& operator--();
     BigInt operator++(int);
     BigInt operator--(int);
     BigInt operator-() const;
     BigInt operator+() const;
-    BigInt operator<<(const unsigned long& b) const;
-    BigInt operator>>(const unsigned long& b) const;
-    BigInt operator&(const BigInt& b) const;
-    BigInt operator|(const BigInt& b) const;
-    BigInt operator^(const BigInt& b) const;
     BigInt operator~() const;
-    BigInt operator+(const BigInt& b) const;
-    BigInt operator-(const BigInt& b) const;
-    BigInt operator*(const BigInt& b) const;
-    BigInt operator/(const BigInt& b) const;
-    BigInt operator%(const BigInt& b) const;
-    bool operator<(const BigInt& b) const;
-    bool operator>(const BigInt& b) const;
-    bool operator<=(const BigInt& b) const;
-    bool operator>=(const BigInt& b) const;
-    bool operator==(const BigInt& b) const;
-    bool operator!=(const BigInt& b) const;
 
-    operator bool() const;
-    operator int() const;
-    operator unsigned int() const;
-    operator long() const;
-    operator unsigned long() const;
-    operator long long() const;
-    operator unsigned long long() const;
+    explicit operator bool() const;
+    explicit operator int() const;
+    explicit operator unsigned int() const;
+    explicit operator long() const;
+    explicit operator unsigned long() const;
+    explicit operator long long() const;
+    explicit operator unsigned long long() const;
 
     void print() const;
     void print(int radix) const;
@@ -130,24 +118,50 @@ public:
     void nextprime();
 };
 
-inline bool is_conjugate_identical(BigInt) { return true; }
-inline bool is_commutative(BigInt) { return true; }
-inline bool is_associative(BigInt) { return true; }
-inline bool is_alternative(BigInt) { return true; }
+constexpr bool is_conjugate_identical(const BigInt&) { return true; }
+constexpr bool is_commutative(const BigInt&) { return true; }
+constexpr bool is_associative(const BigInt&) { return true; }
+constexpr bool is_alternative(const BigInt&) { return true; }
 
-inline bool is_unital(BigInt) { return true; }
-inline bool is_dividable(BigInt) { return true; }
+constexpr bool is_unital(const BigInt&) { return true; }
+constexpr bool is_dividable(const BigInt&) { return true; }
 
 inline BigInt ident(BigInt) { return BigInt::one; }
 inline BigInt zero(BigInt) { return BigInt::zero; }
 inline BigInt conj(BigInt x) { return x; }
-inline BigInt inv(BigInt x) { return BigInt::one / x; }
 inline BigInt norm(BigInt x) { return x.abs(); }
-inline BigInt norm2(BigInt x) { return x * x; }
+BigInt norm2(BigInt x);
 inline int line(BigInt) { return 1; }
 
 inline void print(const BigInt& x, int l) { x.print(); }
 inline void print(const BigInt& x, int radix, int l) { x.print(radix); }
+
+BigInt& operator+=(BigInt& a, const BigInt& b);
+BigInt& operator-=(BigInt& a, const BigInt& b);
+BigInt& operator*=(BigInt& a, const BigInt& b);
+BigInt& operator/=(BigInt& a, const BigInt& b);
+BigInt& operator%=(BigInt& a, const BigInt& b);
+BigInt& operator<<=(BigInt& a, const unsigned long& b);
+BigInt& operator>>=(BigInt& a, const unsigned long& b);
+BigInt& operator&=(BigInt& a, const BigInt& b);
+BigInt& operator|=(BigInt& a, const BigInt& b);
+BigInt& operator^=(BigInt& a, const BigInt& b);
+BigInt operator<<(const BigInt& a, const unsigned long& b);
+BigInt operator>>(const BigInt& a, const unsigned long& b);
+BigInt operator&(const BigInt& a, const BigInt& b);
+BigInt operator|(const BigInt& a, const BigInt& b);
+BigInt operator^(const BigInt& a, const BigInt& b);
+BigInt operator+(const BigInt& a, const BigInt& b);
+BigInt operator-(const BigInt& a, const BigInt& b);
+BigInt operator*(const BigInt& a, const BigInt& b);
+BigInt operator/(const BigInt& a, const BigInt& b);
+BigInt operator%(const BigInt& a, const BigInt& b);
+bool operator<(const BigInt& a, const BigInt& b);
+bool operator>(const BigInt& a, const BigInt& b);
+bool operator<=(const BigInt& a, const BigInt& b);
+bool operator>=(const BigInt& a, const BigInt& b);
+bool operator==(const BigInt& a, const BigInt& b);
+bool operator!=(const BigInt& a, const BigInt& b);
 
 int sgn(const BigInt& x);
 BigInt abs(const BigInt& x);
@@ -160,7 +174,7 @@ BigInt root(const BigInt& x, unsigned long exp);
 BigInt rootrem(const BigInt& x, BigInt& rem, unsigned long exp);
 BigInt gcd(const BigInt& x, const BigInt& y);
 BigInt lcm(const BigInt& x, const BigInt& y);
-BigInt exgcd(const BigInt& x, const BigInt& y, BigInt& s, BigInt& t);
+BigInt exgcd(const BigInt& x, const BigInt& y, BigInt& a, BigInt& b);
 BigInt factorial(const BigInt& x);
 BigInt fibonacci(const BigInt& x);
 BigInt lucas(const BigInt& x);
@@ -170,6 +184,8 @@ BigInt multinomial(const BigInt& x, const BigInt& y);
 BigInt multinomial(const BigInt& x, const BigInt& y, const BigInt& m);
 int legendre(const BigInt& x, const BigInt& p);
 int jacobi(const BigInt& x, const BigInt& p);
+BigInt nextprime(const BigInt& x);
+BigInt rand(const BigInt& n);
 
 class BigFrac {
 public:
@@ -203,34 +219,17 @@ public:
     BigFrac& operator=(const unsigned long& x);
     BigFrac& operator=(const long long& x);
     BigFrac& operator=(const unsigned long long& x);
-    BigFrac& operator+=(const BigFrac& b);
-    BigFrac& operator-=(const BigFrac& b);
-    BigFrac& operator*=(const BigFrac& b);
-    BigFrac& operator/=(const BigFrac& b);
-    BigFrac& operator<<=(const unsigned long& b);
-    BigFrac& operator>>=(const unsigned long& b);
     BigFrac& operator++();
     BigFrac& operator--();
     BigFrac operator++(int);
     BigFrac operator--(int);
     BigFrac operator-() const;
     BigFrac operator+() const;
-    BigFrac operator+(const BigFrac& b) const;
-    BigFrac operator-(const BigFrac& b) const;
-    BigFrac operator*(const BigFrac& b) const;
-    BigFrac operator/(const BigFrac& b) const;
-    BigFrac operator<<(const unsigned long& b) const;
-    BigFrac operator>>(const unsigned long& b) const;
-    bool operator<(const BigFrac& b) const;
-    bool operator>(const BigFrac& b) const;
-    bool operator<=(const BigFrac& b) const;
-    bool operator>=(const BigFrac& b) const;
-    bool operator==(const BigFrac& b) const;
-    bool operator!=(const BigFrac& b) const;
 
-    operator bool() const;
-    operator double() const;
-    operator long double() const;
+    explicit operator bool() const;
+    explicit operator float() const;
+    explicit operator double() const;
+    explicit operator long double() const;
 
     void print() const;
     void print(int radix) const;
@@ -252,15 +251,17 @@ public:
     BigFrac inv();
     BigFrac pow(unsigned long exp);
     BigFrac pow(const BigInt& exp, const BigInt& mod);
+
+    BigFrac& simplify();
 };
 
-inline bool is_conjugate_identical(BigFrac) { return true; }
-inline bool is_commutative(BigFrac) { return true; }
-inline bool is_associative(BigFrac) { return true; }
-inline bool is_alternative(BigFrac) { return true; }
+constexpr bool is_conjugate_identical(const BigFrac&) { return true; }
+constexpr bool is_commutative(const BigFrac&) { return true; }
+constexpr bool is_associative(const BigFrac&) { return true; }
+constexpr bool is_alternative(const BigFrac&) { return true; }
 
-inline bool is_unital(BigFrac) { return true; }
-inline bool is_dividable(BigFrac) { return true; }
+constexpr bool is_unital(const BigFrac&) { return true; }
+constexpr bool is_dividable(const BigFrac&) { return true; }
 
 inline BigFrac ident(BigFrac) { return BigFrac::one; }
 inline BigFrac zero(BigFrac) { return BigFrac::zero; }
@@ -269,6 +270,28 @@ inline BigFrac inv(BigFrac x) { return x.inv(); }
 inline BigFrac norm(BigFrac x) { BigFrac t = x; t.abs(); return t; }
 inline BigFrac norm2(BigFrac x) { return x * x; }
 inline int line(BigFrac) { return 1; }
+
+inline void print(const BigFrac& x, int l) { x.print(); }
+inline void print(const BigFrac& x, int radix, int l) { x.print(radix); }
+
+BigFrac& operator+=(BigFrac& a, const BigFrac& b);
+BigFrac& operator-=(BigFrac& a, const BigFrac& b);
+BigFrac& operator*=(BigFrac& a, const BigFrac& b);
+BigFrac& operator/=(BigFrac& a, const BigFrac& b);
+BigFrac& operator<<=(BigFrac& a, const unsigned long& b);
+BigFrac& operator>>=(BigFrac& a, const unsigned long& b);
+BigFrac operator+(const BigFrac& a, const BigFrac& b);
+BigFrac operator-(const BigFrac& a, const BigFrac& b);
+BigFrac operator*(const BigFrac& a, const BigFrac& b);
+BigFrac operator/(const BigFrac& a, const BigFrac& b);
+BigFrac operator<<(const BigFrac& a, const unsigned long& b);
+BigFrac operator>>(const BigFrac& a, const unsigned long& b);
+bool operator<(const BigFrac& a, const BigFrac& b);
+bool operator>(const BigFrac& a, const BigFrac& b);
+bool operator<=(const BigFrac& a, const BigFrac& b);
+bool operator>=(const BigFrac& a, const BigFrac& b);
+bool operator==(const BigFrac& a, const BigFrac& b);
+bool operator!=(const BigFrac& a, const BigFrac& b);
 
 int sgn(const BigFrac& x);
 BigFrac abs(const BigFrac& x);
@@ -322,37 +345,17 @@ public:
     BigFloat& operator=(const mpf_t& x);
     BigFloat& operator=(const BigInt& x);
     BigFloat& operator=(const BigFrac& x);
-    BigFloat& operator+=(const BigFloat& b);
-    BigFloat& operator-=(const BigFloat& b);
-    BigFloat& operator*=(const BigFloat& b);
-    BigFloat& operator/=(const BigFloat& b);
-    BigFloat& operator%=(const BigFloat& b);
-    BigFloat& operator<<=(const unsigned long& b);
-    BigFloat& operator>>=(const unsigned long& b);
     BigFloat& operator++();
     BigFloat& operator--();
     BigFloat operator++(int);
     BigFloat operator--(int);
     BigFloat operator-() const;
     BigFloat operator+() const;
-    BigFloat operator+(const BigFloat& b) const;
-    BigFloat operator-(const BigFloat& b) const;
-    BigFloat operator*(const BigFloat& b) const;
-    BigFloat operator/(const BigFloat& b) const;
-    BigFloat operator%(const BigFloat& b) const;
-    BigFloat operator<<(const unsigned long& b) const;
-    BigFloat operator>>(const unsigned long& b) const;
-    bool operator<(const BigFloat& b) const;
-    bool operator>(const BigFloat& b) const;
-    bool operator<=(const BigFloat& b) const;
-    bool operator>=(const BigFloat& b) const;
-    bool operator==(const BigFloat& b) const;
-    bool operator!=(const BigFloat& b) const;
 
-    operator bool() const;
-    operator float() const;
-    operator double() const;
-    operator long double() const;
+    explicit operator bool() const;
+    explicit operator float() const;
+    explicit operator double() const;
+    explicit operator long double() const;
 
     void print() const;
     void print(int radix) const;
@@ -375,13 +378,13 @@ public:
     BigFloat trunc();
 };
 
-inline bool is_conjugate_identical(BigFloat) { return true; }
-inline bool is_commutative(BigFloat) { return true; }
-inline bool is_associative(BigFloat) { return true; }
-inline bool is_alternative(BigFloat) { return true; }
+constexpr bool is_conjugate_identical(const BigFloat&) { return true; }
+constexpr bool is_commutative(const BigFloat&) { return true; }
+constexpr bool is_associative(const BigFloat&) { return true; }
+constexpr bool is_alternative(const BigFloat&) { return true; }
 
-inline bool is_unital(BigFloat) { return true; }
-inline bool is_dividable(BigFloat) { return true; }
+constexpr bool is_unital(const BigFloat&) { return true; }
+constexpr bool is_dividable(const BigFloat&) { return true; }
 
 inline BigFloat ident(BigFloat) { return BigFloat::one; }
 inline BigFloat zero(BigFloat) { return BigFloat::zero; }
@@ -393,6 +396,27 @@ inline int line(BigFloat) { return 1; }
 
 inline void print(const BigFloat& x, int l) { x.print(); }
 inline void print(const BigFloat& x, int radix, int l) { x.print(radix); }
+
+BigFloat& operator+=(BigFloat& a, const BigFloat& b);
+BigFloat& operator-=(BigFloat& a, const BigFloat& b);
+BigFloat& operator*=(BigFloat& a, const BigFloat& b);
+BigFloat& operator/=(BigFloat& a, const BigFloat& b);
+BigFloat& operator%=(BigFloat& a, const BigFloat& b);
+BigFloat& operator<<=(BigFloat& a, const unsigned long& b);
+BigFloat& operator>>=(BigFloat& a, const unsigned long& b);
+BigFloat operator+(const BigFloat& a, const BigFloat& b);
+BigFloat operator-(const BigFloat& a, const BigFloat& b);
+BigFloat operator*(const BigFloat& a, const BigFloat& b);
+BigFloat operator/(const BigFloat& a, const BigFloat& b);
+BigFloat operator%(const BigFloat& a, const BigFloat& b);
+BigFloat operator<<(const BigFloat& a, const unsigned long& b);
+BigFloat operator>>(const BigFloat& a, const unsigned long& b);
+bool operator<(const BigFloat& a, const BigFloat& b);
+bool operator>(const BigFloat& a, const BigFloat& b);
+bool operator<=(const BigFloat& a, const BigFloat& b);
+bool operator>=(const BigFloat& a, const BigFloat& b);
+bool operator==(const BigFloat& a, const BigFloat& b);
+bool operator!=(const BigFloat& a, const BigFloat& b);
 
 int sgn(const BigInt& x);
 BigFloat abs(const BigFloat& x);
@@ -425,6 +449,33 @@ BigFloat asinh(const BigFloat& x);
 BigFloat acosh(const BigFloat& x);
 BigFloat atanh(const BigFloat& x);
 BigFloat atan2(const BigFloat& y, const BigFloat& x);
+BigFloat erf(const BigFloat& x);
 BigFloat gamma(const BigFloat& x);
+BigFloat zeta(const BigFloat& x);
+
+template <typename T>
+bool miller_prime_check(const T& n, const T& a) {
+    T d = n - 1;
+    while ((d & 1) == 0) d >>= 1;
+    T t = pow(a, d, n);
+    while (d != n - 1 && t != 1 && t != n - 1) {
+        t = mul(t, t, n);
+        d <<= 1;
+    }
+    return t == n - 1 || (d & 1) == 1;
+}
+
+// Gary Lee Miller's primality proof
+// Based on Riemann Hypothesis
+template <typename T>
+bool miller_prime_proof(const T& n) {
+    if (n < 3 || (n & 1) == 0)
+        return n == 2;
+    T reps = 2 * log2(n) * log2(n);
+    for (T i = 2; i <= reps; ++i)
+        if (!miller_prime_check(n, i))
+            return false;
+    return true;
+}
 
 #endif

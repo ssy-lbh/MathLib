@@ -80,7 +80,7 @@ template <typename T, int H, int W> constexpr TMatrix<T, W, H> transpose(const T
 
 // input: l, u is zeros
 template <typename T, int L> constexpr void lu_decom(const TMatrix<T, L, L>& x, TMatrix<T, L, L>& l, TMatrix<T, L, L>& u) {
-    static_assert(is_dividable(T()), "items in matrix must be dividable");
+    // static_assert(is_dividable(T()), "items in matrix must be dividable");
     for (int i = 0; i < L; i++){
         for (int j = 0; j < i; j++){
             l[i][j] = x[i][j];
@@ -100,7 +100,7 @@ template <typename T, int L> constexpr void lu_decom(const TMatrix<T, L, L>& x, 
 }
 
 template <typename T, int L> constexpr void qr_decom(const TMatrix<T, L, L>& x, TMatrix<T, L, L>& q, TMatrix<T, L, L>& r) {
-    static_assert(is_dividable(T()), "items in matrix must be dividable");
+    // static_assert(is_dividable(T()), "items in matrix must be dividable");
     for (int i = 0; i < L; i++){
         q[i] = x[i];
         for (int j = 0; j < i; j++){

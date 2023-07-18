@@ -8,7 +8,7 @@ uint64_t pollard_rho(uint64_t n){
     if (miller_rabin(n))
         return n;
     while (true){
-        uint64_t c = rand(1, n - 1); // 生成随机的c
+        uint64_t c = rand(1, n); // 生成随机的c
         auto f = [=](uint64_t x) {
             uint64_t y = (uint64_t)mul(x, x, n) + c;
             return (y >= n ? y - n : y);
@@ -34,7 +34,7 @@ uint32_t pollard_rho(uint32_t n){
     if (miller_rabin(n))
         return n;
     while (true){
-        uint32_t c = rand(1, n - 1); // 生成随机的c
+        uint32_t c = rand(1, n); // 生成随机的c
         auto f = [=](uint32_t x) {
             uint32_t y = (uint64_t)x * x % n + c;
             return (y >= n ? y - n : y);

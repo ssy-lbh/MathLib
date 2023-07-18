@@ -99,7 +99,7 @@ inline uint64_t rand(uint64_t mod){
 }
 
 inline uint64_t rand(uint64_t l, uint64_t h){
-    return l + rand(h - l + 1);
+    return l + rand(h - l);
 }
 
 inline uint32_t rand(uint32_t mod){
@@ -107,7 +107,7 @@ inline uint32_t rand(uint32_t mod){
 }
 
 inline uint32_t rand(uint32_t l, uint32_t h){
-    return l + rand(h - l + 1);
+    return l + rand(h - l);
 }
 
 inline uint64_t sqrt_ceil(uint64_t x){
@@ -190,6 +190,9 @@ public:
 
     constexpr TMod() : n(0) {}
     constexpr TMod(uint32_t n) : n(n % N) {}
+    constexpr TMod(int32_t n) : n((n % N + N) % N) {}
+    constexpr TMod(uint64_t n) : n((uint32_t)(n % N)) {}
+    constexpr TMod(int64_t n) : n((uint32_t)((n % N + N) % N)) {}
     constexpr TMod(const TMod<N>&) = default;
     constexpr TMod<N>& operator=(const TMod<N>&) = default;
     constexpr TMod<N>& operator=(uint32_t n) { this->n = n; return *this; }
@@ -205,23 +208,38 @@ template <int N> constexpr bool is_dividable(TMod<N>) { return true; }
 // congruence group, Ä£NÍ¬ÓàÈº
 template <int N> constexpr TMod<N> operator+(TMod<N> x, TMod<N> y) { uint32_t s = x.n + y.n; return TMod<N>(s >= N ? s - N : s); }
 template <int N> constexpr TMod<N> operator+(TMod<N> x, uint32_t y) { uint32_t s = x.n + y; return TMod<N>(s >= N ? s - N : s); }
+template <int N> constexpr TMod<N> operator+(uint32_t x, TMod<N> y) { uint32_t s = x + y.n; return TMod<N>(s >= N ? s - N : s); }
 template <int N> constexpr TMod<N> operator-(TMod<N> x, TMod<N> y) { return TMod<N>(x.n < y.n ? x.n + N - y.n : x.n - y.n); }
 template <int N> constexpr TMod<N> operator-(TMod<N> x, uint32_t y) { return TMod<N>(x.n < y ? x.n + N - y : x.n - y); }
+template <int N> constexpr TMod<N> operator-(uint32_t x, TMod<N> y) { return TMod<N>(x < y.n ? x + N - y.n : x - y.n); }
 template <int N> constexpr TMod<N> operator*(TMod<N> x, TMod<N> y) { return TMod<N>((((uint64_t)x.n) * y.n) % N); }
 template <int N> constexpr TMod<N> operator*(TMod<N> x, uint32_t y) { return TMod<N>((((uint64_t)x.n) * y) % N); }
+template <int N> constexpr TMod<N> operator*(uint32_t x, TMod<N> y) { return TMod<N>((((uint64_t)x) * y.n) % N); }
 template <int N> constexpr TMod<N> operator/(TMod<N> x, TMod<N> y) { return inv(y) * x; }
 template <int N> constexpr TMod<N> operator/(TMod<N> x, uint32_t y) { return inv(TMod<N>(y)) * x; }
+template <int N> constexpr TMod<N> operator/(uint32_t x, TMod<N> y) { return inv(y) * x; }
+template <int N> constexpr TMod<N> operator%(TMod<N> x, TMod<N> y) { return TMod<N>(x.n % y.n); }
 template <int N> constexpr TMod<N> operator%(TMod<N> x, uint32_t y) { return TMod<N>(x.n % y); }
+template <int N> constexpr TMod<N> operator%(uint32_t x, TMod<N> y) { return TMod<N>(x % y.n); }
 template <int N> constexpr TMod<N> operator+=(TMod<N>& x, TMod<N> y) { return x = x + y; }
+template <int N> constexpr TMod<N> operator+=(TMod<N>& x, uint32_t y) { return x = x + y; }
 template <int N> constexpr TMod<N> operator-=(TMod<N>& x, TMod<N> y) { return x = x - y; }
+template <int N> constexpr TMod<N> operator-=(TMod<N>& x, uint32_t y) { return x = x - y; }
 template <int N> constexpr TMod<N> operator*=(TMod<N>& x, TMod<N> y) { return x = y * x; }
+template <int N> constexpr TMod<N> operator*=(TMod<N>& x, uint32_t y) { return x = y * x; }
 template <int N> constexpr TMod<N> operator/=(TMod<N>& x, TMod<N> y) { return x = x / y; }
+template <int N> constexpr TMod<N> operator/=(TMod<N>& x, uint32_t y) { return x = x / y; }
+template <int N> constexpr TMod<N> operator%=(TMod<N>& x, TMod<N> y) { return x = x % y; }
 template <int N> constexpr TMod<N> operator%=(TMod<N>& x, uint32_t y) { return x = x % y; }
 template <int N> constexpr TMod<N> operator+(TMod<N> x) { return x; }
 template <int N> constexpr TMod<N> operator-(TMod<N> x) { return TMod<N>(N - x.n); }
 
 template <int N> constexpr bool operator==(TMod<N> x, TMod<N> y) { return x.n == y.n; }
 template <int N> constexpr bool operator!=(TMod<N> x, TMod<N> y) { return x.n != y.n; }
+template <int N> constexpr bool operator<(TMod<N> x, TMod<N> y) { return x.n < y.n; }
+template <int N> constexpr bool operator<=(TMod<N> x, TMod<N> y) { return x.n <= y.n; }
+template <int N> constexpr bool operator>(TMod<N> x, TMod<N> y) { return x.n > y.n; }
+template <int N> constexpr bool operator>=(TMod<N> x, TMod<N> y) { return x.n >= y.n; }
 
 template <int N> constexpr bool operator==(TMod<N> x, uint32_t y) { return x.n == y; }
 template <int N> constexpr bool operator!=(TMod<N> x, uint32_t y) { return x.n != y; }
