@@ -41,7 +41,7 @@ void algo_matacc(){
     };
     TMatrix<NMod<998244353>, 2, 2> A = {{1, 1}, {1, 0}};
     for (int i = 0; i < 20; i++){
-        int n = rand(1000u);
+        int n = randmod(1000u);
         auto B = pow(A, n);
         auto a = B[0][0]; // * [1(0), 0(-1)]
         auto b = calc_fab(n);

@@ -3,6 +3,8 @@
 
 #include "math_base.h"
 
+#include <cstdint>
+
 #include <gmp.h>
 #include <mpfr.h>
 #include <mpf2mpfr.h>
@@ -152,6 +154,12 @@ bool operator<=(const BigInt& a, const BigInt& b);
 bool operator>=(const BigInt& a, const BigInt& b);
 bool operator==(const BigInt& a, const BigInt& b);
 bool operator!=(const BigInt& a, const BigInt& b);
+bool operator<(const BigInt& a, long b);
+bool operator>(const BigInt& a, long b);
+bool operator<=(const BigInt& a, long b);
+bool operator>=(const BigInt& a, long b);
+bool operator==(const BigInt& a, long b);
+bool operator!=(const BigInt& a, long b);
 
 inline BigInt ident(BigInt) { return BigInt::one; }
 inline BigInt zero(BigInt) { return BigInt::zero; }
@@ -184,8 +192,9 @@ BigInt multinomial(const BigInt& x, const BigInt& y);
 BigInt multinomial(const BigInt& x, const BigInt& y, const BigInt& m);
 int legendre(const BigInt& x, const BigInt& p);
 int jacobi(const BigInt& x, const BigInt& p);
+int kronecker(const BigInt& x, const BigInt& y);
 BigInt nextprime(const BigInt& x);
-BigInt rand(const BigInt& n);
+BigInt randmod(const BigInt& n);
 
 extern BigInt::Random default_bigint_random;
 
@@ -480,5 +489,9 @@ bool miller_prime_proof(const T& n) {
             return false;
     return true;
 }
+
+bool miller_rabin(BigInt n);
+BigInt pollard_rho(BigInt n);
+uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len);
 
 #endif

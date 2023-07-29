@@ -55,7 +55,7 @@ uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p){
     uint64_t pm1_prime[N];
     uint32_t exp[N];
 
-    uint32_t cnt = pollard_rho(phi, pm1_prime, exp, N);
+    uint32_t cnt = factorize(phi, pm1_prime, exp, N);
 
     return pohlig_hellman(g, b, p, pm1_prime, exp, cnt);
 }
@@ -67,7 +67,7 @@ uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p){
     uint64_t pm1_prime[N];
     uint32_t exp[N];
 
-    uint32_t cnt = pollard_rho(phi, pm1_prime, exp, N);
+    uint32_t cnt = factorize(phi, pm1_prime, exp, N);
 
     if (check_root(a, p, pm1_prime, cnt))
         return pohlig_hellman(a, b, p, pm1_prime, exp, cnt);

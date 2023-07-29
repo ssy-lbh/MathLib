@@ -58,12 +58,12 @@ uint64_t egypt_sieve(uint64_t n, bool tag[], uint64_t prime[]){
     return cnt;
 }
 
-// min25É¸ O(n^{2/3})
+// min25ç­› O(n^{2/3})
 
-// ¶Å½ÌÉ¸
-// Çó½â \sum_{i=1}^n f(i)
-// ÊäÈë h = \sum{i=1}^n f * g
-// Ä¬ÈÏ g = 1
+// æœæ•™ç­›
+// æ±‚è§£ \sum_{i=1}^n f(i)
+// è¾“å…¥ h = \sum{i=1}^n f * g
+// é»˜è®¤ g = 1
 
 // \phi * 1 = id
 // \mu * 1 = \epsilon
@@ -74,7 +74,7 @@ int64_t dujiao_sum(int64_t x, std::unordered_map<int64_t, int64_t>& cache, int64
     int64_t res = h(x);
     for (int64_t l = 2, r; l <= x; l = r + 1){
         int64_t y = x / l;
-        // r = x / (x / l), [x / n] == y Çó³öµÄnÇø¼ä
+        // r = x / (x / l), [x / n] == y æ±‚å‡ºçš„nåŒºé—´
         r = x / y;
         res -= (r - l + 1) * dujiao_sum(y, cache, h);
     }

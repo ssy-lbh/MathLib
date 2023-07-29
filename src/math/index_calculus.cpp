@@ -11,7 +11,7 @@
 *    1.1. 筛出一定数量的素数, 确保 b 能被这些素数完全分解, 素数的上界一般取 e^{\frac{\sqrt(\log mod * \log \log mod)}{2} + 1}
 *    1.2. 这些素数依次编号为 p_i, 后文中令 e_i 为 p_i 的指数, a^{x_i} === p_i (mod p)
 * 2. 列举方程
-*    2.1. 令 t = rand(0, p-1), 计算 a^t (mod p)
+*    2.1. 令 t = randmod(0, p-1), 计算 a^t (mod p)
 *    2.2. 以所有的 p 为基底, 对 a^t (mod p) 执行质因数分解, 得到 a^t (mod p) = \prod p_i^{e_i}, 如果无法分解为这些素数的乘积则舍去
 *    2.3. 所得方程 t = \sum e_i * x_i
 * 3. 解方程组
@@ -88,7 +88,7 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p, uin
     ctx.m = limit;
     do {
         uint32_t i = 0;
-        for (uint64_t j = rand(phi), k = pow(g, j, p); i < limit; j = rand(phi), k = pow(g, j, p)){
+        for (uint64_t j = randmod(phi), k = pow(g, j, p); i < limit; j = randmod(phi), k = pow(g, j, p)){
             for (uint64_t l = k, x = 1; x < phi; l = mul(l, k, p), x++){
                 uint32_t t1 = ctzl(l);
                 uint64_t t2 = l >> t1;
@@ -128,7 +128,7 @@ inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g
     if (p == 2)
         return -1;
     uint64_t phi = p - 1;
-    for (uint64_t i = rand(phi), j = pow(g, i, p); ; i = rand(phi), j = pow(g, i, p)){
+    for (uint64_t i = randmod(phi), j = pow(g, i, p); ; i = randmod(phi), j = pow(g, i, p)){
         for (uint64_t k = j, l = 1; l < phi; k = pow(k, j, p), l++){
             uint32_t t1;
             uint64_t t2 = mul(a, k, p), t3;

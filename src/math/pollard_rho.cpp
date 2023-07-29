@@ -1,4 +1,5 @@
 #include "number_theory.h"
+#include "big_num.h"
 
 #include <queue>
 
@@ -54,7 +55,7 @@ uint32_t pollard_rho(uint32_t n){
     }
 }
 
-uint32_t pollard_rho(uint64_t n, uint64_t prime[], uint32_t exp[], uint32_t len){
+uint32_t factorize(uint64_t n, uint64_t prime[], uint32_t exp[], uint32_t len){
     if (n <= 1)
         return 0;
     uint32_t cnt = 0;
@@ -76,6 +77,71 @@ uint32_t pollard_rho(uint64_t n, uint64_t prime[], uint32_t exp[], uint32_t len)
         d = (x <= 0xFFFFFFFFull ? pollard_rho((uint32_t)x) : pollard_rho(x));
         if (d == x){
             for (uint32_t i = 0; i < cnt; i++)
+                if (prime[i] == x){
+                    exp[i]++;
+                    goto next;
+                }
+            if (cnt == len)
+                return cnt;
+            prime[cnt] = x;
+            exp[cnt++] = 1;
+            continue;
+        }
+        q.push(d);
+        q.push(x / d);
+        next:;
+    }
+    return cnt;
+}
+
+BigInt pollard_rho(BigInt n){
+    if (n == 4)
+        return 2;
+    if (miller_rabin(n))
+        return n;
+    while (true){
+        BigInt c = randmod(n) + 1; // 生成随机的c
+        auto f = [=](BigInt x) {
+            BigInt y = (BigInt)mul(x, x, n) + c;
+            return (y >= n ? y - n : y);
+        };
+        BigInt t = 0, r = 0, p = 1, q;
+        do {
+            for (int i = 0; i < 128; i++){ // 令固定距离C=128
+                t = f(t), r = f(f(r));
+                if (t == r || (q = mul(p, abs(t - r), n)) == 0) // 如果发现环，或者积即将为0，退出
+                    break;
+                p = q;
+            }
+            BigInt d = gcd(p, n);
+            if (d > 1)
+                return d;
+        } while (t != r);
+    }
+}
+
+uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
+    if (n <= 1)
+        return 0;
+    uint64_t cnt = 0;
+    std::queue<BigInt> q;
+    q.push(n);
+    while (!q.empty()){
+        BigInt x = q.front();
+        q.pop();
+        if (x <= 1)
+            continue;
+        BigInt d;
+        for (uint64_t i = 0; i < cnt; i++)
+            while (x % prime[i] == 0){
+                exp[i]++;
+                x /= prime[i];
+                if (x <= 1)
+                    goto next;
+            }
+        d = pollard_rho(x);
+        if (d == x){
+            for (uint64_t i = 0; i < cnt; i++)
                 if (prime[i] == x){
                     exp[i]++;
                     goto next;

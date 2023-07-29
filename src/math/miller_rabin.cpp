@@ -1,4 +1,5 @@
 #include "number_theory.h"
+#include "big_num.h"
 
 bool miller_rabin(uint32_t n){
     if (n < 3 || (n & 1) == 0)
@@ -39,6 +40,30 @@ bool miller_rabin(uint64_t n){
         for (int i = 0; i < s; i++){
             x = (uint64_t)x * x % n;
             if (x == n - 1 && i != s - 1)
+                goto next;
+            if (x == 1) return false;
+        }
+        if (x != 1)
+            return false;
+        next:;
+    }
+    return true;
+}
+
+bool miller_rabin(BigInt n){
+    if (n < 3 || (n & 1) == 0)
+        return n == 2;
+    BigInt d = n - 1;
+    uint64_t s = 0;
+    while ((d & 1) == 0)
+        d >>= 1, s++;
+    for (int i = 0; i < 20; i++){
+        BigInt x = pow(randmod(n), d, n);
+        if (x <= 1 || x + 1 == n)
+            continue;
+        for (uint64_t i = 0; i < s; i++){
+            x = mul(x, x, n);
+            if (x + 1 == n && i != s - 1)
                 goto next;
             if (x == 1) return false;
         }

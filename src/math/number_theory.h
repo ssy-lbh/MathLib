@@ -96,20 +96,20 @@ constexpr uint64_t inv(uint64_t x, uint64_t mod){
 void inv(uint32_t vals[], uint32_t n, uint32_t mod);
 void inv(uint64_t vals[], uint64_t n, uint64_t mod);
 
-inline uint64_t rand(uint64_t mod){
+inline uint64_t randmod(uint64_t mod){
     return (((uint64_t)rand() << 60) | ((uint64_t)rand() << 45) | ((uint64_t)rand() << 30) | (rand() << 15) | rand()) % mod;
 }
 
 inline uint64_t rand(uint64_t l, uint64_t h){
-    return l + rand(h - l);
+    return l + randmod(h - l);
 }
 
-inline uint32_t rand(uint32_t mod){
+inline uint32_t randmod(uint32_t mod){
     return (((uint32_t)rand() << 30) | (rand() << 15) | rand()) % mod;
 }
 
 inline uint32_t rand(uint32_t l, uint32_t h){
-    return l + rand(h - l);
+    return l + randmod(h - l);
 }
 
 inline uint64_t sqrt_ceil(uint64_t x){
@@ -138,7 +138,7 @@ bool miller_rabin(uint32_t n);
 bool miller_rabin(uint64_t n);
 
 uint64_t pollard_rho(uint64_t n);
-uint32_t pollard_rho(uint64_t n, uint64_t factor[], uint32_t exp[], uint32_t len);
+uint32_t factorize(uint64_t n, uint64_t factor[], uint32_t exp[], uint32_t len);
 
 uint64_t totient(uint64_t n);
 
@@ -186,103 +186,116 @@ template <> struct TModRoot<1004535809> { static constexpr uint32_t R = 479, K =
 
 // N为大小, G为原根(生成元)
 template <int N>
-class TMod {
+class NMod {
 public:
     uint32_t n;
 
-    constexpr TMod() : n(0) {}
-    constexpr TMod(uint32_t n) : n(n % N) {}
-    constexpr TMod(int32_t n) : n((n % N + N) % N) {}
-    constexpr TMod(uint64_t n) : n((uint32_t)(n % N)) {}
-    constexpr TMod(int64_t n) : n((uint32_t)((n % N + N) % N)) {}
-    constexpr TMod(const TMod<N>&) = default;
-    constexpr TMod<N>& operator=(const TMod<N>&) = default;
-    constexpr TMod<N>& operator=(uint32_t n) { this->n = n; return *this; }
+    constexpr NMod() : n(0) {}
+    constexpr NMod(uint32_t n) : n(n % N) {}
+    constexpr NMod(int32_t n) : n((n % N + N) % N) {}
+    constexpr NMod(uint64_t n) : n((uint32_t)(n % N)) {}
+    constexpr NMod(int64_t n) : n((uint32_t)((n % N + N) % N)) {}
+    constexpr NMod(const NMod<N>&) = default;
+    constexpr NMod<N>& operator=(const NMod<N>&) = default;
+    constexpr NMod<N>& operator=(uint32_t n) { this->n = n; return *this; }
 };
 
-template <int N> constexpr bool is_commutative(TMod<N>) { return true; }
-template <int N> constexpr bool is_associative(TMod<N>) { return true; }
-template <int N> constexpr bool is_alternative(TMod<N>) { return true; }
+template <int N> constexpr bool is_commutative(NMod<N>) { return true; }
+template <int N> constexpr bool is_associative(NMod<N>) { return true; }
+template <int N> constexpr bool is_alternative(NMod<N>) { return true; }
 
-template <int N> constexpr bool is_unital(TMod<N>) { return true; }
-template <int N> constexpr bool is_dividable(TMod<N>) { return true; }
+template <int N> constexpr bool is_unital(NMod<N>) { return true; }
+template <int N> constexpr bool is_dividable(NMod<N>) { return true; }
 
 // congruence group, 模N同余群
-template <int N> constexpr TMod<N> operator+(TMod<N> x, TMod<N> y) { uint32_t s = x.n + y.n; return TMod<N>(s >= N ? s - N : s); }
-template <int N> constexpr TMod<N> operator+(TMod<N> x, uint32_t y) { uint32_t s = x.n + y; return TMod<N>(s >= N ? s - N : s); }
-template <int N> constexpr TMod<N> operator+(uint32_t x, TMod<N> y) { uint32_t s = x + y.n; return TMod<N>(s >= N ? s - N : s); }
-template <int N> constexpr TMod<N> operator-(TMod<N> x, TMod<N> y) { return TMod<N>(x.n < y.n ? x.n + N - y.n : x.n - y.n); }
-template <int N> constexpr TMod<N> operator-(TMod<N> x, uint32_t y) { return TMod<N>(x.n < y ? x.n + N - y : x.n - y); }
-template <int N> constexpr TMod<N> operator-(uint32_t x, TMod<N> y) { return TMod<N>(x < y.n ? x + N - y.n : x - y.n); }
-template <int N> constexpr TMod<N> operator*(TMod<N> x, TMod<N> y) { return TMod<N>((((uint64_t)x.n) * y.n) % N); }
-template <int N> constexpr TMod<N> operator*(TMod<N> x, uint32_t y) { return TMod<N>((((uint64_t)x.n) * y) % N); }
-template <int N> constexpr TMod<N> operator*(uint32_t x, TMod<N> y) { return TMod<N>((((uint64_t)x) * y.n) % N); }
-template <int N> constexpr TMod<N> operator/(TMod<N> x, TMod<N> y) { return inv(y) * x; }
-template <int N> constexpr TMod<N> operator/(TMod<N> x, uint32_t y) { return inv(TMod<N>(y)) * x; }
-template <int N> constexpr TMod<N> operator/(uint32_t x, TMod<N> y) { return inv(y) * x; }
-template <int N> constexpr TMod<N> operator%(TMod<N> x, TMod<N> y) { return TMod<N>(x.n % y.n); }
-template <int N> constexpr TMod<N> operator%(TMod<N> x, uint32_t y) { return TMod<N>(x.n % y); }
-template <int N> constexpr TMod<N> operator%(uint32_t x, TMod<N> y) { return TMod<N>(x % y.n); }
-template <int N> constexpr TMod<N> operator+=(TMod<N>& x, TMod<N> y) { return x = x + y; }
-template <int N> constexpr TMod<N> operator+=(TMod<N>& x, uint32_t y) { return x = x + y; }
-template <int N> constexpr TMod<N> operator-=(TMod<N>& x, TMod<N> y) { return x = x - y; }
-template <int N> constexpr TMod<N> operator-=(TMod<N>& x, uint32_t y) { return x = x - y; }
-template <int N> constexpr TMod<N> operator*=(TMod<N>& x, TMod<N> y) { return x = y * x; }
-template <int N> constexpr TMod<N> operator*=(TMod<N>& x, uint32_t y) { return x = y * x; }
-template <int N> constexpr TMod<N> operator/=(TMod<N>& x, TMod<N> y) { return x = x / y; }
-template <int N> constexpr TMod<N> operator/=(TMod<N>& x, uint32_t y) { return x = x / y; }
-template <int N> constexpr TMod<N> operator%=(TMod<N>& x, TMod<N> y) { return x = x % y; }
-template <int N> constexpr TMod<N> operator%=(TMod<N>& x, uint32_t y) { return x = x % y; }
-template <int N> constexpr TMod<N> operator+(TMod<N> x) { return x; }
-template <int N> constexpr TMod<N> operator-(TMod<N> x) { return TMod<N>(N - x.n); }
+template <int N> constexpr NMod<N> operator+(NMod<N> x, NMod<N> y) { uint32_t s = x.n + y.n; return NMod<N>(s >= N ? s - N : s); }
+template <int N> constexpr NMod<N> operator+(NMod<N> x, uint32_t y) { uint32_t s = x.n + y; return NMod<N>(s >= N ? s - N : s); }
+template <int N> constexpr NMod<N> operator+(uint32_t x, NMod<N> y) { uint32_t s = x + y.n; return NMod<N>(s >= N ? s - N : s); }
+template <int N> constexpr NMod<N> operator-(NMod<N> x, NMod<N> y) { return NMod<N>(x.n < y.n ? x.n + N - y.n : x.n - y.n); }
+template <int N> constexpr NMod<N> operator-(NMod<N> x, uint32_t y) { return NMod<N>(x.n < y ? x.n + N - y : x.n - y); }
+template <int N> constexpr NMod<N> operator-(uint32_t x, NMod<N> y) { return NMod<N>(x < y.n ? x + N - y.n : x - y.n); }
+template <int N> constexpr NMod<N> operator*(NMod<N> x, NMod<N> y) { return NMod<N>((((uint64_t)x.n) * y.n) % N); }
+template <int N> constexpr NMod<N> operator*(NMod<N> x, uint32_t y) { return NMod<N>((((uint64_t)x.n) * y) % N); }
+template <int N> constexpr NMod<N> operator*(uint32_t x, NMod<N> y) { return NMod<N>((((uint64_t)x) * y.n) % N); }
+template <int N> constexpr NMod<N> operator/(NMod<N> x, NMod<N> y) { return inv(y) * x; }
+template <int N> constexpr NMod<N> operator/(NMod<N> x, uint32_t y) { return inv(NMod<N>(y)) * x; }
+template <int N> constexpr NMod<N> operator/(uint32_t x, NMod<N> y) { return inv(y) * x; }
+template <int N> constexpr NMod<N> operator%(NMod<N> x, NMod<N> y) { return NMod<N>(x.n % y.n); }
+template <int N> constexpr NMod<N> operator%(NMod<N> x, uint32_t y) { return NMod<N>(x.n % y); }
+template <int N> constexpr NMod<N> operator%(uint32_t x, NMod<N> y) { return NMod<N>(x % y.n); }
+template <int N> constexpr NMod<N> operator+=(NMod<N>& x, NMod<N> y) { return x = x + y; }
+template <int N> constexpr NMod<N> operator+=(NMod<N>& x, uint32_t y) { return x = x + y; }
+template <int N> constexpr NMod<N> operator-=(NMod<N>& x, NMod<N> y) { return x = x - y; }
+template <int N> constexpr NMod<N> operator-=(NMod<N>& x, uint32_t y) { return x = x - y; }
+template <int N> constexpr NMod<N> operator*=(NMod<N>& x, NMod<N> y) { return x = y * x; }
+template <int N> constexpr NMod<N> operator*=(NMod<N>& x, uint32_t y) { return x = y * x; }
+template <int N> constexpr NMod<N> operator/=(NMod<N>& x, NMod<N> y) { return x = x / y; }
+template <int N> constexpr NMod<N> operator/=(NMod<N>& x, uint32_t y) { return x = x / y; }
+template <int N> constexpr NMod<N> operator%=(NMod<N>& x, NMod<N> y) { return x = x % y; }
+template <int N> constexpr NMod<N> operator%=(NMod<N>& x, uint32_t y) { return x = x % y; }
+template <int N> constexpr NMod<N> operator+(NMod<N> x) { return x; }
+template <int N> constexpr NMod<N> operator-(NMod<N> x) { return NMod<N>(N - x.n); }
 
-template <int N> constexpr bool operator==(TMod<N> x, TMod<N> y) { return x.n == y.n; }
-template <int N> constexpr bool operator!=(TMod<N> x, TMod<N> y) { return x.n != y.n; }
-template <int N> constexpr bool operator<(TMod<N> x, TMod<N> y) { return x.n < y.n; }
-template <int N> constexpr bool operator<=(TMod<N> x, TMod<N> y) { return x.n <= y.n; }
-template <int N> constexpr bool operator>(TMod<N> x, TMod<N> y) { return x.n > y.n; }
-template <int N> constexpr bool operator>=(TMod<N> x, TMod<N> y) { return x.n >= y.n; }
+template <int N> constexpr bool operator==(NMod<N> x, NMod<N> y) { return x.n == y.n; }
+template <int N> constexpr bool operator!=(NMod<N> x, NMod<N> y) { return x.n != y.n; }
+template <int N> constexpr bool operator<(NMod<N> x, NMod<N> y) { return x.n < y.n; }
+template <int N> constexpr bool operator<=(NMod<N> x, NMod<N> y) { return x.n <= y.n; }
+template <int N> constexpr bool operator>(NMod<N> x, NMod<N> y) { return x.n > y.n; }
+template <int N> constexpr bool operator>=(NMod<N> x, NMod<N> y) { return x.n >= y.n; }
 
-template <int N> constexpr bool operator==(TMod<N> x, uint32_t y) { return x.n == y; }
-template <int N> constexpr bool operator!=(TMod<N> x, uint32_t y) { return x.n != y; }
-template <int N> constexpr bool operator<(TMod<N> x, uint32_t y) { return x.n < y; }
-template <int N> constexpr bool operator<=(TMod<N> x, uint32_t y) { return x.n <= y; }
-template <int N> constexpr bool operator>(TMod<N> x, uint32_t y) { return x.n > y; }
-template <int N> constexpr bool operator>=(TMod<N> x, uint32_t y) { return x.n >= y; }
+template <int N> constexpr bool operator==(NMod<N> x, uint32_t y) { return x.n == y; }
+template <int N> constexpr bool operator!=(NMod<N> x, uint32_t y) { return x.n != y; }
+template <int N> constexpr bool operator<(NMod<N> x, uint32_t y) { return x.n < y; }
+template <int N> constexpr bool operator<=(NMod<N> x, uint32_t y) { return x.n <= y; }
+template <int N> constexpr bool operator>(NMod<N> x, uint32_t y) { return x.n > y; }
+template <int N> constexpr bool operator>=(NMod<N> x, uint32_t y) { return x.n >= y; }
 
-template <int N> constexpr TMod<N> ident(TMod<N>) { return TMod<N>(1); }
-template <int N> constexpr TMod<N> zero(TMod<N>) { return TMod<N>(0); }
-template <int N2, int N> constexpr TMod<N> gen(TMod<N>) { static_assert((N - 1) % N2 == 0, "root number not compatible"); return pow(TModRoot<N>::G, (N - 1) / N2, N); }
-template <int N> constexpr TMod<N> gen(TMod<N>, uint32_t n) { assert((N - 1) % n == 0); return pow(TModRoot<N>::G, (N - 1) / n, N); }
-template <int N> constexpr TMod<N> conj(TMod<N> x) { return x; }
-template <int N> constexpr TMod<N> inv(TMod<N> x) { return pow(x.n, (uint32_t)N - 2, (uint32_t)N); }
-template <int N> constexpr TMod<N> norm(TMod<N> x) { return x; }
-template <int N> constexpr TMod<N> norm2(TMod<N> x) { return x * x; }
-template <int N> constexpr int line(TMod<N>) { return 1; }
+template <int N> constexpr NMod<N> ident(NMod<N>) { return NMod<N>(1); }
+template <int N> constexpr NMod<N> zero(NMod<N>) { return NMod<N>(0); }
+template <int N2, int N> constexpr NMod<N> gen(NMod<N>) { static_assert((N - 1) % N2 == 0, "root number not compatible"); return pow(TModRoot<N>::G, (N - 1) / N2, N); }
+template <int N> constexpr NMod<N> gen(NMod<N>, uint32_t n) { assert((N - 1) % n == 0); return pow(TModRoot<N>::G, (N - 1) / n, N); }
+template <int N> constexpr NMod<N> conj(NMod<N> x) { return x; }
+template <int N> constexpr NMod<N> inv(NMod<N> x) { return pow(x.n, (uint32_t)N - 2, (uint32_t)N); }
+template <int N> constexpr NMod<N> norm(NMod<N> x) { return x; }
+template <int N> constexpr NMod<N> norm2(NMod<N> x) { return x * x; }
+template <int N> constexpr int line(NMod<N>) { return 1; }
 
-template <int N> constexpr bool isnan(TMod<N> x) { return x.n == -1; }
-template <int N> constexpr TMod<N> nan(TMod<N>) { TMod<N> x; x.n = -1; return x; }
-template <int N> constexpr TMod<N> pow(TMod<N> x, uint32_t n) { return pow(x.n, n % (uint32_t)(N - 1), (uint32_t)N); }
+template <int N> constexpr bool isnan(NMod<N> x) { return x.n == -1; }
+template <int N> constexpr NMod<N> nan(NMod<N>) { NMod<N> x; x.n = -1; return x; }
+template <int N> constexpr NMod<N> pow(NMod<N> x, uint32_t n) { return pow(x.n, n % (uint32_t)(N - 1), (uint32_t)N); }
 
-template <int N> constexpr TMod<N> sqrt(const TMod<N>& x) {
-    TMod<N> r;
+template <int N> constexpr NMod<N> sqrt(const NMod<N>& x) {
+    NMod<N> r;
     r.n = (uint32_t)cipolla(x.n, N);
     return r;
 }
 
-template <int N> void print(const TMod<N>& x, int) { printf("%d", x.n); }
-template <int N> void print(const TMod<N>& x) { printf("%d\n", x.n); }
+template <int N> void print(const NMod<N>& x, int) { printf("%d", x.n); }
+template <int N> void print(const NMod<N>& x) { printf("%d\n", x.n); }
 
-template <int N> TMod<N> rand(TMod<N>) { return TMod<N>(rand((uint32_t)N)); }
+template <int N> NMod<N> randmod(NMod<N>) { return NMod<N>(randmod((uint32_t)N)); }
 
-template <int N> int legendre(TMod<N> x){
+template <int N> int legendre(NMod<N> x){
     return x == 0 ? 0 : pow(x.n, (N - 1) / 2, N) == 1 ? 1 : -1;
 }
 
 int jacobi(uint64_t a, uint64_t n);
 
-template <int N> int jacobi(TMod<N> x){
+template <int N> int jacobi(NMod<N> x){
     return jacobi(x.n, N);
 }
+
+template <typename T>
+class TMod {
+public:
+    T n;
+    const T& mod;
+
+    constexpr TMod(const T& mod) : n(zero(T())), mod(mod) {}
+    constexpr TMod(T n, const T& mod) : n(n), mod(mod) {}
+    constexpr TMod(const TMod<T>&) = default;
+    constexpr TMod<T>& operator=(const TMod<T>&) = default;
+    constexpr TMod<T>& operator=(T n) { this->n = n; return *this; }
+};
 
 #endif /* NUMBER_THEORY_H */

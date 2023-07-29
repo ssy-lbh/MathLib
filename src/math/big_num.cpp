@@ -60,6 +60,12 @@ bool operator<=(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) <= 
 bool operator>=(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) >= 0; }
 bool operator==(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) == 0; }
 bool operator!=(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) != 0; }
+bool operator<(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) < 0; }
+bool operator>(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) > 0; }
+bool operator<=(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) <= 0; }
+bool operator>=(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) >= 0; }
+bool operator==(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) == 0; }
+bool operator!=(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) != 0; }
 
 BigInt::operator bool() const { return mpz_cmp_ui(n, 0) != 0; }
 BigInt::operator int() const { return mpz_get_si(n); }
@@ -132,6 +138,7 @@ BigInt multinomial(const BigInt& x, const BigInt& y) { BigInt t; mpz_sub(t.n, x.
 BigInt multinomial(const BigInt& x, const BigInt& y, const BigInt& m) { BigInt t; mpz_sub(t.n, x.n, y.n); mpz_fac_ui(t.n, mpz_get_ui(t.n)); mpz_fac_ui(t.n, mpz_get_ui(t.n)); mpz_divexact_ui(t.n, t.n, mpz_get_ui(y.n)); mpz_mod(t.n, t.n, m.n); return t; }
 int legendre(const BigInt& x, const BigInt& p) { return mpz_legendre(x.n, p.n); }
 int jacobi(const BigInt& x, const BigInt& p) { return mpz_jacobi(x.n, p.n); }
+int kronecker(const BigInt& x, const BigInt& p) { return mpz_kronecker(x.n, p.n); }
 BigInt nextprime(const BigInt& x) { BigInt t; mpz_nextprime(t.n, x.n); return t; }
 
 BigInt::Random::Random() { gmp_randinit_default(state); }
@@ -143,7 +150,7 @@ BigInt BigInt::Random::operator()(const BigInt& n) { BigInt t; mpz_urandomm(t.n,
 BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, b.n, a.n); mpz_urandomm(t.n, state, t.n); t += a; return t; }
 
 BigInt::Random default_bigint_random(0x114514CC);
-BigInt rand(const BigInt& x) { return default_bigint_random(x); }
+BigInt randmod(const BigInt& x) { return default_bigint_random(x); }
 
 const BigFrac BigFrac::zero(0);
 const BigFrac BigFrac::one(1);

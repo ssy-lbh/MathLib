@@ -12,7 +12,7 @@ void test_pollard_rho(){
 
     uint64_t prime[N];
     uint32_t exp[N];
-    uint32_t cnt = pollard_rho(n, prime, exp, N);
+    uint32_t cnt = factorize(n, prime, exp, N);
 
     assert(cnt == 2);
     if (prime[0] > prime[1]){
@@ -32,7 +32,7 @@ void test_pohlig_hellman_log(){
 
     uint64_t prime[N];
     uint32_t exp[N];
-    uint32_t cnt = pollard_rho(p - 1, prime, exp, N);
+    uint32_t cnt = factorize(p - 1, prime, exp, N);
 
     assert(check_root(g, p, prime, cnt));
     uint64_t x = pohlig_hellman_log(g, b, p);
@@ -46,7 +46,7 @@ void test_index_calculus_log(){
 
     uint64_t prime[N];
     uint32_t exp[N];
-    uint32_t cnt = pollard_rho(p - 1, prime, exp, N);
+    uint32_t cnt = factorize(p - 1, prime, exp, N);
 
     assert(check_root(g, p, prime, cnt));
     uint64_t x = index_calculus_log(b, g, p);

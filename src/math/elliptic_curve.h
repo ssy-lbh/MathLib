@@ -55,11 +55,12 @@ public:
         return Point({p.x, -p.y});
     }
 
+    // 需要数据类型有模数
     Point random() const {
-        T x = rand(T());
+        T x = randmod(a);
         T y_square = (x * x + a) * x + b;
         while (legendre(y_square) == -1){
-            x = rand(T());
+            x = randmod(a);
             y_square = (x * x + a) * x + b;
         }
         T y = sqrt(y_square);

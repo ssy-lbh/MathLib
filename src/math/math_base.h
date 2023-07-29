@@ -101,7 +101,7 @@ template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T>
 template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, T> norm(T x) { return abs(x); }
 template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> norm(T x) { return fabs(x); }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> norm2(T x) { return x * x; }
-template <typename T> constexpr std::enable_if_t<std::is_scalar_v<T>, int> line(T) { return 1; }
+template <typename T> constexpr std::enable_if_t<std::is_scalar_v<T> || std::is_pointer_v<T>, int> line(T) { return 1; }
 
 // 字面量0被重载是有可能的, 建议调用前用构造器转换
 inline void print(void* x, int) { printf("%p", x); }
@@ -146,6 +146,26 @@ void println(const T& x) {
     }
 }
 
+template <int N>
+void print(const char (&x)[N]) {
+    printf("%s", x);
+}
+
+template <int N>
+void print(const wchar_t (&x)[N]) {
+    printf("%S", x);
+}
+
+template <int N>
+void println(const char (&x)[N]) {
+    printf("%s\n", x);
+}
+
+template <int N>
+void println(const wchar_t (&x)[N]) {
+    printf("%S\n", x);
+}
+
 template <typename T, typename I> constexpr std::enable_if_t<std::is_integral_v<I>, T> pow(T x, I y){
     T r = ident(T());
     while (y){
@@ -169,5 +189,9 @@ int popcntl(long long);
 template <typename T, typename E> constexpr bool equal(const T& x, const T& y, E epsilon) { return norm2(x - y) <= epsilon * epsilon; }
 
 template <typename T1, typename T2> constexpr std::enable_if_t<std::is_scalar_v<T1> && std::is_scalar_v<T2>, void> convert(T1& x, const T2& y) { x = y; }
+
+inline bool rand(bool){
+    return rand() & 1;
+}
 
 #endif /* MATH_BASE_H */

@@ -12,7 +12,7 @@ uint64_t totient(uint64_t n){
     uint64_t prime[N];
     uint32_t exp[N];
 
-    uint32_t cnt = pollard_rho(n, prime, exp, N);
+    uint32_t cnt = factorize(n, prime, exp, N);
 
     return totient(n, prime, cnt);
 }
