@@ -73,3 +73,7 @@ bool miller_rabin(BigInt n){
     }
     return true;
 }
+
+bool miller_rabin(BigInt n, int reps){
+    return mpz_millerrabin(n.n, reps);
+}

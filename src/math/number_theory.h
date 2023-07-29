@@ -163,26 +163,26 @@ uint64_t index_calculus_log(uint64_t a, uint64_t g, uint64_t p);
 
 // 可以后续添加, 模板位置不限
 //TODO R, K自动计算
-template <int N> struct TModRoot;
-template <> struct TModRoot<3> { static constexpr uint32_t R = 1, K = 1, G = 2; };
-template <> struct TModRoot<5> { static constexpr uint32_t R = 1, K = 2, G = 2; };
-template <> struct TModRoot<17> { static constexpr uint32_t R = 1, K = 4, G = 3; };
-template <> struct TModRoot<97> { static constexpr uint32_t R = 3, K = 5, G = 5; };
-template <> struct TModRoot<193> { static constexpr uint32_t R = 3, K = 6, G = 5; };
-template <> struct TModRoot<257> { static constexpr uint32_t R = 1, K = 8, G = 3; };
-template <> struct TModRoot<7681> { static constexpr uint32_t R = 15, K = 9, G = 17; };
-template <> struct TModRoot<12289> { static constexpr uint32_t R = 3, K = 12, G = 11; };
-template <> struct TModRoot<40961> { static constexpr uint32_t R = 5, K = 13, G = 3; };
-template <> struct TModRoot<65537> { static constexpr uint32_t R = 1, K = 16, G = 3; };
-template <> struct TModRoot<786433> { static constexpr uint32_t R = 3, K = 18, G = 10; };
-template <> struct TModRoot<5767169> { static constexpr uint32_t R = 11, K = 19, G = 3; };
-template <> struct TModRoot<7340033> { static constexpr uint32_t R = 7, K = 20, G = 3; };
-template <> struct TModRoot<23068673> { static constexpr uint32_t R = 11, K = 21, G = 3; };
-template <> struct TModRoot<104857601> { static constexpr uint32_t R = 25, K = 22, G = 3; };
-template <> struct TModRoot<167772161> { static constexpr uint32_t R = 5, K = 25, G = 3; };
-template <> struct TModRoot<469762049> { static constexpr uint32_t R = 7, K = 26, G = 3; };
-template <> struct TModRoot<998244353> { static constexpr uint32_t R = 119, K = 23, G = 3; };
-template <> struct TModRoot<1004535809> { static constexpr uint32_t R = 479, K = 21, G = 3; };
+template <int N> struct NModRoot;
+template <> struct NModRoot<3> { static constexpr uint32_t R = 1, K = 1, G = 2; };
+template <> struct NModRoot<5> { static constexpr uint32_t R = 1, K = 2, G = 2; };
+template <> struct NModRoot<17> { static constexpr uint32_t R = 1, K = 4, G = 3; };
+template <> struct NModRoot<97> { static constexpr uint32_t R = 3, K = 5, G = 5; };
+template <> struct NModRoot<193> { static constexpr uint32_t R = 3, K = 6, G = 5; };
+template <> struct NModRoot<257> { static constexpr uint32_t R = 1, K = 8, G = 3; };
+template <> struct NModRoot<7681> { static constexpr uint32_t R = 15, K = 9, G = 17; };
+template <> struct NModRoot<12289> { static constexpr uint32_t R = 3, K = 12, G = 11; };
+template <> struct NModRoot<40961> { static constexpr uint32_t R = 5, K = 13, G = 3; };
+template <> struct NModRoot<65537> { static constexpr uint32_t R = 1, K = 16, G = 3; };
+template <> struct NModRoot<786433> { static constexpr uint32_t R = 3, K = 18, G = 10; };
+template <> struct NModRoot<5767169> { static constexpr uint32_t R = 11, K = 19, G = 3; };
+template <> struct NModRoot<7340033> { static constexpr uint32_t R = 7, K = 20, G = 3; };
+template <> struct NModRoot<23068673> { static constexpr uint32_t R = 11, K = 21, G = 3; };
+template <> struct NModRoot<104857601> { static constexpr uint32_t R = 25, K = 22, G = 3; };
+template <> struct NModRoot<167772161> { static constexpr uint32_t R = 5, K = 25, G = 3; };
+template <> struct NModRoot<469762049> { static constexpr uint32_t R = 7, K = 26, G = 3; };
+template <> struct NModRoot<998244353> { static constexpr uint32_t R = 119, K = 23, G = 3; };
+template <> struct NModRoot<1004535809> { static constexpr uint32_t R = 479, K = 21, G = 3; };
 
 // N为大小, G为原根(生成元)
 template <int N>
@@ -198,6 +198,7 @@ public:
     constexpr NMod(const NMod<N>&) = default;
     constexpr NMod<N>& operator=(const NMod<N>&) = default;
     constexpr NMod<N>& operator=(uint32_t n) { this->n = n; return *this; }
+    explicit constexpr operator uint32_t() const { return n; }
 };
 
 template <int N> constexpr bool is_commutative(NMod<N>) { return true; }
@@ -252,8 +253,8 @@ template <int N> constexpr bool operator>=(NMod<N> x, uint32_t y) { return x.n >
 
 template <int N> constexpr NMod<N> ident(NMod<N>) { return NMod<N>(1); }
 template <int N> constexpr NMod<N> zero(NMod<N>) { return NMod<N>(0); }
-template <int N2, int N> constexpr NMod<N> gen(NMod<N>) { static_assert((N - 1) % N2 == 0, "root number not compatible"); return pow(TModRoot<N>::G, (N - 1) / N2, N); }
-template <int N> constexpr NMod<N> gen(NMod<N>, uint32_t n) { assert((N - 1) % n == 0); return pow(TModRoot<N>::G, (N - 1) / n, N); }
+template <int N2, int N> constexpr NMod<N> gen(NMod<N>) { static_assert((N - 1) % N2 == 0, "root number not compatible"); return pow(NModRoot<N>::G, (N - 1) / N2, N); }
+template <int N> constexpr NMod<N> gen(NMod<N>, uint32_t n) { assert((N - 1) % n == 0); return pow(NModRoot<N>::G, (N - 1) / n, N); }
 template <int N> constexpr NMod<N> conj(NMod<N> x) { return x; }
 template <int N> constexpr NMod<N> inv(NMod<N> x) { return pow(x.n, (uint32_t)N - 2, (uint32_t)N); }
 template <int N> constexpr NMod<N> norm(NMod<N> x) { return x; }
@@ -292,10 +293,79 @@ public:
     const T& mod;
 
     constexpr TMod(const T& mod) : n(zero(T())), mod(mod) {}
-    constexpr TMod(T n, const T& mod) : n(n), mod(mod) {}
+    constexpr TMod(const T& n, const T& mod) : n(n), mod(mod) {}
     constexpr TMod(const TMod<T>&) = default;
     constexpr TMod<T>& operator=(const TMod<T>&) = default;
-    constexpr TMod<T>& operator=(T n) { this->n = n; return *this; }
+    constexpr TMod<T>& operator=(const T& n) { this->n = n; return *this; }
+    explicit constexpr operator T() const { return n; }
 };
+
+template <typename T> constexpr bool is_commutative(TMod<T>) { return true; }
+template <typename T> constexpr bool is_associative(TMod<T>) { return true; }
+template <typename T> constexpr bool is_alternative(TMod<T>) { return true; }
+
+template <typename T> constexpr bool is_unital(TMod<T>) { return true; }
+template <typename T> constexpr bool is_dividable(TMod<T>) { return true; }
+
+template <typename T> constexpr TMod<T> operator+(const TMod<T>& x, const TMod<T>& y) { T s = x.n + y.n; return TMod<T>(s >= x.mod ? s - x.mod : s, x.mod); }
+template <typename T> constexpr TMod<T> operator+(const TMod<T>& x, T y) { T s = x.n + y; return TMod<T>(s >= x.mod ? s - x.mod : s, x.mod); }
+template <typename T> constexpr TMod<T> operator+(T x, const TMod<T>& y) { T s = x + y.n; return TMod<T>(s >= y.mod ? s - y.mod : s, y.mod); }
+template <typename T> constexpr TMod<T> operator-(const TMod<T>& x, const TMod<T>& y) { return TMod<T>(x.n < y.n ? x.n + x.mod - y.n : x.n - y.n, x.mod); }
+template <typename T> constexpr TMod<T> operator-(const TMod<T>& x, T y) { return TMod<T>(x.n < y ? x.n + x.mod - y : x.n - y, x.mod); }
+template <typename T> constexpr TMod<T> operator-(T x, const TMod<T>& y) { return TMod<T>(x < y.n ? x + y.mod - y.n : x - y.n, y.mod); }
+template <typename T> constexpr TMod<T> operator*(const TMod<T>& x, const TMod<T>& y) { return TMod<T>((x.n * y.n) % x.mod, x.mod); }
+template <typename T> constexpr TMod<T> operator*(const TMod<T>& x, T y) { return TMod<T>((x.n * y) % x.mod, x.mod); }
+template <typename T> constexpr TMod<T> operator*(T x, const TMod<T>& y) { return TMod<T>((x * y.n) % y.mod, y.mod); }
+template <typename T> constexpr TMod<T> operator/(const TMod<T>& x, const TMod<T>& y) { return inv(y) * x; }
+template <typename T> constexpr TMod<T> operator/(const TMod<T>& x, T y) { return inv(TMod<T>(y, x.mod)) * x; }
+template <typename T> constexpr TMod<T> operator/(T x, const TMod<T>& y) { return inv(y) * x; }
+template <typename T> constexpr TMod<T> operator%(const TMod<T>& x, const TMod<T>& y) { return TMod<T>(x.n % y.n, x.mod); }
+template <typename T> constexpr TMod<T> operator%(const TMod<T>& x, T y) { return TMod<T>(x.n % y, x.mod); }
+template <typename T> constexpr TMod<T> operator%(T x, const TMod<T>& y) { return TMod<T>(x % y.n, y.mod); }
+template <typename T> constexpr TMod<T> operator+=(TMod<T>& x, const TMod<T>& y) { return x = x + y; }
+template <typename T> constexpr TMod<T> operator+=(TMod<T>& x, T y) { return x = x + y; }
+template <typename T> constexpr TMod<T> operator-=(TMod<T>& x, const TMod<T>& y) { return x = x - y; }
+template <typename T> constexpr TMod<T> operator-=(TMod<T>& x, T y) { return x = x - y; }
+template <typename T> constexpr TMod<T> operator*=(TMod<T>& x, const TMod<T>& y) { return x = y * x; }
+template <typename T> constexpr TMod<T> operator*=(TMod<T>& x, T y) { return x = y * x; }
+template <typename T> constexpr TMod<T> operator/=(TMod<T>& x, const TMod<T>& y) { return x = x / y; }
+template <typename T> constexpr TMod<T> operator/=(TMod<T>& x, T y) { return x = x / y; }
+template <typename T> constexpr TMod<T> operator%=(TMod<T>& x, const TMod<T>& y) { return x = x % y; }
+template <typename T> constexpr TMod<T> operator%=(TMod<T>& x, T y) { return x = x % y; }
+template <typename T> constexpr TMod<T> operator+(const TMod<T>& x) { return x; }
+template <typename T> constexpr TMod<T> operator-(const TMod<T>& x) { return TMod<T>(x.mod - x.n, x.mod); }
+
+template <typename T> constexpr bool operator==(const TMod<T>& x, const TMod<T>& y) { return x.n == y.n; }
+template <typename T> constexpr bool operator!=(const TMod<T>& x, const TMod<T>& y) { return x.n != y.n; }
+template <typename T> constexpr bool operator<(const TMod<T>& x, const TMod<T>& y) { return x.n < y.n; }
+template <typename T> constexpr bool operator<=(const TMod<T>& x, const TMod<T>& y) { return x.n <= y.n; }
+template <typename T> constexpr bool operator>(const TMod<T>& x, const TMod<T>& y) { return x.n > y.n; }
+template <typename T> constexpr bool operator>=(const TMod<T>& x, const TMod<T>& y) { return x.n >= y.n; }
+
+template <typename T> constexpr bool operator==(const TMod<T>& x, T y) { return x.n == y; }
+template <typename T> constexpr bool operator!=(const TMod<T>& x, T y) { return x.n != y; }
+template <typename T> constexpr bool operator<(const TMod<T>& x, T y) { return x.n < y; }
+template <typename T> constexpr bool operator<=(const TMod<T>& x, T y) { return x.n <= y; }
+template <typename T> constexpr bool operator>(const TMod<T>& x, T y) { return x.n > y; }
+template <typename T> constexpr bool operator>=(const TMod<T>& x, T y) { return x.n >= y; }
+
+template <typename T> constexpr TMod<T> ident(const TMod<T>& x) { return TMod<T>(ident(T()), x.mod); }
+template <typename T> constexpr TMod<T> zero(const TMod<T>& x) { return TMod<T>(zero(T()), x.mod); }
+template <typename T> constexpr TMod<T> conj(const TMod<T>& x) { return TMod<T>(conj(x.n), x.mod); }
+template <typename T> constexpr TMod<T> inv(const TMod<T>& x) { return TMod<T>(inv(x.n, x.mod), x.mod); }
+template <typename T> constexpr auto norm(const TMod<T>& x) { return norm(x.n); }
+template <typename T> constexpr auto norm2(const TMod<T>& x) { return norm2(x.n); }
+template <typename T> constexpr int line(const TMod<T>& x) { return line(x.n); }
+
+template <typename T> constexpr TMod<T> pow(const TMod<T>& x, T n) { return TMod<T>(pow(x.n, n, x.mod), x.mod); }
+template <typename T> TMod<T> rand(const TMod<T>& x) { return TMod<T>(randmod(x.mod), x.mod); }
+
+template <typename T> constexpr TMod<T> sqrt(const TMod<T>& x) {
+    TMod<T> r;
+    r.n = cipolla(x.n, x.mod);
+    return r;
+}
+
+template <typename T> void print(const TMod<T>& x, int l) { print(x.n, l); }
 
 #endif /* NUMBER_THEORY_H */

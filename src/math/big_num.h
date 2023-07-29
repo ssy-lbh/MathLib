@@ -195,6 +195,10 @@ int jacobi(const BigInt& x, const BigInt& p);
 int kronecker(const BigInt& x, const BigInt& y);
 BigInt nextprime(const BigInt& x);
 BigInt randmod(const BigInt& n);
+BigInt rand(const BigInt& a, const BigInt& b);
+BigInt randbits(unsigned long bits);
+uint64_t size(const BigInt& x);
+uint64_t sizeinbase(const BigInt& x, int base);
 
 extern BigInt::Random default_bigint_random;
 
@@ -464,6 +468,13 @@ BigFloat erf(const BigFloat& x);
 BigFloat gamma(const BigFloat& x);
 BigFloat zeta(const BigFloat& x);
 
+inline BigInt inv(const BigInt& x, const BigInt& mod){
+    BigInt y = 0, z = 0;
+    if (exgcd(x, mod, y, z) != 1)
+        return -1;
+    return y < 0 ? y + mod : y;
+}
+
 template <typename T>
 bool miller_prime_check(const T& n, const T& a) {
     T d = n - 1;
@@ -482,16 +493,20 @@ template <typename T>
 bool miller_prime_proof(const T& n) {
     if (n < 3 || (n & 1) == 0)
         return n == 2;
-    auto t = log2(n);
-    T reps = floor(2 * t * t);
-    for (T i = 2; i <= reps; ++i)
+    auto t = log(n);
+    T reps = floor(t * log2(t)) << 1;
+    for (T i = 2; i <= reps; i++)
         if (!miller_prime_check(n, i))
             return false;
     return true;
 }
 
 bool miller_rabin(BigInt n);
+bool miller_rabin(BigInt n, int reps);
 BigInt pollard_rho(BigInt n);
 uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len);
+
+BigInt cpow(BigInt x, BigInt w2, BigInt n, BigInt mod);
+BigInt cipolla(BigInt x, BigInt mod);
 
 #endif

@@ -140,6 +140,8 @@ int legendre(const BigInt& x, const BigInt& p) { return mpz_legendre(x.n, p.n); 
 int jacobi(const BigInt& x, const BigInt& p) { return mpz_jacobi(x.n, p.n); }
 int kronecker(const BigInt& x, const BigInt& p) { return mpz_kronecker(x.n, p.n); }
 BigInt nextprime(const BigInt& x) { BigInt t; mpz_nextprime(t.n, x.n); return t; }
+uint64_t size(const BigInt& x) { return mpz_size(x.n); }
+uint64_t sizeinbase(const BigInt& x, int base) { return mpz_sizeinbase(x.n, base); }
 
 BigInt::Random::Random() { gmp_randinit_default(state); }
 BigInt::Random::Random(const Random& r) { gmp_randinit_set(state, r.state); }
@@ -151,6 +153,8 @@ BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; 
 
 BigInt::Random default_bigint_random(0x114514CC);
 BigInt randmod(const BigInt& x) { return default_bigint_random(x); }
+BigInt rand(const BigInt& a, const BigInt& b) { return default_bigint_random(a, b); }
+BigInt randbits(unsigned long bits) { BigInt t; mpz_urandomb(t.n, default_bigint_random.state, bits); return t; }
 
 const BigFrac BigFrac::zero(0);
 const BigFrac BigFrac::one(1);

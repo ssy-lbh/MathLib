@@ -6,10 +6,11 @@
 #include "tensor.h"
 
 template <typename T>
+using Point2 = TTensor<T, 2>;
+
+template <typename T>
 class TEllipticCurve {
 public:
-    using Point = TTensor<T, 2>;
-
     // y^2 = x^3 + A * x + B
     T a, b;
     TEllipticCurve() : a(0), b(0) {}
@@ -24,25 +25,25 @@ public:
     bool is_supersingular() const { return a == 0 && b == 0; }
     bool is_ordinary() const { return !is_supersingular(); }
     bool is_special() const { return is_supersingular(); }
-    bool is_infinity(const Point& p) const { return p[0] == 0 && p[1] == 0; }
-    bool is_on_curve(const Point& p) const { return p[1] * p[1] == (p[0] * p[0] + a) * p[0] + b; }
+    bool is_infinity(const Point2& p) const { return p[0] == 0 && p[1] == 0; }
+    bool is_on_curve(const Point2& p) const { return p[1] * p[1] == (p[0] * p[0] + a) * p[0] + b; }
 
-    Point add(const Point& p, const Point& q) const {
+    Point2 add(const Point2& p, const Point2& q) const {
         if (is_infinity(p)) return q;
         if (is_infinity(q)) return p;
-        if (p[0] == q[0] && p[1] == -q[1]) return Point({0, 0});
+        if (p[0] == q[0] && p[1] == -q[1]) return Point2({0, 0});
         T s;
         if (p[0] == q[0] && p[1] == q[1]) s = (3 * p[0] * p[0] + a) / (2 * p[1]);
         else s = (q[1] - p[1]) / (q[0] - p[0]);
         T x = s * s - p[0] - q[0];
         T y = s * (p[0] - x) - p[1];
-        return Point({x, y});
+        return Point2({x, y});
     }
 
     template <typename U>
-    Point mul(const Point& p, U k) const {
-        Point r{0, 0};
-        Point q = p;
+    Point2 mul(const Point2& p, U k) const {
+        Point2 r{0, 0};
+        Point2 q = p;
         while (k){
             if (k & 1) r = add(r, q);
             q = add(q, q);
@@ -51,20 +52,20 @@ public:
         return r;
     }
 
-    Point neg(const Point& p) const {
+    Point2 neg(const Point2& p) const {
         return Point({p.x, -p.y});
     }
 
     // 需要数据类型有模数
-    Point random() const {
-        T x = randmod(a);
+    Point2 random() const {
+        T x = rand(a);
         T y_square = (x * x + a) * x + b;
         while (legendre(y_square) == -1){
-            x = randmod(a);
+            x = rand(a);
             y_square = (x * x + a) * x + b;
         }
         T y = sqrt(y_square);
-        return Point({x, y});
+        return Point2({x, y});
     }
 };
 
