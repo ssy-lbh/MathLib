@@ -18,10 +18,6 @@ public:
     TEllipticCurve& operator=(const TEllipticCurve& c) { a = c.a; b = c.b; return *this; }
     bool operator==(const TEllipticCurve& c) const { return a == c.a && b == c.b; }
     bool operator!=(const TEllipticCurve& c) const { return a != c.a || b != c.b; }
-    bool operator<(const TEllipticCurve& c) const { return a < c.a || (a == c.a && b < c.b); }
-    bool operator>(const TEllipticCurve& c) const { return a > c.a || (a == c.a && b > c.b); }
-    bool operator<=(const TEllipticCurve& c) const { return a <= c.a || (a == c.a && b <= c.b); }
-    bool operator>=(const TEllipticCurve& c) const { return a >= c.a || (a == c.a && b >= c.b); }
     bool is_singular() const { return 4 * a * a * a + 27 * b * b == 0; }
     bool is_smooth() const { return !is_singular(); }
     bool is_nonsingular() const { return !is_singular(); }
@@ -43,7 +39,8 @@ public:
         return Point({x, y});
     }
 
-    Point mul(const Point& p, uint64_t k) const {
+    template <typename U>
+    Point mul(const Point& p, U k) const {
         Point r{0, 0};
         Point q = p;
         while (k){
@@ -58,10 +55,10 @@ public:
         return Point({p.x, -p.y});
     }
 
-    Point random(T mod) const {
+    Point random() const {
         T x = rand(T());
         T y_square = (x * x + a) * x + b;
-        while (legendre(y_square, mod) == -1){
+        while (legendre(y_square) == -1){
             x = rand(T());
             y_square = (x * x + a) * x + b;
         }

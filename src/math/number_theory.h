@@ -42,7 +42,7 @@ constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
     return r;
 }
 
-// ¸¡µãÊı¶ÔÓÚ1µÄ¾«È·ĞÔ¿ÉÒÔÈİĞí
+// æµ®ç‚¹æ•°å¯¹äº1çš„ç²¾ç¡®æ€§å¯ä»¥å®¹è®¸
 template <typename T> constexpr T fact(T x){
     T r = ident(T());
     for (T i = 2; i <= x; i++)
@@ -53,7 +53,7 @@ template <typename T> constexpr T fact(T x){
 template <typename T> constexpr T gcd(T x, T y){ return (x == zero(T())) ? y : gcd(y % x, x); }
 template <typename T> constexpr T lcm(T x, T y){ return x / gcd(x, y) * y; }
 
-// À©Õ¹Å·¼¸ÀïµÃ, ax + by = gcd(a, b)
+// æ‰©å±•æ¬§å‡ é‡Œå¾—, ax + by = gcd(a, b)
 constexpr int32_t exgcd(int32_t a, int32_t b, int32_t& x, int32_t& y){
     if (b == 0){
         x = 1;
@@ -78,16 +78,18 @@ constexpr uint64_t exgcd(uint64_t a, uint64_t b, int64_t& x, int64_t& y){
     return r;
 }
 
-// ÇóÄæÔª, ax = 1 (mod m)
+// æ±‚é€†å…ƒ, ax = 1 (mod m), aä¸modäº’è´¨, å¦åˆ™è¿”å›-1
 constexpr uint32_t inv(uint32_t x, uint32_t mod){
     int32_t y = 0, z = 0;
-    exgcd(x, mod, y, z);
+    if (exgcd(x, mod, y, z) != 1)
+        return -1;
     return (uint32_t)(y < 0 ? y + mod : y);
 }
 
 constexpr uint64_t inv(uint64_t x, uint64_t mod){
     int64_t y = 0, z = 0;
-    exgcd(x, mod, y, z);
+    if (exgcd(x, mod, y, z) != 1)
+        return -1;
     return (uint64_t)(y < 0 ? y + mod : y);
 }
 
@@ -155,12 +157,12 @@ uint64_t index_calculus_log(uint64_t a, uint64_t b, uint64_t g, uint64_t p);
 // g^x === a (mod p)
 uint64_t index_calculus_log(uint64_t a, uint64_t g, uint64_t p);
 
-// ÓĞÏŞÑ­»·Èº, ¿ÉÒÔ»ñÈ¡Éú³ÉÔª, Ä¿Ç°µÄÖÖÀàÓĞ
-// 1. Zn, Ä£NÍ¬ÓàÈº, ÓĞÏŞÑ­»·Èº
-// 2. ¸´ÊıÔ­¸ù
+// æœ‰é™å¾ªç¯ç¾¤, å¯ä»¥è·å–ç”Ÿæˆå…ƒ, ç›®å‰çš„ç§ç±»æœ‰
+// 1. Zn, æ¨¡NåŒä½™ç¾¤, æœ‰é™å¾ªç¯ç¾¤
+// 2. å¤æ•°åŸæ ¹
 
-// ¿ÉÒÔºóĞøÌí¼Ó, Ä£°åÎ»ÖÃ²»ÏŞ
-//TODO R, K×Ô¶¯¼ÆËã
+// å¯ä»¥åç»­æ·»åŠ , æ¨¡æ¿ä½ç½®ä¸é™
+//TODO R, Kè‡ªåŠ¨è®¡ç®—
 template <int N> struct TModRoot;
 template <> struct TModRoot<3> { static constexpr uint32_t R = 1, K = 1, G = 2; };
 template <> struct TModRoot<5> { static constexpr uint32_t R = 1, K = 2, G = 2; };
@@ -182,7 +184,7 @@ template <> struct TModRoot<469762049> { static constexpr uint32_t R = 7, K = 26
 template <> struct TModRoot<998244353> { static constexpr uint32_t R = 119, K = 23, G = 3; };
 template <> struct TModRoot<1004535809> { static constexpr uint32_t R = 479, K = 21, G = 3; };
 
-// NÎª´óĞ¡, GÎªÔ­¸ù(Éú³ÉÔª)
+// Nä¸ºå¤§å°, Gä¸ºåŸæ ¹(ç”Ÿæˆå…ƒ)
 template <int N>
 class TMod {
 public:
@@ -205,7 +207,7 @@ template <int N> constexpr bool is_alternative(TMod<N>) { return true; }
 template <int N> constexpr bool is_unital(TMod<N>) { return true; }
 template <int N> constexpr bool is_dividable(TMod<N>) { return true; }
 
-// congruence group, Ä£NÍ¬ÓàÈº
+// congruence group, æ¨¡NåŒä½™ç¾¤
 template <int N> constexpr TMod<N> operator+(TMod<N> x, TMod<N> y) { uint32_t s = x.n + y.n; return TMod<N>(s >= N ? s - N : s); }
 template <int N> constexpr TMod<N> operator+(TMod<N> x, uint32_t y) { uint32_t s = x.n + y; return TMod<N>(s >= N ? s - N : s); }
 template <int N> constexpr TMod<N> operator+(uint32_t x, TMod<N> y) { uint32_t s = x + y.n; return TMod<N>(s >= N ? s - N : s); }

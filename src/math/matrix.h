@@ -206,12 +206,12 @@ constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, 
 	int cnt = 0; // current iteration
 	while (true) {
 		// find the largest element on the off-diagonal line of the X
-		double maxv = norm2(X[0][1]);
+		double maxv = double(norm2(X[0][1]));
 		int ridx = 0;
 		int cidx = 1;
 		for (int i = 0; i < L; i++) {			// row
 			for (int j = 0; j < L; j++) {		// column
-				double d = norm2(X[i][j]);
+				double d = double(norm2(X[i][j]));
 				if ((i != j) && (d > maxv)) {
 					maxv = d;
 					ridx = i;

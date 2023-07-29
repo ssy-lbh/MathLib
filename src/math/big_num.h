@@ -46,8 +46,8 @@ public:
     BigInt(const unsigned long& x);
     BigInt(const long long& x);
     BigInt(const unsigned long long& x);
-    BigInt(const BigFrac& x);
-    BigInt(const BigFloat& x);
+    explicit BigInt(const BigFrac& x);
+    explicit BigInt(const BigFloat& x);
     ~BigInt();
     BigInt& operator=(const BigInt& b);
     BigInt& operator=(const char* s);
@@ -126,16 +126,6 @@ constexpr bool is_alternative(const BigInt&) { return true; }
 constexpr bool is_unital(const BigInt&) { return true; }
 constexpr bool is_dividable(const BigInt&) { return true; }
 
-inline BigInt ident(BigInt) { return BigInt::one; }
-inline BigInt zero(BigInt) { return BigInt::zero; }
-inline BigInt conj(BigInt x) { return x; }
-inline BigInt norm(BigInt x) { return x.abs(); }
-BigInt norm2(BigInt x);
-inline int line(BigInt) { return 1; }
-
-inline void print(const BigInt& x, int l) { x.print(); }
-inline void print(const BigInt& x, int radix, int l) { x.print(radix); }
-
 BigInt& operator+=(BigInt& a, const BigInt& b);
 BigInt& operator-=(BigInt& a, const BigInt& b);
 BigInt& operator*=(BigInt& a, const BigInt& b);
@@ -163,6 +153,16 @@ bool operator>=(const BigInt& a, const BigInt& b);
 bool operator==(const BigInt& a, const BigInt& b);
 bool operator!=(const BigInt& a, const BigInt& b);
 
+inline BigInt ident(BigInt) { return BigInt::one; }
+inline BigInt zero(BigInt) { return BigInt::zero; }
+inline BigInt conj(BigInt x) { return x; }
+inline BigInt norm(BigInt x) { return x.abs(); }
+inline BigInt norm2(BigInt x) { return x * x; }
+inline int line(BigInt) { return 1; }
+
+inline void print(const BigInt& x, int l) { x.print(); }
+inline void print(const BigInt& x, int radix, int l) { x.print(radix); }
+
 int sgn(const BigInt& x);
 BigInt abs(const BigInt& x);
 BigInt mul(const BigInt& x, const BigInt& y, const BigInt& mod);
@@ -186,6 +186,8 @@ int legendre(const BigInt& x, const BigInt& p);
 int jacobi(const BigInt& x, const BigInt& p);
 BigInt nextprime(const BigInt& x);
 BigInt rand(const BigInt& n);
+
+extern BigInt::Random default_bigint_random;
 
 class BigFrac {
 public:
@@ -263,17 +265,6 @@ constexpr bool is_alternative(const BigFrac&) { return true; }
 constexpr bool is_unital(const BigFrac&) { return true; }
 constexpr bool is_dividable(const BigFrac&) { return true; }
 
-inline BigFrac ident(BigFrac) { return BigFrac::one; }
-inline BigFrac zero(BigFrac) { return BigFrac::zero; }
-inline BigFrac conj(BigFrac x) { return x; }
-inline BigFrac inv(BigFrac x) { return x.inv(); }
-inline BigFrac norm(BigFrac x) { BigFrac t = x; t.abs(); return t; }
-inline BigFrac norm2(BigFrac x) { return x * x; }
-inline int line(BigFrac) { return 1; }
-
-inline void print(const BigFrac& x, int l) { x.print(); }
-inline void print(const BigFrac& x, int radix, int l) { x.print(radix); }
-
 BigFrac& operator+=(BigFrac& a, const BigFrac& b);
 BigFrac& operator-=(BigFrac& a, const BigFrac& b);
 BigFrac& operator*=(BigFrac& a, const BigFrac& b);
@@ -292,6 +283,17 @@ bool operator<=(const BigFrac& a, const BigFrac& b);
 bool operator>=(const BigFrac& a, const BigFrac& b);
 bool operator==(const BigFrac& a, const BigFrac& b);
 bool operator!=(const BigFrac& a, const BigFrac& b);
+
+inline BigFrac ident(BigFrac) { return BigFrac::one; }
+inline BigFrac zero(BigFrac) { return BigFrac::zero; }
+inline BigFrac conj(BigFrac x) { return x; }
+inline BigFrac inv(BigFrac x) { return x.inv(); }
+inline BigFrac norm(BigFrac x) { BigFrac t = x; t.abs(); return t; }
+inline BigFrac norm2(BigFrac x) { return x * x; }
+inline int line(BigFrac) { return 1; }
+
+inline void print(const BigFrac& x, int l) { x.print(); }
+inline void print(const BigFrac& x, int radix, int l) { x.print(radix); }
 
 int sgn(const BigFrac& x);
 BigFrac abs(const BigFrac& x);
@@ -373,9 +375,9 @@ public:
     BigFloat abs();
     BigFloat pow(unsigned long exp);
     BigFloat sqrt();
-    BigFloat floor();
-    BigFloat ceil();
-    BigFloat trunc();
+    BigInt floor();
+    BigInt ceil();
+    BigInt trunc();
 };
 
 constexpr bool is_conjugate_identical(const BigFloat&) { return true; }
@@ -385,17 +387,6 @@ constexpr bool is_alternative(const BigFloat&) { return true; }
 
 constexpr bool is_unital(const BigFloat&) { return true; }
 constexpr bool is_dividable(const BigFloat&) { return true; }
-
-inline BigFloat ident(BigFloat) { return BigFloat::one; }
-inline BigFloat zero(BigFloat) { return BigFloat::zero; }
-inline BigFloat conj(BigFloat x) { return x; }
-inline BigFloat inv(BigFloat x) { return BigFloat::one / x; }
-inline BigFloat norm(BigFloat x) { BigFloat t = x; t.abs(); return t; }
-inline BigFloat norm2(BigFloat x) { return x * x; }
-inline int line(BigFloat) { return 1; }
-
-inline void print(const BigFloat& x, int l) { x.print(); }
-inline void print(const BigFloat& x, int radix, int l) { x.print(radix); }
 
 BigFloat& operator+=(BigFloat& a, const BigFloat& b);
 BigFloat& operator-=(BigFloat& a, const BigFloat& b);
@@ -418,15 +409,26 @@ bool operator>=(const BigFloat& a, const BigFloat& b);
 bool operator==(const BigFloat& a, const BigFloat& b);
 bool operator!=(const BigFloat& a, const BigFloat& b);
 
+inline BigFloat ident(BigFloat) { return BigFloat::one; }
+inline BigFloat zero(BigFloat) { return BigFloat::zero; }
+inline BigFloat conj(BigFloat x) { return x; }
+inline BigFloat inv(BigFloat x) { return BigFloat::one / x; }
+inline BigFloat norm(BigFloat x) { BigFloat t = x; t.abs(); return t; }
+inline BigFloat norm2(BigFloat x) { return x * x; }
+inline int line(BigFloat) { return 1; }
+
+inline void print(const BigFloat& x, int l) { x.print(); }
+inline void print(const BigFloat& x, int radix, int l) { x.print(radix); }
+
 int sgn(const BigInt& x);
 BigFloat abs(const BigFloat& x);
 BigFloat pow(const BigFloat& x, unsigned long exp);
 BigFloat pow(const BigFloat& x, const BigFloat& exp);
 BigFloat sqrt(const BigFloat& x);
 BigFloat cbrt(const BigFloat& x);
-BigFloat floor(const BigFloat& x);
-BigFloat ceil(const BigFloat& x);
-BigFloat trunc(const BigFloat& x);
+BigInt floor(const BigFloat& x);
+BigInt ceil(const BigFloat& x);
+BigInt trunc(const BigFloat& x);
 
 BigFloat exp(const BigFloat& x);
 BigFloat exp2(const BigFloat& x);
@@ -471,7 +473,8 @@ template <typename T>
 bool miller_prime_proof(const T& n) {
     if (n < 3 || (n & 1) == 0)
         return n == 2;
-    T reps = 2 * log2(n) * log2(n);
+    auto t = log2(n);
+    T reps = floor(2 * t * t);
     for (T i = 2; i <= reps; ++i)
         if (!miller_prime_check(n, i))
             return false;

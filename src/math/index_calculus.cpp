@@ -4,6 +4,22 @@
 
 #include <algorithm>
 
+/* 
+* Index Calculus
+* 求解离散对数问题, 即 a^x === b (mod p)
+* 1. 预处理
+*    1.1. 筛出一定数量的素数, 确保 b 能被这些素数完全分解, 素数的上界一般取 e^{\frac{\sqrt(\log mod * \log \log mod)}{2} + 1}
+*    1.2. 这些素数依次编号为 p_i, 后文中令 e_i 为 p_i 的指数, a^{x_i} === p_i (mod p)
+* 2. 列举方程
+*    2.1. 令 t = rand(0, p-1), 计算 a^t (mod p)
+*    2.2. 以所有的 p 为基底, 对 a^t (mod p) 执行质因数分解, 得到 a^t (mod p) = \prod p_i^{e_i}, 如果无法分解为这些素数的乘积则舍去
+*    2.3. 所得方程 t = \sum e_i * x_i
+* 3. 解方程组
+*    3.1. 采用模意义下的高斯消元法, 解出对于每个 p_i 的离散对数 x_i
+* 4. 计算答案
+*    4.1. 直接将 b 分解, 离散对数 x = \sum e_i * x_i
+*/
+
 struct IndexCalculusContext {
     constexpr static uint32_t M = 239; // 239 -> uint32_t, 35000 -> uint64_t
     constexpr static uint32_t N = 3 * M;

@@ -36,7 +36,7 @@ void bignum_eigen(){
     assert(norm(det(A) - prod(E)) < eps);
 }
 
-/* assert(riemman_hypothesis()); */
+/* assert(riemann_hypothesis()); */
 void bignum_prime(){
     BigInt A = "300000000000000000053";
     assert(miller_prime_proof(A));
@@ -56,6 +56,47 @@ void bignum_test_ec(){
     assert(ec.is_on_curve(ec.add(p, q))); // [-1 2]
     assert(ec.is_on_curve(ec.add(q, q))); // [-87/64 747/512]
     assert(ec.is_on_curve(ec.add(p, p))); // [-5/9 62/27]
+
+    // select a random point G on the curve
+    // 1. G is a generator of the group
+    // 2. G is a point on the curve
+    // 3. G has a large prime order
+    // generate a random number r
+    // compute Q = r * G
+    // Q is a public key
+    // r is a private key
+    // to encrypt a message M, compute k * G = (x1, y1)
+    // compute M + k * Q = (x2, y2)
+    // to decrypt, compute (x1, y1) - r * (x2, y2)
+
+    TEllipticCurve<TMod<257>> ec2(3, 19);
+    for (int i = 0; i < 10; i++)
+        assert(ec2.is_on_curve(ec2.random()));
+}
+
+void bignum_pell_equation(){
+    BigInt t = 39352;
+    BigInt m = sqrt(t);
+    std::vector<BigInt> f;
+    f.push_back(m);
+    BigInt a = m, b = 1;
+    while (true){
+        b = (t - a * a) / b;
+        if (b == 1) break;
+        BigInt c = (m + a) / b;
+        a = c * b - a;
+        f.push_back(c);
+    }
+    BigInt p = 0, q = 1;
+    for (int i = f.size() - 1; i >= 0; --i){
+        BigInt t = p;
+        p = q;
+        q = f[i] * q + t;
+    }
+    assert(q * q - t * p * p == 1);
+    assert(q == "2662019309411216232806345449321879270495478346383");
+    assert(p == "13419236180444562206941613278603693768762410762");
+    // ¾ØÕóÉú³É½â [[q, t * p], [p, q]]^n * [1 0]
 }
 
 int main(){
@@ -64,5 +105,6 @@ int main(){
     bignum_eigen();
     bignum_prime();
     bignum_test_ec();
+    bignum_pell_equation();
     return 0;
 }

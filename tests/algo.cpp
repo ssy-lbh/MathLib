@@ -56,7 +56,7 @@ void algo_matacc(){
 void algo_eigen(){
     const default_type eps = 1e-6;
 
-    Matrix<2, 2> A = {{1, 1}, {1, 0}};
+    Matrix<2, 2> A = {{3, 1}, {1, 2}};
     Tensor<2> E;
     Matrix<2, 2> V;
 

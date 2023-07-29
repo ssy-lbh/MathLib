@@ -14,26 +14,28 @@ uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[]
 
     uint64_t phi = p - 1;
 
-    for (uint32_t i = 0; i < cnt; i++) { // Ã¶¾ÙÃ¿¸öÖÊÒò×Ó
+    for (uint32_t i = 0; i < cnt; i++) { // æšä¸¾æ¯ä¸ªè´¨å› å­
         memset(factor, 0, sizeof(factor));
         pow_prime[0] = 1;
         for (uint32_t j = 0; j <= exp[i]; j++){
-            pow_prime[j+1] = pow_prime[j] * pm1_prime[i]; // Ô¤´¦Àí
+            pow_prime[j+1] = pow_prime[j] * pm1_prime[i]; // é¢„å¤„ç†
         }
         uint64_t sum = 1;
         uint64_t rem = 0, mod = pow_prime[exp[i]];
-        for (uint32_t j = 1; j <= exp[i]; j++){ //Çó³öÃ¿¸öÏµÊı
+        for (uint32_t j = 1; j <= exp[i]; j++){ //æ±‚å‡ºæ¯ä¸ªç³»æ•°
             uint64_t a0 = pow(g, phi / pm1_prime[i], p);
             uint64_t b0 = pow(b, phi / pow_prime[j], p);
-            for (uint64_t x = 0; x <= pm1_prime[i] - 1; x++){ // ±éÀúÕÒ³öÏµÊıx
-                if (mul(sum, pow(a0, x, p), p) == b0){
+            uint64_t ap = 1;
+            for (uint64_t x = 0; x <= pm1_prime[i] - 1; x++){ // éå†æ‰¾å‡ºç³»æ•°x
+                if (mul(sum, ap, p) == b0){
                     factor[j] = x;
-                    uint64_t xs = 0; // ÒÑÇó³öµÄÏµÊı°´È¨ÇóºÍ
+                    uint64_t xs = 0; // å·²æ±‚å‡ºçš„ç³»æ•°æŒ‰æƒæ±‚å’Œ
                     for (uint64_t k = 0; k < j; k++)
                         xs = (xs + (pow_prime[k] * factor[k + 1] % phi)) % phi;
                     sum = pow(g, mul(xs, phi / pow_prime[j + 1], phi), p);
                     break;
                 }
+                ap = mul(ap, a0, p);
             }
             rem += pow_prime[j - 1] * factor[j];
         }

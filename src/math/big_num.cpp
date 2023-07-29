@@ -34,8 +34,6 @@ BigInt BigInt::operator-() const { BigInt t = *this; mpz_neg(t.n, t.n); return t
 BigInt BigInt::operator+() const { return *this; }
 BigInt BigInt::operator~() const { BigInt t; mpz_com(t.n, n); return t; }
 
-BigInt norm2(BigInt x) { BigInt t = x; mpz_mul(t.n, x.n, x.n); return t; }
-
 BigInt& operator+=(BigInt& a, const BigInt& b) { mpz_add(a.n, a.n, b.n); return a; }
 BigInt& operator-=(BigInt& a, const BigInt& b) { mpz_sub(a.n, a.n, b.n); return a; }
 BigInt& operator*=(BigInt& a, const BigInt& b) { mpz_mul(a.n, a.n, b.n); return a; }
@@ -144,8 +142,8 @@ BigInt::Random::~Random() { gmp_randclear(state); }
 BigInt BigInt::Random::operator()(const BigInt& n) { BigInt t; mpz_urandomm(t.n, state, n.n); return t; }
 BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, b.n, a.n); mpz_urandomm(t.n, state, t.n); t += a; return t; }
 
-BigInt::Random default_random(0x114514CC);
-BigInt rand(const BigInt& x) { return default_random(x); }
+BigInt::Random default_bigint_random(0x114514CC);
+BigInt rand(const BigInt& x) { return default_bigint_random(x); }
 
 const BigFrac BigFrac::zero(0);
 const BigFrac BigFrac::one(1);
@@ -315,9 +313,9 @@ int BigFloat::sgn() const { return mpfr_sgn(n); }
 BigFloat BigFloat::abs() { BigFloat t; mpfr_abs(t.n, n, MPFR_RNDD); return t; }
 BigFloat BigFloat::pow(unsigned long exp) { BigFloat t; mpfr_pow_ui(t.n, n, exp, MPFR_RNDD); return t; }
 BigFloat BigFloat::sqrt() { BigFloat t; mpfr_sqrt(t.n, n, MPFR_RNDD); return t; }
-BigFloat BigFloat::floor() { BigFloat t; mpfr_floor(t.n, n); return t; }
-BigFloat BigFloat::ceil() { BigFloat t; mpfr_ceil(t.n, n); return t; }
-BigFloat BigFloat::trunc() { BigFloat t; mpfr_trunc(t.n, n); return t; }
+BigInt BigFloat::floor() { BigFloat t; mpfr_floor(t.n, n); return BigInt(t); }
+BigInt BigFloat::ceil() { BigFloat t; mpfr_ceil(t.n, n); return BigInt(t); }
+BigInt BigFloat::trunc() { BigFloat t; mpfr_trunc(t.n, n); return BigInt(t); }
 
 int sgn(const BigFloat& x) { return mpfr_sgn(x.n); }
 BigFloat abs(const BigFloat& x) { BigFloat t; mpfr_abs(t.n, x.n, MPFR_RNDD); return t; }
@@ -325,9 +323,9 @@ BigFloat pow(const BigFloat& x, unsigned long exp) { BigFloat t; mpfr_pow_ui(t.n
 BigFloat pow(const BigFloat& x, const BigFloat& exp) { BigFloat t; mpfr_pow(t.n, x.n, exp.n, MPFR_RNDD); return t; }
 BigFloat sqrt(const BigFloat& x) { BigFloat t; mpfr_sqrt(t.n, x.n, MPFR_RNDD); return t; }
 BigFloat cbrt(const BigFloat& x) { BigFloat t; mpfr_cbrt(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat floor(const BigFloat& x) { BigFloat t; mpfr_floor(t.n, x.n); return t; }
-BigFloat ceil(const BigFloat& x) { BigFloat t; mpfr_ceil(t.n, x.n); return t; }
-BigFloat trunc(const BigFloat& x) { BigFloat t; mpfr_trunc(t.n, x.n); return t; }
+BigInt floor(const BigFloat& x) { BigFloat t; mpfr_floor(t.n, x.n); return BigInt(t); }
+BigInt ceil(const BigFloat& x) { BigFloat t; mpfr_ceil(t.n, x.n); return BigInt(t); }
+BigInt trunc(const BigFloat& x) { BigFloat t; mpfr_trunc(t.n, x.n); return BigInt(t); }
 
 BigFloat exp(const BigFloat& x) { BigFloat t; mpfr_exp(t.n, x.n, MPFR_RNDD); return t; }
 BigFloat exp2(const BigFloat& x) { BigFloat t; mpfr_exp2(t.n, x.n, MPFR_RNDD); return t; }

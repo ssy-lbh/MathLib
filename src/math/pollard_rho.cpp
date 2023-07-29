@@ -8,16 +8,16 @@ uint64_t pollard_rho(uint64_t n){
     if (miller_rabin(n))
         return n;
     while (true){
-        uint64_t c = rand(1, n); // Éú³ÉËæ»úµÄc
+        uint64_t c = rand(1, n); // ç”Ÿæˆéšæœºçš„c
         auto f = [=](uint64_t x) {
             uint64_t y = (uint64_t)mul(x, x, n) + c;
             return (y >= n ? y - n : y);
-        }; // lll±íÊ¾__int128£¬·ÀÒç³ö
+        }; // lllè¡¨ç¤º__int128ï¼Œé˜²æº¢å‡º
         uint64_t t = 0, r = 0, p = 1, q;
         do{
-            for (int i = 0; i < 128; i++){ // Áî¹Ì¶¨¾àÀëC=128
+            for (int i = 0; i < 128; i++){ // ä»¤å›ºå®šè·ç¦»C=128
                 t = f(t), r = f(f(r));
-                if (t == r || (q = mul(p, abs((int64_t)t - (int64_t)r), n)) == 0) // Èç¹û·¢ÏÖ»·£¬»òÕß»ý¼´½«Îª0£¬ÍË³ö
+                if (t == r || (q = mul(p, abs((int64_t)t - (int64_t)r), n)) == 0) // å¦‚æžœå‘çŽ°çŽ¯ï¼Œæˆ–è€…ç§¯å³å°†ä¸º0ï¼Œé€€å‡º
                     break;
                 p = q;
             }
@@ -34,16 +34,16 @@ uint32_t pollard_rho(uint32_t n){
     if (miller_rabin(n))
         return n;
     while (true){
-        uint32_t c = rand(1, n); // Éú³ÉËæ»úµÄc
+        uint32_t c = rand(1, n); // ç”Ÿæˆéšæœºçš„c
         auto f = [=](uint32_t x) {
             uint32_t y = (uint64_t)x * x % n + c;
             return (y >= n ? y - n : y);
         };
         uint32_t t = 0, r = 0, p = 1, q;
         do{
-            for (int i = 0; i < 16; i++){ // Áî¹Ì¶¨¾àÀëC=16
+            for (int i = 0; i < 16; i++){ // ä»¤å›ºå®šè·ç¦»C=16
                 t = f(t), r = f(f(r));
-                if (t == r || (q = (uint64_t)p * (uint32_t)abs((int32_t)t - (int32_t)r) % n) == 0) // Èç¹û·¢ÏÖ»·£¬»òÕß»ý¼´½«Îª0£¬ÍË³ö
+                if (t == r || (q = (uint64_t)p * (uint32_t)abs((int32_t)t - (int32_t)r) % n) == 0) // å¦‚æžœå‘çŽ°çŽ¯ï¼Œæˆ–è€…ç§¯å³å°†ä¸º0ï¼Œé€€å‡º
                     break;
                 p = q;
             }
