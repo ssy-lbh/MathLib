@@ -6,7 +6,7 @@
 #include <initializer_list>
 #include <functional>
 
-// ÕÅÁ¿Ä£°å, Î¬¶È: ..., ĞĞ, ÁĞ
+// å¼ é‡æ¨¡æ¿, ç»´åº¦: ..., è¡Œ, åˆ—
 template <typename T, int... L>
 class TTensor;
 
@@ -88,7 +88,7 @@ template <typename T, int... L> constexpr bool is_alternative(TTensor<T, L...>) 
 template <typename T, int... L> constexpr bool is_unital(TTensor<T, L...>) { return sizeof...(L) == 2 && tensor_dim_equal_v<TTensor<T, L...>> && is_unital(T()); }
 template <typename T, int... L> constexpr bool is_dividable(TTensor<T, L...>) { return sizeof...(L) <= 2 && is_dividable(T()); }
 
-// tensor, ÕÅÁ¿
+// tensor, å¼ é‡
 template <typename T> constexpr TTensor<T> operator+(const TTensor<T>& x, const TTensor<T>& y) {
     return TTensor<T>(x.n + y.n);
 }
@@ -133,8 +133,8 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> operator*
     return t;
 }
 
-// ÕÅÁ¿³Ë·¨
-//TODO Éè¼ÆÖ¸±êÂÖ×ªµÄ×ªÖÃ¹¦ÄÜ£¬ÓÃÄ£°å²ÎÊıÁĞ±íÊµÏÖ
+// å¼ é‡ä¹˜æ³•
+//TODO è®¾è®¡æŒ‡æ ‡è½®è½¬çš„è½¬ç½®åŠŸèƒ½ï¼Œç”¨æ¨¡æ¿å‚æ•°åˆ—è¡¨å®ç°
 template <typename T, int... L> TTensor<T, L...> operator*(const TTensor<T>& x, const TTensor<T, L...>& y){
     return T(x) * y;
 }
@@ -356,7 +356,7 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> hadamard(
     return t;
 }
 
-// Ö±»ı
+// ç›´ç§¯
 template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> direct(const T& x, const TTensor<T, CL, L...>& y) {
     return x * y;
 }
@@ -372,7 +372,7 @@ template <typename T, int CL, int... L, int... L2> constexpr TTensor<T, CL, L...
     return t;
 }
 
-// Ğ¨»ı/Íâ»ı/²æ»ı
+// æ¥”ç§¯/å¤–ç§¯/å‰ç§¯
 template <typename T, int... L1, int... L2> constexpr auto wedge(const TTensor<T, L1...>& x, const TTensor<T, L2...>& y) {
     return direct(x, y) - direct(y, x);
 }
