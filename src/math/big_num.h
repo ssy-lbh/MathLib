@@ -199,6 +199,15 @@ BigInt rand(const BigInt& a, const BigInt& b);
 BigInt randbits(unsigned long bits);
 uint64_t size(const BigInt& x);
 uint64_t sizeinbase(const BigInt& x, int base);
+BigInt fdivq(const BigInt& n, const BigInt& d);
+BigInt fdivr(const BigInt& n, const BigInt& d);
+void fdivqr(const BigInt& n, const BigInt& d, BigInt& q, BigInt& r);
+BigInt cdivq(const BigInt& n, const BigInt& d);
+BigInt cdivr(const BigInt& n, const BigInt& d);
+void cdivqr(const BigInt& n, const BigInt& d, BigInt& q, BigInt& r);
+BigInt tdivq(const BigInt& n, const BigInt& d);
+BigInt tdivr(const BigInt& n, const BigInt& d);
+void tdivqr(const BigInt& n, const BigInt& d, BigInt& q, BigInt& r);
 
 extern BigInt::Random default_bigint_random;
 
@@ -508,5 +517,7 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len);
 
 BigInt cpow(BigInt x, BigInt w2, BigInt n, BigInt mod);
 BigInt cipolla(BigInt x, BigInt mod);
+
+BigInt ecm_factorize(BigInt n);
 
 #endif

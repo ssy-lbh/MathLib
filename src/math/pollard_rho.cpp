@@ -1,5 +1,6 @@
 #include "number_theory.h"
 #include "big_num.h"
+#include "ecm_factorize.h"
 
 #include <queue>
 
@@ -120,6 +121,8 @@ BigInt pollard_rho(BigInt n){
     }
 }
 
+const BigInt POLLARD_RHO_MAX = "100000000000000000000";
+
 uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
     if (n <= 1)
         return 0;
@@ -139,7 +142,14 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
                 if (x <= 1)
                     goto next;
             }
-        d = pollard_rho(x);
+        if (x > POLLARD_RHO_MAX){
+            d = ecm_factorize(x);
+            if (d == -1){
+                d = pollard_rho(x);
+            }
+        } else {
+            d = pollard_rho(x);
+        }
         if (d == x){
             for (uint64_t i = 0; i < cnt; i++)
                 if (prime[i] == x){

@@ -16,7 +16,7 @@ struct complex_unfold { using type = T; };
 template <int L, typename T>
 struct complex_unfold<L, TComplex<T>> { using type = typename std::conditional<(L > 0), typename complex_unfold<L - 1, T>::type, TComplex<T>>::type; };
 
-// ¸´ÊıÒÔ¼°³¬¸´ÊıÉú³ÉÄ£°å
+// å¤æ•°ä»¥åŠè¶…å¤æ•°ç”Ÿæˆæ¨¡æ¿
 template <typename T>
 class TComplex {
 public:
@@ -41,7 +41,7 @@ struct nth_complex<T, 0> { using type = T; };
 template <typename T, int N>
 using nth_complex_t = typename nth_complex<T, N>::type;
 
-// Ê¹ÓÃÇ°ĞèÒªstatic_assertÅĞ¶ÏNÊÇ·ñÎª2µÄÃİ
+// ä½¿ç”¨å‰éœ€è¦static_assertåˆ¤æ–­Næ˜¯å¦ä¸º2çš„å¹‚
 template <typename T, int N>
 struct lg2_nth_complex { using type = TComplex<typename lg2_nth_complex<T, (N >> 1)>::type>; };
 template <typename T>
@@ -90,12 +90,12 @@ template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level
     operator-(const T1& x, const TComplex<T2>& y) { return TComplex<decltype(T1() - T2())>(x - y.w, -y.i); }
 template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level<T1, T2>::value != 1, TComplex<decltype(T1() - T2())>>
     operator-(const TComplex<T1>& x, const T2& y) { return TComplex<decltype(T1() - T2())>(x.w - y, x.i); }
-// ¿­À³-µÏ¿ËËÉ¹¹Ôì
-// ÆäÖĞÌåÏÖµÄÌØĞÔÓĞ
-// 1. Èô×Ô¼ºµÄ¹²éîÓë×Ô¼º²»ÏàµÈ£¬Ôò¸ßÒ»¼¶ÎŞ½»»»ÂÉ
-// 2. ÈôÎŞ½»»»ÂÉ£¬Ôò¸ßÒ»¼¶ÎŞ½áºÏÂÉ
-// 3. ÈôÎŞ½áºÏÂÉ£¬Ôò¸ßÒ»¼¶ÎŞ½»´íÂÉ
-// 4. ÈôÎŞ½»´íÂÉ£¬¼ÌĞø¶ªµôÊ²Ã´ĞÔÖÊ½¨Òé×Ô¼ºÑĞ¾¿
+// å‡¯è±-è¿ªå…‹æ¾æ„é€ 
+// å…¶ä¸­ä½“ç°çš„ç‰¹æ€§æœ‰
+// 1. è‹¥è‡ªå·±çš„å…±è½­ä¸è‡ªå·±ä¸ç›¸ç­‰ï¼Œåˆ™é«˜ä¸€çº§æ— äº¤æ¢å¾‹
+// 2. è‹¥æ— äº¤æ¢å¾‹ï¼Œåˆ™é«˜ä¸€çº§æ— ç»“åˆå¾‹
+// 3. è‹¥æ— ç»“åˆå¾‹ï¼Œåˆ™é«˜ä¸€çº§æ— äº¤é”™å¾‹
+// 4. è‹¥æ— äº¤é”™å¾‹ï¼Œç»§ç»­ä¸¢æ‰ä»€ä¹ˆæ€§è´¨å»ºè®®è‡ªå·±ç ”ç©¶
 template <typename T> constexpr TComplex<T> operator*(const TComplex<T>& x, const TComplex<T>& y) { return TComplex<T>(x.w * y.w - conj(y.i) * x.i, y.i * x.w + x.i * conj(y.w)); }
 template <typename T1, typename T2> constexpr std::enable_if_t<complex_cmp_level<T1, T2>::value != 2, TComplex<decltype(T1() * T2())>>
     operator*(const T1& x, const TComplex<T2>& y) { return TComplex<decltype(T1() * T2())>(x * y.w, x * y.i); }
@@ -115,9 +115,9 @@ template <typename T> constexpr TComplex<T> operator-(const TComplex<T>& x) { re
 template <typename T> constexpr bool operator==(const TComplex<T>& x, const TComplex<T>& y) { return x.w == y.w && x.i == y.i; }
 template <typename T> constexpr bool operator!=(const TComplex<T>& x, const TComplex<T>& y) { return !(x == y); }
 
-// Çë×¢Òâ
-// 1. ÒÔÏÂÔËËã·ûµÄÓÅÏÈ¼¶½ÏµÍ, ÇëÊ¹ÓÃÀ¨ºÅ
-// 2. °ËÔªÊı¼°ÒÔÉÏ²»Âú×ã½áºÏÂÉ, Ê®ÁùÔªÊı¼°ÒÔÉÏ²»Âú×ã½»´íÂÊ
+// è¯·æ³¨æ„
+// 1. ä»¥ä¸‹è¿ç®—ç¬¦çš„ä¼˜å…ˆçº§è¾ƒä½, è¯·ä½¿ç”¨æ‹¬å·
+// 2. å…«å…ƒæ•°åŠä»¥ä¸Šä¸æ»¡è¶³ç»“åˆå¾‹, åå…­å…ƒæ•°åŠä»¥ä¸Šä¸æ»¡è¶³äº¤é”™ç‡
 template <typename T> constexpr TComplex<T> operator^(const TComplex<T>& x, int y){ return pow(x, y); }
 
 template <typename T> constexpr TComplex<T> ident(TComplex<T>) { return TComplex<T>(ident(T()), zero(T())); }
@@ -152,7 +152,7 @@ template <typename T>
 using TSedenion = TComplex<TOctonion<T>>;
 template <typename T>
 using TDeducilion = TComplex<TSedenion<T>>;
-// ÏëÒª¸ü¶à³¬¸´ÊıÔÙ¼Ó
+// æƒ³è¦æ›´å¤šè¶…å¤æ•°å†åŠ 
 
 constexpr Complex operator ""_i(long double x) { return Complex(0.0, (default_type)x); }
 constexpr Quaternion operator ""_j(long double x) { return Quaternion({0.0, 0.0}, {(default_type)x, 0.0}); }
@@ -173,8 +173,8 @@ template <typename T> constexpr TComplex<T> pow(const TComplex<T>& x, int y){
     return m;
 }
 
-// ÒÔÏÂÎª³£ÓÃº¯Êı, Ä¿Ç°½ö¶Ô¸´ÊıÓĞÓÃ, ³¬¸´ÊıµÄ»°ĞèÒªÒÔºóÊµÏÖ
-// Ê®ÁùÔªÊı¼°ÒÔÏÂ·ûºÏÃİ½áºÏĞÔ(power associativity)£¬¿ÉÒÔÊ¹ÓÃ¶àÏîÊ½
+// ä»¥ä¸‹ä¸ºå¸¸ç”¨å‡½æ•°, ç›®å‰ä»…å¯¹å¤æ•°æœ‰ç”¨, è¶…å¤æ•°çš„è¯éœ€è¦ä»¥åå®ç°
+// åå…­å…ƒæ•°åŠä»¥ä¸‹ç¬¦åˆå¹‚ç»“åˆæ€§(power associativity)ï¼Œå¯ä»¥ä½¿ç”¨å¤šé¡¹å¼
 template <typename T> constexpr TComplex<T> exp(const TComplex<T>& x) {
     constexpr int nth = is_nth_complex_v<T>;
     if (nth > 0){
@@ -213,7 +213,7 @@ template <typename T> constexpr TComplex<T> asin(const TComplex<T>& x) {
     return TComplex<T>(zero(T()), -ident(T())) * log(TComplex<T>(-x.i, x.w) + sqrt(TComplex<T>(ident(T())) - x * x));
 }
 
-//TODO ÒÔÏÂCopilot²¹È«µÄ´úÂë
+//TODO ä»¥ä¸‹Copilotè¡¥å…¨çš„ä»£ç 
 template <typename T> constexpr TComplex<T> acos(const TComplex<T>& x) {
     return TComplex<T>(zero(T()), -ident(T())) * log(x + sqrt(TComplex<T>(ident(T())) - x * x) * TComplex<T>(zero(T()), ident(T())));
 }

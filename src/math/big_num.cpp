@@ -1,5 +1,7 @@
 #include "big_num.h"
 
+#include <random>
+
 const BigInt BigInt::zero(0);
 const BigInt BigInt::one(1);
 
@@ -11,8 +13,8 @@ BigInt::BigInt(const int& x) { mpz_init_set_si(n, x); }
 BigInt::BigInt(const unsigned int& x) { mpz_init_set_ui(n, x); }
 BigInt::BigInt(const long& x) { mpz_init_set_si(n, x); }
 BigInt::BigInt(const unsigned long& x) { mpz_init_set_ui(n, x); }
-BigInt::BigInt(const long long& x) { mpz_init_set_si(n, x); }
-BigInt::BigInt(const unsigned long long& x) { mpz_init_set_ui(n, x); }
+BigInt::BigInt(const long long& x) { mpz_init(n); mpz_import(n, 1, -1, sizeof(long long), 0, 0, &x); }
+BigInt::BigInt(const unsigned long long& x) { mpz_init(n); mpz_import(n, 1, -1, sizeof(unsigned long long), 0, 0, &x); }
 BigInt::BigInt(const BigFrac& x) { mpz_init(n); mpz_set_q(n, x.n); }
 BigInt::BigInt(const BigFloat& x) { mpz_init(n); mpz_set_f(n, x.n); }
 BigInt::~BigInt() { mpz_clear(n); }
@@ -22,8 +24,8 @@ BigInt& BigInt::operator=(const int& x) { mpz_set_si(n, x); return *this; }
 BigInt& BigInt::operator=(const unsigned int& x) { mpz_set_ui(n, x); return *this; }
 BigInt& BigInt::operator=(const long& x) { mpz_set_si(n, x); return *this; }
 BigInt& BigInt::operator=(const unsigned long& x) { mpz_set_ui(n, x); return *this; }
-BigInt& BigInt::operator=(const long long& x) { mpz_set_si(n, x); return *this; }
-BigInt& BigInt::operator=(const unsigned long long& x) { mpz_set_ui(n, x); return *this; }
+BigInt& BigInt::operator=(const long long& x) { mpz_import(n, 1, -1, sizeof(long long), 0, 0, &x); return *this; }
+BigInt& BigInt::operator=(const unsigned long long& x) { mpz_import(n, 1, -1, sizeof(unsigned long long), 0, 0, &x); return *this; }
 BigInt& BigInt::operator=(const BigFrac& x) { mpz_set_q(n, x.n); return *this; }
 BigInt& BigInt::operator=(const BigFloat& x) { mpz_set_f(n, x.n); return *this; }
 BigInt& BigInt::operator++() { mpz_add_ui(n, n, 1); return *this; }
@@ -52,8 +54,8 @@ BigInt operator^(const BigInt& a, const BigInt& b) { BigInt t; mpz_xor(t.n, a.n,
 BigInt operator+(const BigInt& a, const BigInt& b) { BigInt t; mpz_add(t.n, a.n, b.n); return t; }
 BigInt operator-(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, a.n, b.n); return t; }
 BigInt operator*(const BigInt& a, const BigInt& b) { BigInt t; mpz_mul(t.n, a.n, b.n); return t; }
-BigInt operator/(const BigInt& a, const BigInt& b) { BigInt t; mpz_tdiv_q(t.n, a.n, b.n); return t; }
-BigInt operator%(const BigInt& a, const BigInt& b) { BigInt t; mpz_tdiv_r(t.n, a.n, b.n); return t; }
+BigInt operator/(const BigInt& a, const BigInt& b) { BigInt t; mpz_fdiv_q(t.n, a.n, b.n); return t; }
+BigInt operator%(const BigInt& a, const BigInt& b) { BigInt t; mpz_fdiv_r(t.n, a.n, b.n); return t; }
 bool operator<(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) < 0; }
 bool operator>(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) > 0; }
 bool operator<=(const BigInt& a, const BigInt& b) { return mpz_cmp(a.n, b.n) <= 0; }
@@ -72,8 +74,8 @@ BigInt::operator int() const { return mpz_get_si(n); }
 BigInt::operator unsigned int() const { return mpz_get_ui(n); }
 BigInt::operator long() const { return mpz_get_si(n); }
 BigInt::operator unsigned long() const { return mpz_get_ui(n); }
-BigInt::operator long long() const { return mpz_get_si(n); }
-BigInt::operator unsigned long long() const { return mpz_get_ui(n); }
+BigInt::operator long long() const { long long x; mpz_export(&x, nullptr, -1, sizeof(long long), 0, 0, n); return x; }
+BigInt::operator unsigned long long() const { unsigned long long x; mpz_export(&x, nullptr, -1, sizeof(unsigned long long), 0, 0, n); return x; }
 
 void BigInt::print() const { mpz_out_str(stdout, 10, n); }
 void BigInt::print(int radix) const { mpz_out_str(stdout, radix, n); }
@@ -142,8 +144,17 @@ int kronecker(const BigInt& x, const BigInt& p) { return mpz_kronecker(x.n, p.n)
 BigInt nextprime(const BigInt& x) { BigInt t; mpz_nextprime(t.n, x.n); return t; }
 uint64_t size(const BigInt& x) { return mpz_size(x.n); }
 uint64_t sizeinbase(const BigInt& x, int base) { return mpz_sizeinbase(x.n, base); }
+BigInt fdivq(const BigInt& n, const BigInt& d) { BigInt t; mpz_fdiv_q(t.n, n.n, d.n); return t; }
+BigInt fdivr(const BigInt& n, const BigInt& d) { BigInt t; mpz_fdiv_r(t.n, n.n, d.n); return t; }
+void fdivqr(const BigInt& n, const BigInt& d, BigInt& q, BigInt& r) { mpz_fdiv_qr(q.n, r.n, n.n, d.n); }
+BigInt cdivq(const BigInt& n, const BigInt& d) { BigInt t; mpz_cdiv_q(t.n, n.n, d.n); return t; }
+BigInt cdivr(const BigInt& n, const BigInt& d) { BigInt t; mpz_cdiv_r(t.n, n.n, d.n); return t; }
+void cdivqr(const BigInt& n, const BigInt& d, BigInt& q, BigInt& r) { mpz_cdiv_qr(q.n, r.n, n.n, d.n); }
+BigInt tdivq(const BigInt& n, const BigInt& d) { BigInt t; mpz_tdiv_q(t.n, n.n, d.n); return t; }
+BigInt tdivr(const BigInt& n, const BigInt& d) { BigInt t; mpz_tdiv_r(t.n, n.n, d.n); return t; }
+void tdivqr(const BigInt& n, const BigInt& d, BigInt& q, BigInt& r) { mpz_tdiv_qr(q.n, r.n, n.n, d.n); }
 
-BigInt::Random::Random() { gmp_randinit_default(state); }
+BigInt::Random::Random() { gmp_randinit_default(state); gmp_randseed_ui(state, std::random_device{}()); }
 BigInt::Random::Random(const Random& r) { gmp_randinit_set(state, r.state); }
 BigInt::Random::Random(unsigned long seed) { gmp_randinit_default(state); gmp_randseed_ui(state, seed); }
 BigInt::Random::~Random() { gmp_randclear(state); }
@@ -151,7 +162,8 @@ BigInt::Random::~Random() { gmp_randclear(state); }
 BigInt BigInt::Random::operator()(const BigInt& n) { BigInt t; mpz_urandomm(t.n, state, n.n); return t; }
 BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, b.n, a.n); mpz_urandomm(t.n, state, t.n); t += a; return t; }
 
-BigInt::Random default_bigint_random(0x114514CC);
+//BigInt::Random default_bigint_random(0x114514CC);
+BigInt::Random default_bigint_random;
 BigInt randmod(const BigInt& x) { return default_bigint_random(x); }
 BigInt rand(const BigInt& a, const BigInt& b) { return default_bigint_random(a, b); }
 BigInt randbits(unsigned long bits) { BigInt t; mpz_urandomb(t.n, default_bigint_random.state, bits); return t; }

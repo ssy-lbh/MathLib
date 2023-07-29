@@ -96,21 +96,13 @@ constexpr uint64_t inv(uint64_t x, uint64_t mod){
 void inv(uint32_t vals[], uint32_t n, uint32_t mod);
 void inv(uint64_t vals[], uint64_t n, uint64_t mod);
 
-inline uint64_t randmod(uint64_t mod){
-    return (((uint64_t)rand() << 60) | ((uint64_t)rand() << 45) | ((uint64_t)rand() << 30) | (rand() << 15) | rand()) % mod;
-}
+uint64_t randmod(uint64_t mod);
+uint64_t rand(uint64_t l, uint64_t h);
+uint32_t randmod(uint32_t mod);
+uint32_t rand(uint32_t l, uint32_t h);
 
-inline uint64_t rand(uint64_t l, uint64_t h){
-    return l + randmod(h - l);
-}
-
-inline uint32_t randmod(uint32_t mod){
-    return (((uint32_t)rand() << 30) | (rand() << 15) | rand()) % mod;
-}
-
-inline uint32_t rand(uint32_t l, uint32_t h){
-    return l + randmod(h - l);
-}
+void init_random();
+void init_random(uint64_t seed);
 
 inline uint64_t sqrt_ceil(uint64_t x){
     uint64_t r = (uint64_t)sqrtl((long double)x);
@@ -274,7 +266,7 @@ template <int N> constexpr NMod<N> sqrt(const NMod<N>& x) {
 template <int N> void print(const NMod<N>& x, int) { printf("%d", x.n); }
 template <int N> void print(const NMod<N>& x) { printf("%d\n", x.n); }
 
-template <int N> NMod<N> randmod(NMod<N>) { return NMod<N>(randmod((uint32_t)N)); }
+template <int N> NMod<N> rand(NMod<N>) { return NMod<N>(randmod((uint32_t)N)); }
 
 template <int N> int legendre(NMod<N> x){
     return x == 0 ? 0 : pow(x.n, (N - 1) / 2, N) == 1 ? 1 : -1;
