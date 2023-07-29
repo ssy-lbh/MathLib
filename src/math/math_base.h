@@ -7,14 +7,14 @@
 #include <cassert>
 #include <type_traits>
 
-//! ×¢ÒâÊÂÏî
-//! 1. ±¾¿â¼ÇµÃ¿ªÓÅ»¯, O1Ò²ĞĞ, Ö÷ÒªÊÇÓÅ»¯constexpr
-//! 2. ÎŞ½»»»ÂÉµÄ¼ÆËãË³ĞòÓëÊıÑ§Ò»ÖÂ
-//! 3. ³ı·¨¶¨Òå: x / y => inv(y) * x, ³ËµÈÓÚ¶¨Òå: x *= y => x = y * x
-//! 4. ÒªÇóĞÔÄÜÊ±°ÑassertÌæ»»µô£¬debugÊ±±£Áô
+//! æ³¨æ„äº‹é¡¹
+//! 1. æœ¬åº“è®°å¾—å¼€ä¼˜åŒ–, O1ä¹Ÿè¡Œ, ä¸»è¦æ˜¯ä¼˜åŒ–constexpr
+//! 2. æ— äº¤æ¢å¾‹çš„è®¡ç®—é¡ºåºä¸æ•°å­¦ä¸€è‡´
+//! 3. é™¤æ³•å®šä¹‰: x / y => inv(y) * x, ä¹˜ç­‰äºå®šä¹‰: x *= y => x = y * x
+//! 4. è¦æ±‚æ€§èƒ½æ—¶æŠŠassertæ›¿æ¢æ‰ï¼Œdebugæ—¶ä¿ç•™
 
-//! ÊıÓò²Ù×÷¶¨Òå
-// ±ê×¼ÊıÓò¶¨ÒåÒªÇó£¬ÆäËû¿ÉÒÔÀ©Õ¹
+//! æ•°åŸŸæ“ä½œå®šä¹‰
+// æ ‡å‡†æ•°åŸŸå®šä¹‰è¦æ±‚ï¼Œå…¶ä»–å¯ä»¥æ‰©å±•
 
 // operator + - * / += -= *= /= =
 // T operator+(const T&, const T&);
@@ -30,30 +30,30 @@
 
 // is_commutative, is_associative, is_alternative
 
-// çÛÔªºÍÁãÔª(1, 0)(identity, zero)
-// ²ÎÊı½öÓÃÓÚÖØÔØ, ÎªÁË¸ß¿ÉÀ©Õ¹ĞÔ
+// å¹ºå…ƒå’Œé›¶å…ƒ(1, 0)(identity, zero)
+// å‚æ•°ä»…ç”¨äºé‡è½½, ä¸ºäº†é«˜å¯æ‰©å±•æ€§
 // T ident(T);
 // T zero(T);
 
-// (¿ÉÑ¡)T gen(T); // ÈºÉú³ÉÔª
-// (¿ÉÑ¡)T gen(T, int n); // n½×ÈºÉú³ÉÔª
+// (å¯é€‰)T gen(T); // ç¾¤ç”Ÿæˆå…ƒ
+// (å¯é€‰)T gen(T, int n); // né˜¶ç¾¤ç”Ÿæˆå…ƒ
 
-// Çó¹²éî
+// æ±‚å…±è½­
 // T conj(const T&);
 
-// ÇóÄæÔªinv(ĞÔÄÜ¿¼ÂÇ,×¨ÃÅµÄ¹¦ÄÜ)
+// æ±‚é€†å…ƒinv(æ€§èƒ½è€ƒè™‘,ä¸“é—¨çš„åŠŸèƒ½)
 // T inv(const T&);
 
-// Çó·¶Êınorm, norm2, ¾ØÕó¶¨Òå·¶ÊıÎªĞĞÁĞÊ½
+// æ±‚èŒƒæ•°norm, norm2, çŸ©é˜µå®šä¹‰èŒƒæ•°ä¸ºè¡Œåˆ—å¼
 // T norm(const T&);
 // auto norm(const C<T>&) -> decltype(norm(T()));
 // T norm2(const T&);
 // auto norm2(const C<T>&) -> decltype(norm2(T()));
 
-// int line(T); // ·µ»Ø´òÓ¡µÄĞĞÊı, ÓÃÀ´¿ØÖÆ´òÓ¡¸ñÊ½
-// void print(const T&, int); // ´òÓ¡, ÓÃÀ´¿ØÖÆ´òÓ¡¸ñÊ½
+// int line(T); // è¿”å›æ‰“å°çš„è¡Œæ•°, ç”¨æ¥æ§åˆ¶æ‰“å°æ ¼å¼
+// void print(const T&, int); // æ‰“å°, ç”¨æ¥æ§åˆ¶æ‰“å°æ ¼å¼
 
-//! »ù±¾³£Á¿Óë¹¦ÄÜ
+//! åŸºæœ¬å¸¸é‡ä¸åŠŸèƒ½
 
 using default_type = float;
 
@@ -75,25 +75,25 @@ struct last_int { static constexpr int value = last_int<L...>::value; };
 template <int L>
 struct last_int<L> { static constexpr int value = L; };
 
-//! ÊıÓò¶¨Òå, ±ØĞëÁôÄ¬ÈÏ¹¹ÔìÆ÷
-// ÆäËûÎÄ¼ş´Ë´¦¶¨ÒåĞÂÀàĞÍ
+//! æ•°åŸŸå®šä¹‰, å¿…é¡»ç•™é»˜è®¤æ„é€ å™¨
+// å…¶ä»–æ–‡ä»¶æ­¤å¤„å®šä¹‰æ–°ç±»å‹
 
-//TODO ²ÎÕÕ»·ÂÛĞ´ĞÔÖÊÅĞ¶Ï
+//TODO å‚ç…§ç¯è®ºå†™æ€§è´¨åˆ¤æ–­
 
-// ³Ë·¨ĞÔÖÊ: ¹²éîÏàµÈ£¬½»»»ÂÉ£¬½áºÏÂÉ£¬½»´íÂÉ£¬ÃİµÈÂÉ
+// ä¹˜æ³•æ€§è´¨: å…±è½­ç›¸ç­‰ï¼Œäº¤æ¢å¾‹ï¼Œç»“åˆå¾‹ï¼Œäº¤é”™å¾‹ï¼Œå¹‚ç­‰å¾‹
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, bool> is_conjugate_identical(T) { return true; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, bool> is_commutative(T) { return true; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, bool> is_associative(T) { return true; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, bool> is_alternative(T) { return true; }
 
-// º¬çÛÔª£¬¿É³ı´úÊı
+// å«å¹ºå…ƒï¼Œå¯é™¤ä»£æ•°
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, bool> is_unital(T) { return true; }
 template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, bool> is_dividable(T) { return true; }
 template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, bool> is_dividable(T) { return false; }
 
-//! ÊıÓò²Ù×÷ÊµÏÖÈçÏÂ
+//! æ•°åŸŸæ“ä½œå®ç°å¦‚ä¸‹
 
-// real(float), ÊµÊı, ÒÔ¼°ÕûÊı
+// real(float), å®æ•°, ä»¥åŠæ•´æ•°
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> ident(T) { return 1; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> zero(T) { return 0; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> conj(T x) { return x; }
@@ -103,7 +103,7 @@ template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T>
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> norm2(T x) { return x * x; }
 template <typename T> constexpr std::enable_if_t<std::is_scalar_v<T>, int> line(T) { return 1; }
 
-// ×ÖÃæÁ¿0±»ÖØÔØÊÇÓĞ¿ÉÄÜµÄ, ½¨Òéµ÷ÓÃÇ°ÓÃ¹¹ÔìÆ÷×ª»»
+// å­—é¢é‡0è¢«é‡è½½æ˜¯æœ‰å¯èƒ½çš„, å»ºè®®è°ƒç”¨å‰ç”¨æ„é€ å™¨è½¬æ¢
 inline void print(void* x, int) { printf("%p", x); }
 
 inline void print(char x, int) { printf("%c", x); }
@@ -112,6 +112,7 @@ inline void print(wchar_t x, int) { printf("%C", x); }
 inline void print(const char* x, int) { printf("%s", x); }
 inline void print(const wchar_t* x, int) { printf("%S", x); }
 
+inline void print(bool x, int) { printf("%s", x ? "true" : "false"); }
 inline void print(signed char x, int) { printf("%hhd", x); }
 inline void print(unsigned char x, int) { printf("%hhu", x); }
 inline void print(short x, int) { printf("%hd", x); }

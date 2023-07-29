@@ -8,9 +8,9 @@
 #include "math/complex.h"
 
 void algo_fftmul(){
-    TTensor<TMod<998244353>, 8> a = {5, 6, 1, 9, 0, 0, 0, 0};
-    TTensor<TMod<998244353>, 8> b = {7, 6, 3, 0, 0, 0, 0, 0};
-    TTensor<TMod<998244353>, 8> c = {5, 5, 5, 3, 6, 3, 3, 0};
+    TTensor<NMod<998244353>, 8> a = {5, 6, 1, 9, 0, 0, 0, 0};
+    TTensor<NMod<998244353>, 8> b = {7, 6, 3, 0, 0, 0, 0, 0};
+    TTensor<NMod<998244353>, 8> c = {5, 5, 5, 3, 6, 3, 3, 0};
     fft(a); fft(b);
     for (int i = 0; i < 8; i++)
         a[i] *= b[i];
@@ -31,15 +31,15 @@ void algo_matacc(){
     // 2 => 2
     // ...
     auto calc_fab = [](int n){
-        TMod<998244353> a = 1, b = 1;
+        NMod<998244353> a = 1, b = 1;
         for (int i = 2; i <= n; i++){
-            TMod<998244353> c = a + b;
+            NMod<998244353> c = a + b;
             a = b;
             b = c;
         }
         return b;
     };
-    TMatrix<TMod<998244353>, 2, 2> A = {{1, 1}, {1, 0}};
+    TMatrix<NMod<998244353>, 2, 2> A = {{1, 1}, {1, 0}};
     for (int i = 0; i < 20; i++){
         int n = rand(1000u);
         auto B = pow(A, n);

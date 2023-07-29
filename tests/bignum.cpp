@@ -69,7 +69,7 @@ void bignum_test_ec(){
     // compute M + k * Q = (x2, y2)
     // to decrypt, compute (x1, y1) - r * (x2, y2)
 
-    TEllipticCurve<TMod<257>> ec2(3, 19);
+    TEllipticCurve<NMod<257>> ec2(3, 19);
     for (int i = 0; i < 10; i++)
         assert(ec2.is_on_curve(ec2.random()));
 }
@@ -96,7 +96,7 @@ void bignum_pell_equation(){
     assert(q * q - t * p * p == 1);
     assert(q == "2662019309411216232806345449321879270495478346383");
     assert(p == "13419236180444562206941613278603693768762410762");
-    // ¾ØÕóÉú³É½â [[q, t * p], [p, q]]^n * [1 0]
+    // all solutions [[q, t * p], [p, q]]^n * [1 0]
 }
 
 int main(){
