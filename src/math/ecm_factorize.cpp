@@ -61,12 +61,6 @@ static Point2<BigInt> scalar_multiply(BigInt k, Point2<BigInt> p, BigInt n, BigI
     return q;
 }
 
-static uint64_t pi_limit(uint64_t x){
-    double log_x = log(x);
-    double log_log_x = log(log_x);
-    return (uint64_t)(x / log_x * (1 + 1.2762 / log_x + 1.2762 * log_log_x / log_x / log_x));
-}
-
 const uint64_t MAX_CURVES_ECM = 10000;
 const uint64_t MAX_RND_ECM = 0x8000000000000000ULL;
 

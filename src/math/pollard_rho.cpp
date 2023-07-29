@@ -1,6 +1,7 @@
 #include "number_theory.h"
 #include "big_num.h"
 #include "ecm_factorize.h"
+#include "sieves.h"
 
 #include <queue>
 
@@ -121,12 +122,12 @@ BigInt pollard_rho(BigInt n){
     }
 }
 
+const uint64_t PRECOMPUTE_LIMIT = 100000000ULL;
 const BigInt POLLARD_RHO_MAX = "100000000000000000000";
 
-uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
+uint64_t factorize_hard(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint64_t cnt){
     if (n <= 1)
         return 0;
-    uint64_t cnt = 0;
     std::queue<BigInt> q;
     q.push(n);
     while (!q.empty()){
@@ -135,13 +136,6 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
         if (x <= 1)
             continue;
         BigInt d;
-        for (uint64_t i = 0; i < cnt; i++)
-            while (x % prime[i] == 0){
-                exp[i]++;
-                x /= prime[i];
-                if (x <= 1)
-                    goto next;
-            }
         if (x > POLLARD_RHO_MAX){
             d = ecm_factorize(x);
             if (d == -1){
@@ -167,4 +161,40 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
         next:;
     }
     return cnt;
+}
+
+uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint64_t filter){
+    uint64_t cnt = 0;
+
+    if (filter) {
+        uint64_t lim = pi_limit(filter);
+        uint64_t* primes = new uint64_t[lim];
+        bool* tag = new bool[filter];
+        uint64_t num_primes = egypt_sieve(filter, tag, primes);
+        delete[] tag;
+        assert(num_primes <= lim);
+
+        for (uint64_t i = 0; i < num_primes; i++){
+            if (n % primes[i] == 0){
+                prime[cnt] = primes[i];
+                exp[cnt] = 0;
+                while (n % primes[i] == 0){
+                    exp[cnt]++;
+                    n /= primes[i];
+                }
+                cnt++;
+                if (cnt == len)
+                    return cnt;
+            }
+        }
+        delete[] primes;
+    }
+
+    return factorize_hard(n, prime, exp, len, cnt);
+}
+
+uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
+    uint64_t bit = sizeinbase(n, 2) / 5;
+    uint64_t filter = (bit < 64 ? PRECOMPUTE_LIMIT : (1ULL << bit) > PRECOMPUTE_LIMIT ? PRECOMPUTE_LIMIT : (1ULL << bit));
+    return factorize(n, prime, exp, len, filter);
 }

@@ -46,6 +46,14 @@ void init_random(uint64_t seed){
     rng.seed(seed);
 }
 
+uint64_t pi_limit(uint64_t x){
+    if (x <= 1)
+        return 0;
+    double log_x = log(x);
+    double log_log_x = log(log_x);
+    return (uint64_t)(x / log_x * (1 + 1.2762 / log_x + 1.2762 * log_log_x / log_x / log_x));
+}
+
 int jacobi(uint64_t a, uint64_t n){
     int symbol = 1;
     if (n < 1 || (n & 1) == 0)

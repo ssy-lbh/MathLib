@@ -99,19 +99,6 @@ void bignum_pell_equation(){
     // all solutions [[q, t * p], [p, q]]^n * [1 0]
 }
 
-void bignum_factorize(){
-    BigInt n = "5079161913028937957193211717202415680711";
-    BigInt prime[100];
-    uint64_t exp[100];
-    uint32_t len = factorize(n, prime, exp, 100);
-    for (uint32_t i = 0; i < len; i++){
-        print(prime[i]);
-        print("^");
-        print(exp[i]);
-        print(" ");
-    }
-}
-
 int main(){
     bignum_pow();
     bignum_arith();
@@ -119,6 +106,5 @@ int main(){
     bignum_prime();
     bignum_test_ec();
     bignum_pell_equation();
-    bignum_factorize();
     return 0;
 }

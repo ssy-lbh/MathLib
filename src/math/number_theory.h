@@ -122,6 +122,8 @@ inline uint64_t cbrt_floor(uint64_t x){
     return (uint64_t)cbrtl((long double)x);
 }
 
+uint64_t pi_limit(uint64_t x);
+
 uint64_t cpow(uint64_t x, uint64_t w2, uint64_t n, uint64_t mod);
 uint64_t cipolla(uint64_t x, uint64_t mod);
 

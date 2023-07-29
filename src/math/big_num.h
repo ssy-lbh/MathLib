@@ -514,6 +514,7 @@ bool miller_rabin(BigInt n);
 bool miller_rabin(BigInt n, int reps);
 BigInt pollard_rho(BigInt n);
 uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len);
+uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint64_t filter);
 
 BigInt cpow(BigInt x, BigInt w2, BigInt n, BigInt mod);
 BigInt cipolla(BigInt x, BigInt mod);
