@@ -68,8 +68,8 @@ BigInt cipolla(BigInt x, BigInt mod) {
         w2 = w2 >= x ? w2 - x : w2 + mod - x;
         if (w2 == 0)
             return i;
-        BigInt y = jacobi(w2, mod);
-        if (y == mod - 1)
+        int y = jacobi(w2, mod);
+        if (y == -1)
             return cpow(i, w2, (mod + 1) >> 1, mod);
     }
     assert(false && "unreachable code");

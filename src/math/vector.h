@@ -5,7 +5,7 @@
 #include "tensor.h"
 #include "complex.h"
 
-// ÏòÁ¿ºÍ¾ØÕóÄ£°å, ÏòÁ¿Ä¬ÈÏÎªÁĞÏòÁ¿
+// å‘é‡å’ŒçŸ©é˜µæ¨¡æ¿, å‘é‡é»˜è®¤ä¸ºåˆ—å‘é‡
 template <typename T, int L>
 using TVector = TTensor<T, L, 1>;
 template <typename T, int L>
@@ -16,11 +16,11 @@ using Vector = TVector<default_type, L>;
 template <int L>
 using RowVector = TRowVector<default_type, L>;
 
-// vector, ÏòÁ¿
+// vector, å‘é‡
 
-// ²æ»ıÍÆ¹ã, 2^n-1Î¬ÏòÁ¿µÄ²æ»ı
-// ³¬¸´ÊıĞÔÖÊ: Ã¿¸öĞéÊıµ¥Î»Æ½·½Îª-1, ²»Í¬¸´Êıµ¥Î»Ïà³ËµÃµ½ÁíÒ»¸ö¸´Êıµ¥Î», ½á¹û²»¼ÆÈëÊµ²¿, °ËÔªÊı¼°ÒÔÏÂ³Ë·¨±í·´¶Ô³Æ
-// 1,3,7Î¬Âú×ãĞÔÖÊ×ÔÉíÓë×ÔÉí¼ÆËã½á¹ûÎª0
+// å‰ç§¯æ¨å¹¿, 2^n-1ç»´å‘é‡çš„å‰ç§¯
+// è¶…å¤æ•°æ€§è´¨: æ¯ä¸ªè™šæ•°å•ä½å¹³æ–¹ä¸º-1, ä¸åŒå¤æ•°å•ä½ç›¸ä¹˜å¾—åˆ°å¦ä¸€ä¸ªå¤æ•°å•ä½, ç»“æœä¸è®¡å…¥å®éƒ¨, å…«å…ƒæ•°åŠä»¥ä¸‹ä¹˜æ³•è¡¨åå¯¹ç§°
+// 1,3,7ç»´æ»¡è¶³æ€§è´¨è‡ªèº«ä¸è‡ªèº«è®¡ç®—ç»“æœä¸º0
 template <typename T, int L> constexpr TVector<T, L> cross(const TVector<T, L>& x, const TVector<T, L>& y){
     static_assert((L & (L + 1)) == 0, "cross is not defined unless dimension is 2^n-1");
     TVector<T, L> r;
@@ -36,8 +36,8 @@ template <typename T, int L> constexpr TVector<T, L> cross(const TVector<T, L>& 
     return r;
 }
 
-template <typename T> constexpr T cross(const TVector<T, 0>& x, const TVector<T, 0>& y){ return zero(T()); }
-template <typename T> constexpr T cross(const TVector<T, 1>& x, const TVector<T, 1>& y){ return zero(T()); }
+template <typename T> constexpr T cross(const TVector<T, 0>& x, const TVector<T, 0>& y){ return zero(x[0]); }
+template <typename T> constexpr T cross(const TVector<T, 1>& x, const TVector<T, 1>& y){ return zero(x[0]); }
 
 template <typename T> constexpr T cross(const TVector<T, 2>& x, const TVector<T, 2>& y){
     return x[0] * y[1] - x[1] * y[0];

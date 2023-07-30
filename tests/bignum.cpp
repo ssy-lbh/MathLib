@@ -21,7 +21,7 @@ void bignum_arith(){
 }
 
 void bignum_eigen(){
-    const double eps = 1e-20;
+    const BigFloat eps = 1e-20;
     
     TMatrix<BigFloat, 2, 2> A = {{1, 1}, {1, 0}};
     TTensor<BigFloat, 2> E;
@@ -74,6 +74,23 @@ void bignum_test_ec(){
         assert(ec2.is_on_curve(ec2.random()));
 }
 
+void bignum_test_ecc_enc(){
+    const BigInt MOD = "6277101735386680763835789423207666416083908700390324961279";
+    assert(miller_prime_proof(MOD));
+    TEllipticCurve<TMod<BigInt>> EC({1, MOD}, {6, MOD});
+    Point2<TMod<BigInt>> G = {{2, MOD}, {4, MOD}}; // generator
+    assert(EC.is_on_curve(G));
+    BigInt R = randmod(MOD); // private key
+    Point2<TMod<BigInt>> Q = EC.mul(R, G); // public key
+    Point2<TMod<BigInt>> M = EC.random(); // message
+    BigInt K = randmod(MOD);
+    Point2<TMod<BigInt>> KG = EC.mul(K, G);
+    Point2<TMod<BigInt>> KQ = EC.mul(K, Q);
+    Point2<TMod<BigInt>> C = EC.add(M, KQ); // encrypted message
+    Point2<TMod<BigInt>> D = EC.add(C, EC.neg(EC.mul(R, KG))); // decrypted message
+    assert(D == M);
+}
+
 void bignum_pell_equation(){
     BigInt t = 39352;
     BigInt m = sqrt(t);
@@ -99,6 +116,19 @@ void bignum_pell_equation(){
     // all solutions [[q, t * p], [p, q]]^n * [1 0]
 }
 
+void bignum_factorize(){
+    BigInt n = "5079161913028937957193211717202415680711159149463252";
+    BigInt prime[100];
+    uint64_t exp[100];
+    uint32_t len = factorize(n, prime, exp, 100);
+    for (uint32_t i = 0; i < len; i++){
+        print(prime[i]);
+        print("^");
+        print(exp[i]);
+        print(" ");
+    }
+}
+
 int main(){
     bignum_pow();
     bignum_arith();
@@ -106,5 +136,7 @@ int main(){
     bignum_prime();
     bignum_test_ec();
     bignum_pell_equation();
+    //bignum_factorize();
+    bignum_test_ecc_enc();
     return 0;
 }

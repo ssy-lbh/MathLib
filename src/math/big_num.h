@@ -39,6 +39,7 @@ public:
     };
 
     BigInt();
+    BigInt(BigInt&& b);
     BigInt(const BigInt& b);
     BigInt(const char* s);
     BigInt(const char* s, int radix);
@@ -51,6 +52,7 @@ public:
     explicit BigInt(const BigFrac& x);
     explicit BigInt(const BigFloat& x);
     ~BigInt();
+    BigInt& operator=(BigInt&& b);
     BigInt& operator=(const BigInt& b);
     BigInt& operator=(const char* s);
     BigInt& operator=(const int& x);
@@ -163,6 +165,7 @@ bool operator!=(const BigInt& a, long b);
 
 inline BigInt ident(BigInt) { return BigInt::one; }
 inline BigInt zero(BigInt) { return BigInt::zero; }
+template <typename U> std::enable_if_t<std::is_arithmetic_v<U>, BigInt> num(BigInt, U n) { return BigInt(n); }
 inline BigInt conj(BigInt x) { return x; }
 inline BigInt norm(BigInt x) { return x.abs(); }
 inline BigInt norm2(BigInt x) { return x * x; }
@@ -308,6 +311,7 @@ bool operator!=(const BigFrac& a, const BigFrac& b);
 
 inline BigFrac ident(BigFrac) { return BigFrac::one; }
 inline BigFrac zero(BigFrac) { return BigFrac::zero; }
+template <typename U> std::enable_if_t<std::is_arithmetic_v<U>, BigFrac> num(BigFrac, U n) { return BigFrac(n); }
 inline BigFrac conj(BigFrac x) { return x; }
 inline BigFrac inv(BigFrac x) { return x.inv(); }
 inline BigFrac norm(BigFrac x) { BigFrac t = x; t.abs(); return t; }
@@ -433,10 +437,11 @@ bool operator!=(const BigFloat& a, const BigFloat& b);
 
 inline BigFloat ident(BigFloat) { return BigFloat::one; }
 inline BigFloat zero(BigFloat) { return BigFloat::zero; }
-inline BigFloat conj(BigFloat x) { return x; }
-inline BigFloat inv(BigFloat x) { return BigFloat::one / x; }
-inline BigFloat norm(BigFloat x) { BigFloat t = x; t.abs(); return t; }
-inline BigFloat norm2(BigFloat x) { return x * x; }
+template <typename U> std::enable_if_t<std::is_arithmetic_v<U>, BigFloat> num(BigFloat, U n) { return BigFloat(n); }
+inline BigFloat conj(const BigFloat& x) { return x; }
+inline BigFloat inv(const BigFloat& x) { return BigFloat::one / x; }
+inline BigFloat norm(const BigFloat& x) { BigFloat t = x; t.abs(); return t; }
+inline BigFloat norm2(const BigFloat& x) { return x * x; }
 inline int line(BigFloat) { return 1; }
 
 inline void print(const BigFloat& x, int l) { x.print(); }

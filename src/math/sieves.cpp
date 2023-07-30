@@ -51,7 +51,7 @@ uint64_t egypt_sieve(uint64_t n, bool tag[], uint64_t prime[]){
     for (uint64_t i = 2; i < n; i++){
         if (!tag[i]){
             prime[cnt++] = i;
-            if (i >= n / i)
+            if (i >= (n + i - 1) / i)
                 continue;
             for (uint64_t j = i * i; j < n; j += i)
                 tag[j] = true;

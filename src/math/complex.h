@@ -25,12 +25,12 @@ public:
 
     using base_type = typename complex_base<T>::type;
 
-    constexpr TComplex<T>() : w(zero(T())), i(zero(T())) {}
-    constexpr TComplex<T>(const T& x) : w(x), i(zero(T())) {}
+    constexpr TComplex<T>() : w(zero(w)), i(zero(w)) {}
+    constexpr TComplex<T>(const T& x) : w(x), i(zero(w)) {}
     constexpr TComplex<T>(const T& x, const T& y) : w(x), i(y) {}
     constexpr TComplex<T>(const TComplex<T>&) = default;
     constexpr TComplex<T> &operator=(const TComplex<T>&) = default;
-    constexpr TComplex<T> &operator=(const T& x) { w = x; i = zero(T()); return *this; }
+    constexpr TComplex<T> &operator=(const T& x) { w = x; i = zero(w); return *this; }
     constexpr base_type& operator[](int i) { return ((base_type*)this)[i]; }
 };
 
@@ -120,8 +120,9 @@ template <typename T> constexpr bool operator!=(const TComplex<T>& x, const TCom
 // 2. 八元数及以上不满足结合律, 十六元数及以上不满足交错率
 template <typename T> constexpr TComplex<T> operator^(const TComplex<T>& x, int y){ return pow(x, y); }
 
-template <typename T> constexpr TComplex<T> ident(TComplex<T>) { return TComplex<T>(ident(T()), zero(T())); }
-template <typename T> constexpr TComplex<T> zero(TComplex<T>) { return TComplex<T>(zero(T()), zero(T())); }
+template <typename T> constexpr TComplex<T> ident(const TComplex<T>& x) { return TComplex<T>(ident(x.w), zero(x.i)); }
+template <typename T> constexpr TComplex<T> zero(const TComplex<T>& x) { return TComplex<T>(zero(x.w), zero(x.i)); }
+template <typename T, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TComplex<T>> num(const TComplex<T>& x, U n) { return TComplex<T>(num(x.w, n), zero(x.w)); }
 template <int N, typename T> constexpr TComplex<T> gen(TComplex<T>){ return TComplex<T>(cos(2.0 * PI / N), sin(2.0 * PI / N)); }
 template <typename T> constexpr TComplex<T> gen(TComplex<T>, int n){ return TComplex<T>(cos(2.0 * PI / n), sin(2.0 * PI / n)); }
 template <typename T> constexpr TComplex<T> conj(const TComplex<T>& x) { return TComplex<T>(conj(x.w), -x.i); }
@@ -179,9 +180,9 @@ template <typename T> constexpr TComplex<T> exp(const TComplex<T>& x) {
     constexpr int nth = is_nth_complex_v<T>;
     if (nth > 0){
         TComplex<T> t = x;
-        T w = t[0]; t[0] = zero(T());
+        T w = t[0]; t[0] = zero(w);
         auto n = norm(t);
-        t *= sin(n) / n; t[0] = cos(n) * ident(T());
+        t *= sin(n) / n; t[0] = cos(n) * ident(w);
         return (T)exp(w) * t;
     }
     return (T)exp(x.w) * TComplex<T>(cos(x.i), sin(x.i));
@@ -191,10 +192,10 @@ template <typename T> constexpr TComplex<T> log(const TComplex<T>& x) {
     constexpr int nth = is_nth_complex_v<T>;
     if (nth > 0){
         TComplex<T> t = x;
-        T w = t[0]; t[0] = zero(T());
+        T w = t[0]; t[0] = zero(w);
         auto n2 = norm2(t);
         decltype(n2) n = sqrt(n2);
-        t *= (decltype(n2))atan2(n, w) / n; t[0] = (log(norm2(w) + n2) * 0.5) * ident(T());
+        t *= (decltype(n2))atan2(n, w) / n; t[0] = (log(norm2(w) + n2) * 0.5) * ident(w);
         return t;
     }
     return TComplex<T>(log(norm2(x)) * 0.5, atan2(x.i, x.w));

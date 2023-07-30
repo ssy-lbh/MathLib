@@ -79,6 +79,7 @@ BigInt ecm_factorize(BigInt n){
     uint64_t lim = pi_limit(bound[1]);
     uint64_t* primes = new uint64_t[lim];
     bool* tag = new bool[bound[1]];
+    memset(tag, false, sizeof(bool) * bound[1]);
     uint64_t num_primes = egypt_sieve(bound[1], tag, primes);
     delete[] tag;
     assert(num_primes <= lim);
@@ -108,7 +109,7 @@ BigInt ecm_factorize(BigInt n){
         Point2<BigInt> p = {((u * u * u) / (v * v * v)) % n, 1};
         Point2<BigInt> q = scalar_multiply(k, p, n, a24);
         g = gcd(n, q[1]);
- 
+
         // If stage 1 is successful, return a non-trivial factor else
         // move on to stage 2
         if (g != 1 && g != n){

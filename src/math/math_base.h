@@ -96,6 +96,7 @@ template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, bool> is
 // real(float), 实数, 以及整数
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> ident(T) { return 1; }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> zero(T) { return 0; }
+template <typename T, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U> && std::is_arithmetic_v<T>, T> num(T x, U n) { return T(n); }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> conj(T x) { return x; }
 template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> inv(T x) { return (T)(1.0 / x); }
 template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, T> norm(T x) { return abs(x); }
@@ -132,14 +133,14 @@ template <typename T> inline std::enable_if_t<std::is_enum_v<T>, void> print(T x
 
 template <typename T>
 void print(const T& x) {
-    int s = line(T());
+    int s = line(x);
     for (int i = 0; i < s; i++)
         print(x, i);
 }
 
 template <typename T>
 void println(const T& x) {
-    int s = line(T());
+    int s = line(x);
     for (int i = 0; i < s; i++){
         print(x, i);
         putchar('\n');
@@ -167,7 +168,7 @@ void println(const wchar_t (&x)[N]) {
 }
 
 template <typename T, typename I> constexpr std::enable_if_t<std::is_integral_v<I>, T> pow(T x, I y){
-    T r = ident(T());
+    T r = ident(x);
     while (y){
         if (y & 1)
             r *= x;

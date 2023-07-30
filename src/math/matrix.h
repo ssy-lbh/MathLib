@@ -12,7 +12,7 @@ using TMatrix = TTensor<T, H, W>;
 template <int H, int W>
 using Matrix = TMatrix<default_type, H, W>;
 
-// matrix, ¾ØÕó
+// matrix, çŸ©é˜µ
 template <typename T, int H, int L, int W> constexpr TMatrix<T, W, H> operator/(const TMatrix<T, L, H>& x, const TMatrix<T, L, W>& y){
     return inv(y) * x;
 }
@@ -21,7 +21,7 @@ template <typename T, int H, int L, int W> constexpr TMatrix<T, W, H>& operator/
     return x = x / y;
 }
 
-// hermitian transpose, ¹²éî×ªÖÃ²Ù×÷
+// hermitian transpose, å…±è½­è½¬ç½®æ“ä½œ
 template <typename T, int H, int W> constexpr TMatrix<T, W, H> operator~(const TMatrix<T, H, W>& x){
     TMatrix<T, W, H> m;
     for (int i = 0; i < H; i++)
@@ -44,7 +44,17 @@ template <typename T, int L> constexpr TMatrix<T, L, L> ident(TMatrix<T, L, L>) 
     return m;
 }
 
-// ×÷ÓÃÓÚ³ı»·ÉÏµÄ¾ØÕó
+template <typename T, int L, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TMatrix<T, L, L>> num(const TMatrix<T, L, L>& x, U n) {
+    TMatrix<T, L, L> m;
+    for (int i = 0; i < L; i++)
+        for (int j = 0; j < L; j++)
+            m[i][j] = zero(T());
+    for (int i = 0; i < L; i++)
+        m[i][i] = num(x[i][i], n);
+    return m;
+}
+
+// ä½œç”¨äºé™¤ç¯ä¸Šçš„çŸ©é˜µ
 template <typename T, int L> constexpr TMatrix<T, L, L> inv(const TMatrix<T, L, L>& x) {
     TMatrix<T, L, L> l, u;
     lu_decom(x, l, u);
@@ -63,8 +73,8 @@ template <typename T, int L> constexpr TMatrix<T, L, L> inv(const TMatrix<T, L, 
     return m;
 }
 
-// pseudo-inverse, Î±Äæ¾ØÕó, Äæ¾ØÕó²»´æÔÚÊ±Ê¹ÓÃ
-// ÒÔºó¿¼ÂÇÊ¹ÓÃSVD·Ö½âÇó½â
+// pseudo-inverse, ä¼ªé€†çŸ©é˜µ, é€†çŸ©é˜µä¸å­˜åœ¨æ—¶ä½¿ç”¨
+// ä»¥åè€ƒè™‘ä½¿ç”¨SVDåˆ†è§£æ±‚è§£
 template <typename T, int H, int W> constexpr TMatrix<T, W, H> inv(const TMatrix<T, H, W>& x){
     TMatrix<T, W, H> xt = ~x;
     return inv(xt * x) * xt;
@@ -198,49 +208,53 @@ template <typename T> constexpr T det(const TMatrix<T, 3, 3>& x){
 * @param max_iter	max_iter number of iterations
 * @return
 */
-// ÎŞ·¨½â¾ö¸´Êı¾ØÕóµÄÌØÕ÷ÖµÎÊÌâ
+// æ— æ³•è§£å†³å¤æ•°çŸ©é˜µçš„ç‰¹å¾å€¼é—®é¢˜
 template <typename T, int L>
-constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, double precision, int max_iter){
-    V = ident(TMatrix<T, L, L>());
+constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, const decltype(norm2(T()))& precision, int max_iter){
+    V = ident(X);
+    auto precision2 = precision * precision;
 
 	int cnt = 0; // current iteration
-	while (true) {
+	while (cnt < max_iter) {
 		// find the largest element on the off-diagonal line of the X
-		double maxv = double(norm2(X[0][1]));
+		auto maxv = norm2(X[0][1]);
 		int ridx = 0;
 		int cidx = 1;
 		for (int i = 0; i < L; i++) {			// row
-			for (int j = 0; j < L; j++) {		// column
-				double d = double(norm2(X[i][j]));
-				if ((i != j) && (d > maxv)) {
+			for (int j = i + 1; j < L; j++) {		// column
+				auto d = norm2(X[i][j]);
+				if (d > maxv) {
 					maxv = d;
 					ridx = i;
 					cidx = j;
 				}
+                d = norm2(X[j][i]);
+                if (d > maxv) {
+                    maxv = d;
+                    ridx = j;
+                    cidx = i;
+                }
 			}
 		}
 
-		if (maxv < precision * precision) // precision check 
+		if (maxv < precision2) // precision check 
 			break;
-		if (cnt > max_iter) // iterations check
-			break;
-		cnt++;
 
 		T dbApp = X[ridx][ridx];
 		T dbApq = X[ridx][cidx];
 		T dbAqq = X[cidx][cidx];
 		// compute rotate angle
-		T dbAngle = T(0.5) * atan2(T(-2) * dbApq, dbAqq - dbApp);
+		T dbAngle = num(dbApp, 0.5) * atan2(num(dbApq, -2) * dbApq, dbAqq - dbApp);
 		T dbSinTheta = sin(dbAngle);
 		T dbCosTheta = cos(dbAngle);
-		T dbSin2Theta = sin(T(2) * dbAngle);
-		T dbCos2Theta = cos(T(2) * dbAngle);
+		T dbSin2Theta = sin(num(dbAngle, 2) * dbAngle);
+		T dbCos2Theta = cos(num(dbAngle, 2) * dbAngle);
 
 		X[ridx][ridx] = dbApp * dbCosTheta * dbCosTheta +
-			dbAqq * dbSinTheta * dbSinTheta + T(2) * dbApq * dbCosTheta * dbSinTheta;
+			dbAqq * dbSinTheta * dbSinTheta + num(dbApq, 2) * dbApq * dbCosTheta * dbSinTheta;
 		X[cidx][cidx] = dbApp * dbSinTheta * dbSinTheta +
-			dbAqq * dbCosTheta * dbCosTheta - T(2) * dbApq * dbCosTheta * dbSinTheta;
-		X[ridx][cidx] = T(0.5) * (dbAqq - dbApp) * dbSin2Theta + dbApq * dbCos2Theta;
+			dbAqq * dbCosTheta * dbCosTheta - num(dbApq, 2) * dbApq * dbCosTheta * dbSinTheta;
+		X[ridx][cidx] = num(dbAqq, 0.5) * (dbAqq - dbApp) * dbSin2Theta + dbApq * dbCos2Theta;
 		X[cidx][ridx] = X[ridx][cidx];
 
         T tmp;
@@ -269,6 +283,8 @@ constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, 
 			row[ridx] = row[cidx] * dbSinTheta + tmp * dbCosTheta;
 			row[cidx] = row[cidx] * dbCosTheta - tmp * dbSinTheta;
 		}
+
+        cnt++;
 	}
 
     for (int i = 0; i < L; i++)
@@ -276,7 +292,7 @@ constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, 
     V = ~V;
 }
 
-// ±¸Ñ¡¾«¶ÈºÍ×î´óµü´ú´ÎÊı
+// å¤‡é€‰ç²¾åº¦å’Œæœ€å¤§è¿­ä»£æ¬¡æ•°
 // 1. 1e-6, 9 * L * (L - 1)
 // 2. 1e-8, 12 * L * (L - 1)
 // 3. 1e-10, 15 * L * (L - 1)
@@ -285,8 +301,8 @@ constexpr void jacobi_eigen(const TMatrix<T, L, L>& X, TTensor<T, L>& E, TMatrix
     jacobi_eigen(X, E, V, 1e-6, 9 * L * (L - 1));
 }
 
-// QR·Ö½â·¨Çó½âÌØÕ÷Öµ
-// ÎŞ·¨½â¾ö¸´Êı¾ØÕóµÄÌØÕ÷ÖµÎÊÌâ
+// QRåˆ†è§£æ³•æ±‚è§£ç‰¹å¾å€¼
+// æ— æ³•è§£å†³å¤æ•°çŸ©é˜µçš„ç‰¹å¾å€¼é—®é¢˜
 template <typename T, int L>
 constexpr void qr_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, int max_iter){
     for (int i = 0; i < max_iter; i++){
@@ -308,14 +324,14 @@ constexpr void sort_svd(TMatrix<T, H, H>& U, TMatrix<T, H, W>& S, TMatrix<T, W, 
     for (int i = 0; i < N; i++) {
         int idx = i;
         T mval = S[i][i];
-        // ²éÕÒ×î´óÆæÒìÖµËùÔÚµÄÁĞ
+        // æŸ¥æ‰¾æœ€å¤§å¥‡å¼‚å€¼æ‰€åœ¨çš„åˆ—
         for (int j = i + 1; j < N; j++) {
             if (S(j, j) > mval) {
                 idx = j;
                 mval = S[j][j];
             }
         }
-        // Èç¹û²»ÔÚ¶Ô½ÇÏßÉÏ£¬Ôò½»»» U, S, V ÖĞÏàÓ¦µÄÁĞºÍĞĞ
+        // å¦‚æœä¸åœ¨å¯¹è§’çº¿ä¸Šï¼Œåˆ™äº¤æ¢ U, S, V ä¸­ç›¸åº”çš„åˆ—å’Œè¡Œ
         if (idx != i) {
             T t;
             for (int j = 0; j < N; j++)
@@ -332,22 +348,22 @@ template <typename T, int H, int W>
 constexpr void calc_svd(TMatrix<T, H, W>& A, TMatrix<T, H, H>& U, TMatrix<T, W, W>& V) {
     constexpr int N = (H > W ? W : H);
     TMatrix<T, H, W> S;
-    // ¼ÆËã A^T * A µÄÌØÕ÷ÖµºÍÌØÕ÷ÏòÁ¿
-    // ÌáÈ¡ U ºÍ V ¾ØÕó
+    // è®¡ç®— A^T * A çš„ç‰¹å¾å€¼å’Œç‰¹å¾å‘é‡
+    // æå– U å’Œ V çŸ©é˜µ
     TMatrix<T, W, W> ATA = ~A * A;
     TMatrix<T, H, H> AAT = A * ~A;
     TTensor<T, W> E1;
     TTensor<T, H> E2;
     calc_eigen(ATA, E1, V);
     calc_eigen(AAT, E2, U);
-    // ÌáÈ¡ Sigma ¾ØÕó
+    // æå– Sigma çŸ©é˜µ
     for (int i = 0; i < N; i++)
         S[i][i]= sqrt(E1[i]);
-    // ¶Ô U ºÍ V ½øĞĞÅÅĞò
+    // å¯¹ U å’Œ V è¿›è¡Œæ’åº
     sort_svd(U, S, V);
 }
 
-// ½«º¯Êı(¶àÏîÊ½)Ó¦ÓÃÓÚ¾ØÕóÔËËãÉÏ
+// å°†å‡½æ•°(å¤šé¡¹å¼)åº”ç”¨äºçŸ©é˜µè¿ç®—ä¸Š
 template <typename T, int L>
 constexpr TMatrix<T, L, L> apply_mat(const TMatrix<T, L, L>& X, const std::function<T(T)>& f) {
     TTensor<T, L> E;

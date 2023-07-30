@@ -259,14 +259,14 @@ template <typename T, int CL, int... L> constexpr bool operator==(const TTensor<
     return !(x != y);
 }
 
-template <typename T> constexpr TTensor<T> zero(TTensor<T>) {
-    return TTensor<T>(zero(T()));
+template <typename T> constexpr TTensor<T> zero(const TTensor<T>& x) {
+    return TTensor<T>(zero(x.n));
 }
 
-template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> zero(TTensor<T, CL, L...>) {
+template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> zero(const TTensor<T, CL, L...>& x) {
     TTensor<T, CL, L...> t;
     for (int i = 0; i < CL; i++)
-        t[i] = zero(TTensor<T, L...>());
+        t[i] = zero(x[i]);
     return t;
 }
 

@@ -99,7 +99,7 @@ uint32_t factorize(uint64_t n, uint64_t prime[], uint32_t exp[], uint32_t len){
 BigInt pollard_rho(BigInt n){
     if (n == 4)
         return 2;
-    if (miller_rabin(n))
+    if (miller_prime_proof(n))
         return n;
     while (true){
         BigInt c = randmod(n) + 1; // 生成随机的c
@@ -122,7 +122,7 @@ BigInt pollard_rho(BigInt n){
     }
 }
 
-const uint64_t PRECOMPUTE_LIMIT = 100000000ULL;
+const uint64_t PRECOMPUTE_LIMIT = 25000ULL;
 const BigInt POLLARD_RHO_MAX = "100000000000000000000";
 
 uint64_t factorize_hard(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint64_t cnt){
@@ -170,6 +170,7 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint6
         uint64_t lim = pi_limit(filter);
         uint64_t* primes = new uint64_t[lim];
         bool* tag = new bool[filter];
+        memset(tag, false, sizeof(bool) * filter);
         uint64_t num_primes = egypt_sieve(filter, tag, primes);
         delete[] tag;
         assert(num_primes <= lim);
@@ -177,7 +178,8 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint6
         for (uint64_t i = 0; i < num_primes; i++){
             if (n % primes[i] == 0){
                 prime[cnt] = primes[i];
-                exp[cnt] = 0;
+                exp[cnt] = 1;
+                n /= primes[i];
                 while (n % primes[i] == 0){
                     exp[cnt]++;
                     n /= primes[i];

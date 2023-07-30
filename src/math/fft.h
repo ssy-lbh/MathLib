@@ -23,8 +23,8 @@ void fft(TTensor<T, N>& poly, bool ifft = false){
     for (int i = 1; (1 << i) <= N; i++){
         int h = (1 << (i - 1));
         for (int j = 0; j < (N >> i); j++){
-            T o, m = ident(T()); // çÛÔª
-            o = ifft ? inv(gen(T(), 1 << i)) : gen(T(), 1 << i); // Éú³ÉÔªÓëÄæÔª
+            T o, m = ident(o); // å•ä½å…ƒ
+            o = ifft ? inv(gen(o, 1 << i)) : gen(o, 1 << i); // ç”Ÿæˆå…ƒ
             for (int k = (j << i); k < (j << i) + h; k++){
                 T A = poly[k], B = m * poly[k + h];
                 poly[k] = A + B; poly[k + h] = A - B;

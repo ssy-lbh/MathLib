@@ -51,7 +51,7 @@ uint64_t pi_limit(uint64_t x){
         return 0;
     double log_x = log(x);
     double log_log_x = log(log_x);
-    return (uint64_t)(x / log_x * (1 + 1.2762 / log_x + 1.2762 * log_log_x / log_x / log_x));
+    return (uint64_t)ceil(x / log_x * (1 + 1.2762 / log_x + 1.2762 * log_log_x / log_x / log_x));
 }
 
 int jacobi(uint64_t a, uint64_t n){

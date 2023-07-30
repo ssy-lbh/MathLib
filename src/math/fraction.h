@@ -79,7 +79,7 @@ template <typename T> constexpr TFraction<T> pow(const TFraction<T>& a, int n) {
 
 template <typename T> void print(const TFraction<T>& a, int l) { print(a.x, l); if (a.y != 1){ putchar(l == line(T()) / 2 ? '/' : ' '); print(a.y, l); } }
 template <typename T> void print(const TFraction<T>& a) {
-    int s = line(T());
+    int s = line(a.x);
     for (int i = 0; i < s; i++){
         print(a, i);
         putchar('\n');

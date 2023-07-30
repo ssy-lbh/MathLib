@@ -6,6 +6,7 @@ const BigInt BigInt::zero(0);
 const BigInt BigInt::one(1);
 
 BigInt::BigInt() { mpz_init(n); }
+BigInt::BigInt(BigInt&& b) { mpz_init(n); mpz_swap(n, b.n); }
 BigInt::BigInt(const BigInt& b) { mpz_init_set(n, b.n); }
 BigInt::BigInt(const char* s) { mpz_init_set_str(n, s, 10); }
 BigInt::BigInt(const char* s, int radix) { mpz_init_set_str(n, s, radix); }
@@ -18,6 +19,7 @@ BigInt::BigInt(const unsigned long long& x) { mpz_init(n); mpz_import(n, 1, -1, 
 BigInt::BigInt(const BigFrac& x) { mpz_init(n); mpz_set_q(n, x.n); }
 BigInt::BigInt(const BigFloat& x) { mpz_init(n); mpz_set_f(n, x.n); }
 BigInt::~BigInt() { mpz_clear(n); }
+BigInt& BigInt::operator=(BigInt&& b) { mpz_swap(n, b.n); return *this; }
 BigInt& BigInt::operator=(const BigInt& b) { mpz_set(n, b.n); return *this; }
 BigInt& BigInt::operator=(const char* s) { mpz_set_str(n, s, 10); return *this; }
 BigInt& BigInt::operator=(const int& x) { mpz_set_si(n, x); return *this; }
@@ -86,8 +88,8 @@ void BigInt::scan(int radix) { mpz_inp_str(n, stdin, radix); }
 void BigInt::scan(FILE* file) { mpz_inp_str(n, file, 10); }
 void BigInt::scan(FILE* file, int radix) { mpz_inp_str(n, file, radix); }
 
-void BigInt::swap(BigInt& b) { mpz_swap(n, b.n); }
-void BigInt::swap(BigInt& a, BigInt& b) { mpz_swap(a.n, b.n); }
+void BigInt::swap(BigInt& b) { std::swap(n, b.n); }
+void BigInt::swap(BigInt& a, BigInt& b) { std::swap(a.n, b.n); }
 
 int BigInt::sgn() const { return mpz_sgn(n); }
 BigInt BigInt::abs() { BigInt t; mpz_abs(t.n, n); return t; }
@@ -160,7 +162,7 @@ BigInt::Random::Random(unsigned long seed) { gmp_randinit_default(state); gmp_ra
 BigInt::Random::~Random() { gmp_randclear(state); }
 
 BigInt BigInt::Random::operator()(const BigInt& n) { BigInt t; mpz_urandomm(t.n, state, n.n); return t; }
-BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, b.n, a.n); mpz_urandomm(t.n, state, t.n); t += a; return t; }
+BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, b.n, a.n); mpz_urandomm(t.n, state, t.n); mpz_add(t.n, t.n, a.n); return t; }
 
 //BigInt::Random default_bigint_random(0x114514CC);
 BigInt::Random default_bigint_random;
@@ -247,7 +249,7 @@ BigFrac BigFrac::pow(const BigInt& exp, const BigInt& mod) { BigFrac t; mpz_powm
 BigFrac& BigFrac::simplify() { mpq_canonicalize(n); return *this; }
 
 constexpr mpfr_prec_t precision = 100;
-constexpr size_t outprec = 10;
+constexpr size_t outprec = 20;
 
 const BigFloat BigFloat::zero(0);
 const BigFloat BigFloat::one(1);
