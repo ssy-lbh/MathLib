@@ -10,8 +10,11 @@ uint32_t euler_sieve(uint32_t n, uint32_t fac[], uint32_t prime[]){
             fac[i] = i;
             prime[cnt++] = i;
         }
+        uint32_t tmp = (n - 1) / i; // tmp = ceil(n / i) - 1
+        if (tmp > fac[i])
+            tmp = fac[i];
         for (uint32_t j = 0; j < cnt; j++){
-            if ((uint64_t)i * prime[j] >= n || prime[j] > fac[i]) break;
+            if (prime[j] > tmp) break;
             fac[i * prime[j]] = prime[j];
         }
     }
@@ -25,9 +28,11 @@ uint64_t euler_sieve(uint64_t n, uint64_t fac[], uint64_t prime[]){
             fac[i] = i;
             prime[cnt++] = i;
         }
-        uint64_t tmp = n / i;
+        uint64_t tmp = (n - 1) / i; // tmp = ceil(n / i) - 1
+        if (tmp > fac[i])
+            tmp = fac[i];
         for (uint64_t j = 0; j < cnt; j++){
-            if (prime[j] >= tmp || prime[j] > fac[i]) break;
+            if (prime[j] > tmp) break;
             fac[i * prime[j]] = prime[j];
         }
     }
@@ -39,7 +44,9 @@ uint32_t egypt_sieve(uint32_t n, bool tag[], uint32_t prime[]){
     for (uint32_t i = 2; i < n; i++){
         if (!tag[i]){
             prime[cnt++] = i;
-            for (uint64_t j = i * i; j < n; j += i)
+            uint64_t tmp = i * i;
+            if (tmp >= n) continue;
+            for (uint64_t j = tmp; j < n; j += i)
                 tag[j] = true;
         }
     }
@@ -51,7 +58,7 @@ uint64_t egypt_sieve(uint64_t n, bool tag[], uint64_t prime[]){
     for (uint64_t i = 2; i < n; i++){
         if (!tag[i]){
             prime[cnt++] = i;
-            if (i >= (n + i - 1) / i)
+            if (i > (n - 1) / i)
                 continue;
             for (uint64_t j = i * i; j < n; j += i)
                 tag[j] = true;

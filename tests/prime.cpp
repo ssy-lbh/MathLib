@@ -26,17 +26,17 @@ void test_pollard_rho(){
 }
 
 void test_pohlig_hellman_log(){
-    uint64_t g = 2;
-    uint64_t b = 3;
-    uint64_t p = 5;
+    uint64_t g = 3;
+    uint64_t b = 5242;
+    uint64_t p = 65537;
 
     uint64_t prime[N];
     uint32_t exp[N];
     uint32_t cnt = factorize(p - 1, prime, exp, N);
 
     assert(check_root(g, p, prime, cnt));
-    uint64_t x = pohlig_hellman_log(g, b, p);
-    assert(x == 3);
+    uint64_t x = pohlig_hellman_log(g, b, p, prime, exp, cnt);
+    assert(pow(g, x, p) == b);
 }
 
 void test_index_calculus_log(){
@@ -50,7 +50,7 @@ void test_index_calculus_log(){
 
     assert(check_root(g, p, prime, cnt));
     uint64_t x = index_calculus_log(b, g, p);
-    printf("%llu\n", x);
+    assert(pow(g, x, p) == b);
 }
 
 void test_dujiao_sieve(){
@@ -69,7 +69,7 @@ void test_dujiao_sieve(){
 int main(){
     test_pollard_rho();
     test_pohlig_hellman_log();
-    //test_index_calculus_log();
+    test_index_calculus_log();
     test_dujiao_sieve();
     return 0;
 }

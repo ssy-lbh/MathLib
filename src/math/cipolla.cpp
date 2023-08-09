@@ -44,15 +44,14 @@ BigInt cpow(BigInt x, BigInt w2, BigInt n, BigInt mod) {
     BigInt y = 1, t = 0;
     for (; n; n >>= 1){
         if (n & 1){
-            t = mul(rx, x, mod) + mul(ry, mul(y, w2, mod), mod);
-            ry = mul(ry, x, mod) + mul(rx, y, mod);
-            rx = t >= mod ? t - mod : t;
-            ry = ry >= mod ? ry - mod : ry;
+            t = add(mul(rx, x, mod), mul(ry, mul(y, w2, mod), mod), mod);
+            ry = add(mul(ry, x, mod), mul(rx, y, mod), mod);
+            rx = t;
         }
-        t = mul(x, x, mod) + mul(y, mul(y, w2, mod), mod);
-        y = mul(y, x, mod); y = y + y;
-        x = t >= mod ? t - mod : t;
+        t = add(mul(x, x, mod), mul(y, mul(y, w2, mod), mod), mod);
+        y = mul(y, x, mod) << 1;
         y = y >= mod ? y - mod : y;
+        x = t;
     }
     assert(ry == 0 && "lagrange theorem");
     return rx;

@@ -197,6 +197,8 @@ uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint6
 
 uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len){
     uint64_t bit = sizeinbase(n, 2) / 5;
-    uint64_t filter = (bit < 64 ? PRECOMPUTE_LIMIT : (1ULL << bit) > PRECOMPUTE_LIMIT ? PRECOMPUTE_LIMIT : (1ULL << bit));
+    uint64_t filter = (bit >= 64 ? PRECOMPUTE_LIMIT : ((1ULL << bit) > PRECOMPUTE_LIMIT ? PRECOMPUTE_LIMIT : (1ULL << bit)));
+    if (filter < 8)
+        filter = 8;
     return factorize(n, prime, exp, len, filter);
 }

@@ -6,6 +6,7 @@
 #include "math/number_theory.h"
 #include "math/fraction.h"
 #include "math/elliptic_curve.h"
+#include "math/montgomery_mul.h"
 
 void bignum_pow(){
     BigFloat a = 23;
@@ -57,23 +58,22 @@ void bignum_test_ec(){
     assert(ec.is_on_curve(ec.add(q, q))); // [-87/64 747/512]
     assert(ec.is_on_curve(ec.add(p, p))); // [-5/9 62/27]
 
-    // select a random point G on the curve
-    // 1. G is a generator of the group
-    // 2. G is a point on the curve
-    // 3. G has a large prime order
-    // generate a random number r
-    // compute Q = r * G
-    // Q is a public key
-    // r is a private key
-    // to encrypt a message M, compute k * G = (x1, y1)
-    // compute M + k * Q = (x2, y2)
-    // to decrypt, compute (x1, y1) - r * (x2, y2)
-
     TEllipticCurve<NMod<257>> ec2(3, 19);
     for (int i = 0; i < 10; i++)
         assert(ec2.is_on_curve(ec2.random()));
 }
 
+// select a random point G on the curve
+// 1. G is a generator of the group
+// 2. G is a point on the curve
+// 3. G has a large prime order
+// generate a random number r
+// compute Q = r * G
+// Q is a public key
+// r is a private key
+// to encrypt a message M, compute k * G = (x1, y1)
+// compute M + k * Q = (x2, y2)
+// to decrypt, compute (x1, y1) - r * (x2, y2)
 void bignum_test_ecc_enc(){
     const BigInt MOD = "6277101735386680763835789423207666416083908700390324961279";
     assert(miller_prime_proof(MOD));
@@ -88,6 +88,11 @@ void bignum_test_ecc_enc(){
     Point2<TMod<BigInt>> KQ = EC.mul(K, Q);
     Point2<TMod<BigInt>> C = EC.add(M, KQ); // encrypted message
     Point2<TMod<BigInt>> D = EC.add(C, EC.neg(EC.mul(R, KG))); // decrypted message
+    // EC: y^2 = x^3 + x + 6 (mod 6277101735386680763835789423207666416083908700390324961279)
+    // private key: 2257266665275028717368858634151775288157095944676107451977
+    // generator: [2 4]
+    // encrypted point pair: ([364562710969197180833286231649197863335006589095609232292 4064846720840770304970884966639104197186368667790994813115], [4345212677055395448941375689444562490478462710431726579977 154092500694242968000986641518415931559619348920495233257]) (kG, k(rG) + M)
+    // message: [842479473113610285124554190380454783966523983876323970880 5424199499805154532289260646877346460171942119518172451807]
     assert(D == M);
 }
 
@@ -129,6 +134,17 @@ void bignum_factorize(){
     }
 }
 
+void bignum_montgomery_mul(){
+    BigInt mod = 123456789;
+    MontgomeryMul<BigInt> mm(mod);
+    for (int i = 0; i < 100; i++){
+        BigInt a = randmod(mod);
+        BigInt b = randmod(mod);
+        BigInt c = mm.modmul(a, b);
+        assert(c == a * b % mod);
+    }
+}
+
 int main(){
     bignum_pow();
     bignum_arith();
@@ -138,5 +154,6 @@ int main(){
     bignum_pell_equation();
     //bignum_factorize();
     bignum_test_ecc_enc();
+    bignum_montgomery_mul();
     return 0;
 }

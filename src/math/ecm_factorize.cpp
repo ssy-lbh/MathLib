@@ -2,6 +2,7 @@
 #include "number_theory.h"
 #include "big_num.h"
 #include "sieves.h"
+#include "montgomery_mul.h"
 
 #include <cstdlib>
 
@@ -37,9 +38,9 @@ static Point2<BigInt> point_double(Point2<BigInt> p, BigInt n, BigInt a24){
     BigInt v = p[0] - p[1];
     BigInt u2 = u * u;
     BigInt v2 = v * v;
-    BigInt t = (u2 >= v2 ? u2 - v2 : u2 + n - v2);
+    BigInt t = u2 - v2;
     BigInt x = mul(u2, v2, n);
-    BigInt z = t * (v2 + a24 * t) % n;
+    BigInt z = mul(t, v2 + a24 * t, n);
     return {x, z};
 }
 
@@ -48,8 +49,8 @@ static Point2<BigInt> scalar_multiply(BigInt k, Point2<BigInt> p, BigInt n, BigI
     Point2<BigInt> q = p;
     Point2<BigInt> r = point_double(p, n, a24);
  
-    for (uint64_t i = 1; i < lk; i++){
-        if (k.testbit(lk - i - 1)){
+    for (int64_t i = lk - 2; i >= 0; i--){
+        if (k.testbit(i)){
             q = point_add(r, q, p, n);
             r = point_double(r, n, a24);
         } else {
@@ -78,9 +79,9 @@ BigInt ecm_factorize(BigInt n){
 
     uint64_t lim = pi_limit(bound[1]);
     uint64_t* primes = new uint64_t[lim];
-    bool* tag = new bool[bound[1]];
-    memset(tag, false, sizeof(bool) * bound[1]);
-    uint64_t num_primes = egypt_sieve(bound[1], tag, primes);
+    uint64_t* tag = new uint64_t[bound[1]];
+    memset(tag, 0, sizeof(uint64_t) * bound[1]);
+    uint64_t num_primes = euler_sieve(bound[1], tag, primes);
     delete[] tag;
     assert(num_primes <= lim);
     uint64_t idx_B0 = std::lower_bound(primes, primes + num_primes, bound[0]) - primes;
@@ -91,7 +92,9 @@ BigInt ecm_factorize(BigInt n){
         uint64_t p = primes[i];
         k *= pow(BigInt(p), (uint64_t)(log_B0 / log(p)));
     }
- 
+
+    MontgomeryMul<BigInt> mm(n);
+
     BigInt g = 1;
     while ((g == 1 || g == n) && curves <= MAX_CURVES_ECM){
         curves++;
@@ -99,7 +102,7 @@ BigInt ecm_factorize(BigInt n){
 
         // Generate a new random curve in Montgomery form with Suyama's parametrization
         BigInt u = ((sigma * sigma) - 5) % n;
-        BigInt v = mul(4, sigma, n);
+        BigInt v = (sigma << 2) % n;
         BigInt vmu = v - u;
         BigInt A = ((vmu * vmu * vmu) * (3 * u + v) / (4 * u * u * u * v) - 2) % n;
         if (A < 0) A += n;
@@ -122,11 +125,11 @@ BigInt ecm_factorize(BigInt n){
         // ----- Stage 2 -----
         S[0] = point_double(q, n, a24);
         S[1] = point_double(S[0], n, a24);
-        beta[0] = mul(S[0][0], S[0][1], n);
-        beta[1] = mul(S[1][0], S[1][1], n);
+        beta[0] = mm.modmul(S[0][0], S[0][1]);
+        beta[1] = mm.modmul(S[1][0], S[1][1]);
         for (uint64_t d = 2; d < D; d++){
             S[d] = point_add(S[d - 1], S[0], S[d - 2], n);
-            beta[d] = mul(S[d][0], S[d][1], n);
+            beta[d] = mm.modmul(S[d][0], S[d][1]);
         }
 
         BigInt g = 1;
@@ -138,7 +141,7 @@ BigInt ecm_factorize(BigInt n){
         uint64_t step = D << 1;
  
         for (uint64_t ridx = B; ridx < bound[1]; ridx += step){
-            auto alpha = mul(r[0], r[1], n);
+            auto alpha = mm.modmul(r[0], r[1]);
             uint64_t limit = ridx + step;
             while (idx < num_primes && primes[idx] <= limit){
                 uint64_t d = ((primes[idx] - ridx) >> 1) - 1;

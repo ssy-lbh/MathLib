@@ -178,14 +178,68 @@ template <typename T, typename I> constexpr std::enable_if_t<std::is_integral_v<
     return r;
 }
 
-int ffsi(int);
-int ffsl(long long);
-int ctzi(int);
-int ctzl(long long);
-int clzi(int);
-int clzl(long long);
-int popcnti(int);
-int popcntl(long long);
+#ifdef __GNUC__
+constexpr int ffsi(int x) { return __builtin_ffs(x); }
+constexpr int ffsl(long long x) { return __builtin_ffsl(x); }
+constexpr int ctzi(int x) { return __builtin_ctz(x); }
+constexpr int ctzl(long long x) { return __builtin_ctzl(x); }
+constexpr int clzi(int x) { return __builtin_clz(x); }
+constexpr int clzl(long long x) { return __builtin_clzl(x); }
+constexpr int popcnti(int x) { return __builtin_popcount(x); }
+constexpr int popcntl(long long x) { return __builtin_popcountl(x); }
+
+#define ADVANCED_BITOP_CONSTEXPR constexpr
+
+#else
+extern const int __table_1_32[32];
+extern const int __table_1_64[64];
+extern const int __table_2_32[32];
+extern const int __table_2_64[64];
+
+inline int ffsi(int x){ return __table_1_32[((x & -x) * 0x077cb531u) >> 27] + (x != 0); }
+inline int ffsl(long long x){ return __table_1_64[((x & -x) * 0x022fdd63cc95386dull) >> 58] + (x != 0); }
+inline int ctzi(int x){ return __table_1_32[((x & -x) * 0x077cb531u) >> 27]; }
+inline int ctzl(long long x){ return __table_1_64[((x & -x) * 0x022fdd63cc95386dull) >> 58]; }
+
+inline int clzi(int x){
+    x |= x >> 1;
+    x |= x >> 2;
+    x |= x >> 4;
+    x |= x >> 8;
+    x |= x >> 16;
+    return __table_2_32[(x * 0x07c4acddu) >> 27];
+}
+
+inline int clzl(long long x){
+    x |= x >> 1;
+    x |= x >> 2;
+    x |= x >> 4;
+    x |= x >> 8;
+    x |= x >> 16;
+    x |= x >> 32;
+    return __table_2_64[x * 0x03f79d71b4cb0a89ull >> 58];
+}
+
+inline int popcnti(int x){
+    x = x - ((x >> 1) & 0x55555555);
+    x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
+    x = (x + (x >> 4)) & 0xf0f0f0f;
+    return ((x * 0x01010101) >> 24) & 0x1f;
+}
+
+inline int popcntl(long long x){
+    x = x - ((x >> 1) & 0x5555555555555555ull);
+    x = (x & 0x3333333333333333ull) + ((x >> 2) & 0x3333333333333333ull);
+    x = (x + (x >> 4)) & 0xf0f0f0f0f0f0f0full;
+    return ((x * 0x0101010101010101ull) >> 56) & 0x3f;
+}
+
+#define ADVANCED_BITOP_CONSTEXPR inline
+
+#endif
+
+inline int binsize(int x) { return 32 - clzi(x); }
+inline int binsize(long long x) { return 64 - clzl(x); }
 
 template <typename T, typename E> constexpr bool equal(const T& x, const T& y, E epsilon) { return norm2(x - y) <= epsilon * epsilon; }
 

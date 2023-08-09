@@ -41,9 +41,13 @@ static uint32_t get_opti_value(uint64_t mod){
 
 uint32_t index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
     uint64_t limit = get_opti_value(mod);
+    memset(ctx.tag, false, sizeof(ctx.tag));
     uint32_t cnt = (uint32_t)egypt_sieve(limit, ctx.tag, ctx.prime);
-    for (uint32_t i = 0; i < cnt; i++)
+    // assert(cnt <= IndexCalculusContext::M);
+    for (uint32_t i = 0; i < cnt; i++){
         ctx.inv_prime[i] = inv(ctx.prime[i], mod);
+        // assert(ctx.inv_prime[i] * ctx.prime[i] % mod == 1);
+    }
     return cnt;
 }
 
@@ -62,10 +66,10 @@ bool gauss(IndexCalculusContext& ctx, uint64_t mod){
             std::swap(ctx.a[i], ctx.a[t]);
         }
         uint64_t cur_inv = inv(ctx.a[i][i], mod);
-        for (uint32_t j = i; j < ctx.m; j++){
+        for (uint32_t j = i + 1; j < ctx.m; j++){
             if (ctx.a[j][i]){
                 uint64_t t = mul(cur_inv, ctx.a[j][i], mod);
-                for (uint32_t k = i; k < ctx.n; k++){
+                for (uint32_t k = i; k <= ctx.n; k++){
                     ctx.a[j][k] = (ctx.a[j][k] - mul(t, ctx.a[i][k], mod) + mod) % mod;
                 }
             }
@@ -91,34 +95,36 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p, uin
         for (uint64_t j = randmod(phi), k = pow(g, j, p); i < limit; j = randmod(phi), k = pow(g, j, p)){
             for (uint64_t l = k, x = 1; x < phi; l = mul(l, k, p), x++){
                 uint32_t t1 = ctzl(l);
-                uint64_t t2 = l >> t1;
-                for (uint32_t y = 1; y < cnt && t2 > 1; y++){
+                uint64_t t2 = l >> t1, t3;
+                ctx.a[i][0] = t1;
+                uint32_t y;
+                for (y = 1; y < cnt && t2 > 1; y++){
                     if ((y == 9 && t2 > 1e15) || (y == 29 && t2 > 1e12))
                         break;
-                    while (t2 * ctx.inv_prime[y] < t2)
-                        t2 *= ctx.inv_prime[y];
+                    ctx.a[i][y] = 0;
+                    while ((t3 = mul(t2, ctx.inv_prime[y], p)) < t2){
+                        t2 = t3;
+                        ctx.a[i][y]++;
+                    }
                 }
+                memset(ctx.a[i] + y, 0, sizeof(uint64_t) * (cnt - y));
                 if (t2 == 1){
-                    ctx.a[i][0] = t1;
-                    t2 = l >> t1;
-                    for (uint32_t y = 1; y < cnt; y++){
-                        ctx.a[i][y] = 0;
-                        while (t2 % ctx.prime[y] == 0){
-                            t2 *= ctx.inv_prime[y];
-                            ctx.a[i][y]++;
-                        }
-                    }
-                    if (t2 == 1){
-                        ctx.a[i][cnt] = mul(j, x, phi);
-                        i++;
-                        break;
-                    }
+                    // uint64_t prod = 1;
+                    // for (uint32_t y = 0; y < cnt; y++){
+                    //     prod = mul(prod, pow(ctx.prime[y], ctx.a[i][y], p), p);
+                    // }
+                    // assert(prod == l);
+                    ctx.a[i][cnt] = mul(j, x, phi);
+                    // assert(pow(g, ctx.a[i][cnt], p) == l);
+                    i++;
+                    break;
                 }
             }
         }
     } while (!gauss(ctx, phi));
     for (uint32_t i = 0; i < cnt; i++){
-        ctx.ind[i] = ctx.a[i][cnt - 1];
+        ctx.ind[i] = ctx.a[i][cnt];
+        // assert(pow(g, ctx.ind[i], p) == ctx.prime[i]);
     }
 }
 
@@ -129,28 +135,22 @@ inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g
         return -1;
     uint64_t phi = p - 1;
     for (uint64_t i = randmod(phi), j = pow(g, i, p); ; i = randmod(phi), j = pow(g, i, p)){
-        for (uint64_t k = j, l = 1; l < phi; k = pow(k, j, p), l++){
+        for (uint64_t k = j, l = 1; l < phi; k = mul(k, j, p), l++){
             uint32_t t1;
-            uint64_t t2 = mul(a, k, p), t3;
+            uint64_t t2 = mul(a, k, p);
             t1 = ctzl(t2);
             t2 >>= t1;
-            t3 = t2;
+            uint64_t ans = (mul((uint64_t)t1, ctx.ind[0], phi) - mul(i, l, phi) + phi) % phi;
             for (uint32_t x = 1; x < cnt && t2 > 1; x++){
                 if ((x == 9 && t2 > 1e15) || (x == 29 && t2 > 1e12))
                     break;
-                while (t2 * ctx.inv_prime[x] < t2)
-                    t2 *= ctx.inv_prime[x];
+                while (t2 * ctx.inv_prime[x] % p < t2){
+                    t2 = t2 * ctx.inv_prime[x] % p;
+                    ans = (ans + ctx.ind[x]) % phi;
+                }
             }
             if (t2 == 1){
-                uint64_t ans = (mul((uint64_t)t1, ctx.ind[1], phi) - mul(i, l, phi) + phi) % phi;
-                for (uint32_t x = 1; x < cnt && t3 > 1; x++){
-                    while (t3 % ctx.prime[x] == 0){
-                        t3 *= ctx.inv_prime[x];
-                        ans = (ans + ctx.ind[x]) % phi;
-                    }
-                }
-                if (t3 == 1)
-                    return ans;
+                return ans;
             }
         }
     }

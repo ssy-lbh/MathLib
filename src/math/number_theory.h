@@ -21,22 +21,24 @@ constexpr uint64_t mul(uint64_t a, uint64_t b, uint64_t mod){
 }
 
 constexpr uint32_t pow(uint32_t x, uint32_t y, uint32_t mod){
-    uint64_t r = 1;
+    uint64_t r = ((y & 1) ? x : 1);
+    y >>= 1;
     while (y){
+        x = ((uint64_t)x * x) % mod;
         if (y & 1)
             r = (r * x) % mod;
-        x = ((uint64_t)x * x) % mod;
         y >>= 1;
     }
     return (uint32_t)r;
 }
 
 constexpr uint64_t pow(uint64_t x, uint64_t y, uint64_t mod){
-    uint64_t r = 1;
+    uint64_t r = ((y & 1) ? x : 1);
+    y >>= 1;
     while (y){
+        x = mul(x, x, mod);
         if (y & 1)
             r = mul(r, x, mod);
-        x = mul(x, x, mod);
         y >>= 1;
     }
     return r;
@@ -54,14 +56,27 @@ template <typename T> constexpr T gcd(T x, T y){ return (x == zero(x)) ? y : gcd
 template <typename T> constexpr T lcm(T x, T y){ return x / gcd(x, y) * y; }
 
 // 扩展欧几里得, ax + by = gcd(a, b)
-constexpr int32_t exgcd(int32_t a, int32_t b, int32_t& x, int32_t& y){
+template <typename T>
+constexpr T exgcd(T a, T b, T& x, T& y){
     if (b == 0){
         x = 1;
         y = 0;
         return a;
     }
-    int32_t quot = a / b, rem = a % b;
-    int32_t r = exgcd(b, rem, y, x);
+    T quot = a / b, rem = a % b;
+    T r = exgcd(b, rem, y, x);
+    y -= quot * x;
+    return r;
+}
+
+constexpr uint32_t exgcd(uint32_t a, uint32_t b, int32_t& x, int32_t& y){
+    if (b == 0){
+        x = 1;
+        y = 0;
+        return a;
+    }
+    uint32_t quot = a / b, rem = a % b;
+    uint32_t r = exgcd(b, rem, y, x);
     y -= quot * x;
     return r;
 }
@@ -81,16 +96,23 @@ constexpr uint64_t exgcd(uint64_t a, uint64_t b, int64_t& x, int64_t& y){
 // 求逆元, ax = 1 (mod m), a与mod互质, 否则返回-1
 constexpr uint32_t inv(uint32_t x, uint32_t mod){
     int32_t y = 0, z = 0;
-    if (exgcd(x, mod, y, z) != 1)
+    if (exgcd((int32_t)x, (int32_t)mod, y, z) != 1)
         return -1;
     return (uint32_t)(y < 0 ? y + mod : y);
 }
 
 constexpr uint64_t inv(uint64_t x, uint64_t mod){
     int64_t y = 0, z = 0;
-    if (exgcd(x, mod, y, z) != 1)
+    if (exgcd((int64_t)x, (int64_t)mod, y, z) != 1)
         return -1;
     return (uint64_t)(y < 0 ? y + mod : y);
+}
+
+template <typename T> constexpr T inv(T x, T mod){
+    T y = 0, z = 0;
+    if (exgcd(x, mod, y, z) != 1)
+        return -1;
+    return y < 0 ? y + mod : y;
 }
 
 void inv(uint32_t vals[], uint32_t n, uint32_t mod);
@@ -142,6 +164,7 @@ bool has_root(uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
 
 // a^x === b (mod p)
 uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p);
+uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p, uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
 // g^x === b (mod p)
 uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p);
 uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
@@ -249,7 +272,7 @@ template <int N> constexpr NMod<N> ident(NMod<N>) { return NMod<N>(1); }
 template <int N> constexpr NMod<N> zero(NMod<N>) { return NMod<N>(0); }
 template <int N, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, NMod<N>> num(const NMod<N>& x, U n) { return NMod<N>(num(x.n, n)); }
 template <int N2, int N> constexpr NMod<N> gen(NMod<N>) { static_assert((N - 1) % N2 == 0, "root number not compatible"); return pow(NModRoot<N>::G, (N - 1) / N2, N); }
-template <int N> constexpr NMod<N> gen(NMod<N>, uint32_t n) { assert((N - 1) % n == 0); return pow(NModRoot<N>::G, (N - 1) / n, N); }
+template <int N> constexpr NMod<N> gen(NMod<N>, uint32_t n) { assert((N - 1) % n == 0 && "root number not compatible"); return pow(NModRoot<N>::G, (N - 1) / n, N); }
 template <int N> constexpr NMod<N> conj(NMod<N> x) { return x; }
 template <int N> constexpr NMod<N> inv(NMod<N> x) { return pow(x.n, (uint32_t)N - 2, (uint32_t)N); }
 template <int N> constexpr NMod<N> norm(NMod<N> x) { return x; }
