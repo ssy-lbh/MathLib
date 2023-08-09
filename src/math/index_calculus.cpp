@@ -21,17 +21,13 @@
 */
 
 struct IndexCalculusContext {
-    constexpr static uint32_t M = 239; // 239 -> uint32_t, 35000 -> uint64_t
-    constexpr static uint32_t N = 3 * M;
+    uint64_t** a;
+    uint64_t n;
+    uint64_t m;
 
-    uint64_t a[N][M];
-    uint32_t n;
-    uint32_t m;
-
-    bool tag[M];
-    uint64_t prime[M];
-    uint64_t inv_prime[M];
-    uint64_t ind[M];
+    uint64_t* prime;
+    uint64_t* inv_prime;
+    uint64_t* ind;
 };
 
 static uint32_t get_opti_value(uint64_t mod){
@@ -41,13 +37,28 @@ static uint32_t get_opti_value(uint64_t mod){
 
 uint32_t index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
     uint64_t limit = get_opti_value(mod);
-    memset(ctx.tag, false, sizeof(ctx.tag));
-    uint32_t cnt = (uint32_t)egypt_sieve(limit, ctx.tag, ctx.prime);
-    // assert(cnt <= IndexCalculusContext::M);
-    for (uint32_t i = 0; i < cnt; i++){
+
+    uint64_t* tag = new uint64_t[limit];
+    uint64_t* prime = new uint64_t[pi_limit(limit)];
+    memset(tag, 0, sizeof(tag));
+    uint64_t cnt = (uint64_t)euler_sieve(limit, tag, prime);
+    delete[] tag;
+
+    ctx.prime = new uint64_t[cnt];
+    ctx.inv_prime = new uint64_t[cnt];
+    ctx.ind = new uint64_t[cnt];
+    memcpy(ctx.prime, prime, sizeof(uint64_t) * cnt);
+    delete[] prime;
+
+    ctx.n = cnt;
+    ctx.m = cnt * 3;
+    ctx.a = new uint64_t*[ctx.m];
+    for (uint64_t i = 0; i < ctx.m; i++)
+        ctx.a[i] = new uint64_t[cnt + 1];
+    
+    for (uint64_t i = 0; i < cnt; i++)
         ctx.inv_prime[i] = inv(ctx.prime[i], mod);
-        // assert(ctx.inv_prime[i] * ctx.prime[i] % mod == 1);
-    }
+
     return cnt;
 }
 
@@ -84,21 +95,17 @@ bool gauss(IndexCalculusContext& ctx, uint64_t mod){
     return true;
 }
 
-void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p, uint32_t cnt){
-    uint32_t limit = cnt * 3;
+void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p){
     uint64_t phi = p - 1;
-    memset(ctx.a, 0, sizeof(ctx.a));
-    ctx.n = cnt;
-    ctx.m = limit;
     do {
         uint32_t i = 0;
-        for (uint64_t j = randmod(phi), k = pow(g, j, p); i < limit; j = randmod(phi), k = pow(g, j, p)){
+        for (uint64_t j = randmod(phi), k = pow(g, j, p); i < ctx.m; j = randmod(phi), k = pow(g, j, p)){
             for (uint64_t l = k, x = 1; x < phi; l = mul(l, k, p), x++){
                 uint32_t t1 = ctzl(l);
                 uint64_t t2 = l >> t1, t3;
                 ctx.a[i][0] = t1;
                 uint32_t y;
-                for (y = 1; y < cnt && t2 > 1; y++){
+                for (y = 1; y < ctx.n && t2 > 1; y++){
                     if ((y == 9 && t2 > 1e15) || (y == 29 && t2 > 1e12))
                         break;
                     ctx.a[i][y] = 0;
@@ -107,28 +114,22 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p, uin
                         ctx.a[i][y]++;
                     }
                 }
-                memset(ctx.a[i] + y, 0, sizeof(uint64_t) * (cnt - y));
+                memset(ctx.a[i] + y, 0, sizeof(uint64_t) * (ctx.n - y));
                 if (t2 == 1){
-                    // uint64_t prod = 1;
-                    // for (uint32_t y = 0; y < cnt; y++){
-                    //     prod = mul(prod, pow(ctx.prime[y], ctx.a[i][y], p), p);
-                    // }
-                    // assert(prod == l);
-                    ctx.a[i][cnt] = mul(j, x, phi);
-                    // assert(pow(g, ctx.a[i][cnt], p) == l);
+                    ctx.a[i][ctx.n] = mul(j, x, phi);
                     i++;
                     break;
                 }
             }
         }
     } while (!gauss(ctx, phi));
-    for (uint32_t i = 0; i < cnt; i++){
-        ctx.ind[i] = ctx.a[i][cnt];
-        // assert(pow(g, ctx.ind[i], p) == ctx.prime[i]);
+    for (uint32_t i = 0; i < ctx.n; i++){
+        ctx.ind[i] = ctx.a[i][ctx.n];
+        assert(pow(g, ctx.ind[i], p) == ctx.prime[i]);
     }
 }
 
-inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g, uint64_t p, uint32_t cnt){
+inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g, uint64_t p){
     if (a == 1)
         return 0;
     if (p == 2)
@@ -141,7 +142,7 @@ inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g
             t1 = ctzl(t2);
             t2 >>= t1;
             uint64_t ans = (mul((uint64_t)t1, ctx.ind[0], phi) - mul(i, l, phi) + phi) % phi;
-            for (uint32_t x = 1; x < cnt && t2 > 1; x++){
+            for (uint32_t x = 1; x < ctx.n && t2 > 1; x++){
                 if ((x == 9 && t2 > 1e15) || (x == 29 && t2 > 1e12))
                     break;
                 while (t2 * ctx.inv_prime[x] % p < t2){
@@ -156,17 +157,27 @@ inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g
     }
 }
 
+void index_calculus_free(IndexCalculusContext& ctx){
+    for (uint64_t i = 0; i < ctx.m; i++)
+        delete[] ctx.a[i];
+    delete[] ctx.a;
+    delete[] ctx.prime;
+    delete[] ctx.inv_prime;
+    delete[] ctx.ind;
+}
+
 // a^x === b (mod p)
 uint64_t index_calculus_log(uint64_t a, uint64_t b, uint64_t g, uint64_t p){
     IndexCalculusContext ctx;
-    uint32_t cnt = index_calculus_init1(ctx, p);
-    index_calculus_init2(ctx, g, p, cnt);
+    index_calculus_init1(ctx, p);
+    index_calculus_init2(ctx, g, p);
     if (b == 1)
         return 0;
     uint64_t phi = p - 1;
-    uint64_t x = index_calculus(ctx, a, g, p, cnt);
+    uint64_t x = index_calculus(ctx, a, g, p);
     uint64_t d = gcd(x, phi);
-    uint64_t y = index_calculus(ctx, b, g, p, cnt);
+    uint64_t y = index_calculus(ctx, b, g, p);
+    index_calculus_free(ctx);
     if (y % d != 0)
         return -1;
     phi /= d;
@@ -176,7 +187,9 @@ uint64_t index_calculus_log(uint64_t a, uint64_t b, uint64_t g, uint64_t p){
 // g^x === a (mod p)
 uint64_t index_calculus_log(uint64_t a, uint64_t g, uint64_t p){
     IndexCalculusContext ctx;
-    uint32_t cnt = index_calculus_init1(ctx, p);
-    index_calculus_init2(ctx, g, p, cnt);
-    return index_calculus(ctx, a, g, p, cnt);
+    index_calculus_init1(ctx, p);
+    index_calculus_init2(ctx, g, p);
+    uint64_t res = index_calculus(ctx, a, g, p);
+    index_calculus_free(ctx);
+    return res;
 }
