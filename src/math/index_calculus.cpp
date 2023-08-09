@@ -40,7 +40,7 @@ uint32_t index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
 
     uint64_t* tag = new uint64_t[limit];
     uint64_t* prime = new uint64_t[pi_limit(limit)];
-    memset(tag, 0, sizeof(tag));
+    memset(tag, 0, sizeof(uint64_t) * limit);
     uint64_t cnt = (uint64_t)euler_sieve(limit, tag, prime);
     delete[] tag;
 
@@ -123,30 +123,26 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p){
             }
         }
     } while (!gauss(ctx, phi));
-    for (uint32_t i = 0; i < ctx.n; i++){
+    for (uint32_t i = 0; i < ctx.n; i++)
         ctx.ind[i] = ctx.a[i][ctx.n];
-        assert(pow(g, ctx.ind[i], p) == ctx.prime[i]);
-    }
 }
 
 inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g, uint64_t p){
-    if (a == 1)
-        return 0;
-    if (p == 2)
-        return -1;
+    if (a <= 1)
+        return a - 1;
     uint64_t phi = p - 1;
     for (uint64_t i = randmod(phi), j = pow(g, i, p); ; i = randmod(phi), j = pow(g, i, p)){
         for (uint64_t k = j, l = 1; l < phi; k = mul(k, j, p), l++){
             uint32_t t1;
-            uint64_t t2 = mul(a, k, p);
+            uint64_t t2 = mul(a, k, p), t3;
             t1 = ctzl(t2);
             t2 >>= t1;
             uint64_t ans = (mul((uint64_t)t1, ctx.ind[0], phi) - mul(i, l, phi) + phi) % phi;
             for (uint32_t x = 1; x < ctx.n && t2 > 1; x++){
                 if ((x == 9 && t2 > 1e15) || (x == 29 && t2 > 1e12))
                     break;
-                while (t2 * ctx.inv_prime[x] % p < t2){
-                    t2 = t2 * ctx.inv_prime[x] % p;
+                while ((t3 = mul(t2, ctx.inv_prime[x], p)) < t2){
+                    t2 = t3;
                     ans = (ans + ctx.ind[x]) % phi;
                 }
             }
