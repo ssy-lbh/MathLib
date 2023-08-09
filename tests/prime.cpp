@@ -7,7 +7,7 @@
 
 constexpr uint32_t N = 20;
 
-void test_pollard_rho(){
+void test_factorize(){
     uint64_t n = 673984; // 10531 * 2^6
 
     uint64_t prime[N];
@@ -67,7 +67,7 @@ void test_dujiao_sieve(){
 }
 
 int main(){
-    test_pollard_rho();
+    test_factorize();
     test_pohlig_hellman_log();
     test_index_calculus_log();
     test_dujiao_sieve();
