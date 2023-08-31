@@ -49,7 +49,7 @@ void test_index_calculus_log(){
     uint32_t cnt = factorize(p - 1, prime, exp, N);
 
     assert(check_root(g, p, prime, cnt));
-    uint64_t x = index_calculus_log(b, g, p);
+    uint64_t x = index_calculus_log(g, b, p);
     assert(pow(g, x, p) == b);
 }
 

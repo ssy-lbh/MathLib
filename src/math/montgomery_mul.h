@@ -15,7 +15,7 @@ public:
     uint64_t logR;
 
     /// @brief N must be odd
-    /// @param N 
+    /// @param N modulus
     MontgomeryMul(T N) : N(N) {
         logR = binsize(N);
         R = T(1) << logR;

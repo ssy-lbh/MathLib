@@ -145,6 +145,29 @@ void bignum_montgomery_mul(){
     }
 }
 
+void bignum_discrete_log(){
+    BigInt p = "11269160459";
+    // BigInt p = "3087913911303507899";
+
+    BigInt prime[64];
+    uint64_t exp[64];
+    uint64_t cnt = factorize(p - 1, prime, exp, 64);
+    BigInt g = find_root(p, prime, cnt);
+
+    BigInt b = randmod(p - 1) + 1;
+
+    BigInt x = index_calculus_log(g, b, p);
+    print("ind_");
+    print(g);
+    print("[");
+    print(b);
+    print("] = ");
+    print(x);
+    print("\n");
+    assert(pow(g, x, p) == b);
+    // ind_2[2049958631902929026] = 3041110249776312847 (mod 3087913911303507899)
+}
+
 int main(){
     bignum_pow();
     bignum_arith();
@@ -155,5 +178,6 @@ int main(){
     //bignum_factorize();
     bignum_test_ecc_enc();
     bignum_montgomery_mul();
+    //bignum_discrete_log();
     return 0;
 }

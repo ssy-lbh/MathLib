@@ -5,6 +5,7 @@
 
 #include <initializer_list>
 #include <functional>
+#include <cstdint>
 
 // 张量模板, 维度: ..., 行, 列
 template <typename T, int... L>
@@ -51,7 +52,7 @@ public:
 };
 
 template <int... L>
-using Tensor = TTensor<default_type, L...>;
+using Tensor = TTensor<default_type, L...>; 
 
 template <typename T>
 struct tensor_dim_equal;
@@ -259,6 +260,17 @@ template <typename T, int CL, int... L> constexpr bool operator==(const TTensor<
     return !(x != y);
 }
 
+template <typename T> constexpr TTensor<T> ident(const TTensor<T>& x) {
+    return TTensor<T>(ident(x.n));
+}
+
+template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> ident(const TTensor<T, CL, L...>& x) {
+    TTensor<T, CL, L...> t;
+    for (int i = 0; i < CL; i++)
+        t[i] = ident(x[i]);
+    return t;
+}
+
 template <typename T> constexpr TTensor<T> zero(const TTensor<T>& x) {
     return TTensor<T>(zero(x.n));
 }
@@ -270,6 +282,39 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> zero(cons
     return t;
 }
 
+template <typename T, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TTensor<T>> num(const TTensor<T>& x, U n) {
+    return TTensor<T>(num<T>(x.n, n));
+}
+
+template <typename T, int CL, int... L, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TTensor<T, CL, L...>> num(const TTensor<T, CL, L...>& x, U n) {
+    TTensor<T, CL, L...> t;
+    for (int i = 0; i < CL; i++)
+        t[i] = num<T>(x[i], n);
+    return t;
+}
+
+template <int N2, typename T> constexpr TTensor<T> gen(const TTensor<T>& x) {
+    return TTensor<T>(gen<N2>(x.n));
+}
+
+template <int N2, typename T, int CL, int... L> constexpr TTensor<T, CL, L...> gen(const TTensor<T, CL, L...>& x) {
+    TTensor<T, CL, L...> t;
+    for (int i = 0; i < CL; i++)
+        t[i] = gen<N2>(x[i]);
+    return t;
+}
+
+template <typename T> constexpr TTensor<T> gen(const TTensor<T>& x, uint32_t n) {
+    return TTensor<T>(gen(x.n, n));
+}
+
+template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> gen(const TTensor<T, CL, L...>& x, uint32_t n) {
+    TTensor<T, CL, L...> t;
+    for (int i = 0; i < CL; i++)
+        t[i] = gen(x[i], n);
+    return t;
+}
+
 template <typename T> constexpr TTensor<T> conj(const TTensor<T>& x) {
     return TTensor<T>(conj(x.n));
 }
@@ -278,6 +323,17 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> conj(cons
     TTensor<T, CL, L...> t;
     for (int i = 0; i < CL; i++)
         t[i] = conj(x[i]);
+    return t;
+}
+
+template <typename T> constexpr TTensor<T> inv(const TTensor<T>& x) {
+    return TTensor<T>(inv(x.n));
+}
+
+template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> inv(const TTensor<T, CL, L...>& x) {
+    TTensor<T, CL, L...> t;
+    for (int i = 0; i < CL; i++)
+        t[i] = inv(x[i]);
     return t;
 }
 
@@ -345,7 +401,11 @@ template <typename T, int CL, int... L> constexpr T area(const TTensor<T, CL, L.
     return sqrt(dot(x, x) * dot(y, y) - sqr(dot(x, y)));
 }
 
-template <typename T> constexpr TTensor<T> hadamard(const TTensor<T>& x, const TTensor<T>& y) {
+template <typename T> constexpr T hadamard(const T& x, const T& y) {
+    return x * y;
+}
+
+template <typename T> constexpr T hadamard(const TTensor<T>& x, const TTensor<T>& y) {
     return TTensor<T>(x.n * y.n);
 }
 

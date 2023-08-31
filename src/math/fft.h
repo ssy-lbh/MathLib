@@ -16,6 +16,18 @@ void fft_rev(TTensor<T, N>& s){
     delete[] r;
 }
 
+template <typename T>
+void fft_rev(T poly[], int n){
+    assert(n == (n & -n) && "n must be power of 2");
+    int* r = new int[n];
+    r[0] = 0;
+    for (int i = 1; i < n; i++){
+        r[i] = (r[i >> 1] >> 1) | ((i & 1) ? (n >> 1) : 0);
+        if (i < r[i]){ T t; t = poly[i]; poly[i] = poly[r[i]]; poly[r[i]] = t; }
+    }
+    delete[] r;
+}
+
 template <typename T, int N>
 void fft(TTensor<T, N>& poly, bool ifft = false){
     static_assert(N == (N & -N), "N must be power of 2");
@@ -26,15 +38,59 @@ void fft(TTensor<T, N>& poly, bool ifft = false){
             T o, m = ident(o); // 单位元
             o = ifft ? inv(gen(o, 1 << i)) : gen(o, 1 << i); // 生成元
             for (int k = (j << i); k < (j << i) + h; k++){
-                T A = poly[k], B = m * poly[k + h];
+                T A = poly[k], B = poly[k + h] * m; // 系数在左，变量在右，右乘生成元的幂
                 poly[k] = A + B; poly[k + h] = A - B;
                 m *= o;
             }
         }
     }
     if (ifft)
-        for (int i = 0; i < N; i++)
-            poly[i] /= T(N);
+        poly *= inv(T(N));
+}
+
+template <typename T>
+void fft(T poly[], int n, bool ifft = false){
+    assert(n == (n & -n) && "n must be power of 2");
+    fft_rev(poly, n);
+    for (int i = 1; (1 << i) <= n; i++){
+        int h = (1 << (i - 1));
+        for (int j = 0; j < (n >> i); j++){
+            T o, m = ident(o); // 单位元
+            o = ifft ? inv(gen(o, 1 << i)) : gen(o, 1 << i); // 生成元
+            for (int k = (j << i); k < (j << i) + h; k++){
+                T A = poly[k], B = poly[k + h] * m;
+                poly[k] = A + B; poly[k + h] = A - B;
+                m *= o;
+            }
+        }
+    }
+    if (ifft){
+        T t = inv(T(n));
+        for (int i = 0; i < n; i++)
+            poly[i] *= t;
+    }
+}
+
+template <typename T, int CL, int... L>
+void fft(TTensor<T, CL, L...>& poly, bool ifft = false){
+    static_assert(CL == (CL & -CL), "CL must be power of 2");
+    for (int i = 0; i < CL; i++)
+        fft(poly[i], ifft);
+    fft_rev(poly.n, CL);
+    for (int i = 1; (1 << i) <= CL; i++){
+        int h = (1 << (i - 1));
+        for (int j = 0; j < (CL >> i); j++){
+            T o, m = ident(o); // 单位元
+            o = ifft ? inv(gen(o, 1 << i)) : gen(o, 1 << i); // 生成元
+            for (int k = (j << i); k < (j << i) + h; k++){
+                TTensor<T, L...> A = poly[k], B = poly[k + h] * m; // 系数在左，变量在右，右乘生成元的幂
+                poly[k] = A + B; poly[k + h] = A - B;
+                m *= o;
+            }
+        }
+    }
+    if (ifft)
+        poly *= inv(T(CL));
 }
 
 template <typename T, int N>
@@ -89,9 +145,11 @@ void fht(TTensor<T, N>& s, bool ifht = false){
             ck = t0; sk = t1;
         }
     }
-    if (ifht)
+    if (ifht){
+        T t = inv(T(N));
         for (int i = 0; i < N; i++)
-            s[i] /= T(N);
+            s[i] *= t;
+    }
 }
 
 #endif /* FFT_H */

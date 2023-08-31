@@ -121,7 +121,7 @@ static uint64_t getpi(uint64_t x) {
     return ans;
 }
 
-// Ğ¡ÓÚµÈÓÚnµÄËØÊıÓĞ¶àÉÙ¸ö
+// å°äºç­‰äºnçš„ç´ æ•°æœ‰å¤šå°‘ä¸ª
 static uint64_t lehmer_pi_calc(uint64_t x){
     if (x < N) return pi[x];
     uint32_t a = (uint32_t)lehmer_pi_calc(sqrt_ceil(sqrt_ceil(x)));

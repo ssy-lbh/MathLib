@@ -54,6 +54,11 @@ uint64_t pi_limit(uint64_t x){
     return (uint64_t)ceil(x / log_x * (1 + 1.2762 / log_x + 1.2762 * log_log_x / log_x / log_x));
 }
 
+int legendre(uint64_t a, uint64_t p){
+    uint64_t res = pow(a, (p - 1) >> 1, p);
+    return res == p - 1 ? -1 : res;
+}
+
 int jacobi(uint64_t a, uint64_t n){
     int symbol = 1;
     if (n < 1 || (n & 1) == 0)
@@ -67,11 +72,12 @@ int jacobi(uint64_t a, uint64_t n){
         if (a == 1)
             return symbol;
 
-        if ((a & 1) == 0)
+        if ((a & 1) == 0){
             if (n % 8 == 3 || n % 8 == 5)
                 symbol = -symbol;
             a >>= 1;
             continue;
+        }
 
         if (a % 4 == 3 && n % 4 == 3)
             symbol = -symbol;
@@ -80,4 +86,13 @@ int jacobi(uint64_t a, uint64_t n){
         a = n;
         n = t;
     }
+}
+
+// 狄利克雷卷积
+void dirichlet_convolution(uint64_t a[], uint64_t b[], uint64_t c[], uint64_t n){
+    for (uint64_t i = 1; i < n; i++)
+        c[i] = 0;
+    for (uint64_t d = 1; d < n; d++)
+        for (uint64_t i = d, j = 1; i < n; i += d, j++)
+            c[i] += a[d] * b[j];
 }

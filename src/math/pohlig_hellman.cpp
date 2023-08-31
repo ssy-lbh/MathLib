@@ -22,11 +22,12 @@ uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[]
         }
         uint64_t sum = 1;
         uint64_t rem = 0, mod = pow_prime[exp[i]];
-        for (uint32_t j = 1; j <= exp[i]; j++){ //求出每个系数
+        for (uint32_t j = 1; j <= exp[i]; j++){ // 求出每个系数
             uint64_t a0 = pow(g, phi / pm1_prime[i], p);
             uint64_t b0 = pow(b, phi / pow_prime[j], p);
             uint64_t ap = 1;
-            for (uint64_t x = 0; x <= pm1_prime[i] - 1; x++){ // 遍历找出系数x
+            for (uint64_t x = 0; x <= pm1_prime[i] - 1; x++){ // 遍历找出系数x, 使得sum * a0^x === b0 (mod p)
+                // x = bsgs(a0, mul(b0, inv(sum, p), p), p);
                 if (mul(sum, ap, p) == b0){
                     factor[j] = x;
                     uint64_t xs = 0; // 已求出的系数按权求和

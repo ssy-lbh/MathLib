@@ -1,6 +1,7 @@
 #include "big_num.h"
 
 #include <random>
+#include <ctime>
 
 const BigInt BigInt::zero(0);
 const BigInt BigInt::one(1);
@@ -78,11 +79,19 @@ BigInt::Random::~Random() { gmp_randclear(state); }
 BigInt BigInt::Random::operator()(const BigInt& n) { BigInt t; mpz_urandomm(t.n, state, n.n); return t; }
 BigInt BigInt::Random::operator()(const BigInt& a, const BigInt& b) { BigInt t; mpz_sub(t.n, b.n, a.n); mpz_urandomm(t.n, state, t.n); mpz_add(t.n, t.n, a.n); return t; }
 
-//BigInt::Random default_bigint_random(0x114514CC);
-BigInt::Random default_bigint_random;
-BigInt randmod(const BigInt& x) { return default_bigint_random(x); }
-BigInt rand(const BigInt& a, const BigInt& b) { return default_bigint_random(a, b); }
-BigInt randbits(unsigned long bits) { BigInt t; mpz_urandomb(t.n, default_bigint_random.state, bits); return t; }
+BigInt::Random default_bigint_random(std::random_device{}());
+static time_t prev_reset_time = std::time(nullptr);
+
+static void reset_check(){
+    if (std::time(nullptr) - prev_reset_time > 10){
+        default_bigint_random = BigInt::Random(std::random_device{}());
+        prev_reset_time = std::time(nullptr);
+    }
+}
+
+BigInt randmod(const BigInt& x) { reset_check(); return default_bigint_random(x); }
+BigInt rand(const BigInt& a, const BigInt& b) { reset_check(); return default_bigint_random(a, b); }
+BigInt randbits(unsigned long bits) { reset_check(); BigInt t; mpz_urandomb(t.n, default_bigint_random.state, bits); return t; }
 
 const BigFrac BigFrac::zero(0);
 const BigFrac BigFrac::one(1);

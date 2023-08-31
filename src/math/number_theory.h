@@ -162,6 +162,9 @@ bool check_root(uint64_t x, uint64_t p, uint64_t pm1_prime[], uint32_t cnt);
 uint64_t find_root(uint64_t p, uint64_t pm1_prime[], uint32_t cnt);
 bool has_root(uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
 
+// a^x = b (mod p)
+uint64_t bsgs(uint64_t a, uint64_t b, uint64_t p);
+
 // a^x === b (mod p)
 uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p);
 uint64_t pohlig_hellman_log(uint64_t a, uint64_t b, uint64_t p, uint64_t pm1_prime[], uint32_t exp[], uint32_t cnt);
@@ -172,7 +175,7 @@ uint64_t pohlig_hellman(uint64_t g, uint64_t b, uint64_t p, uint64_t pm1_prime[]
 // a^x === b (mod p)
 uint64_t index_calculus_log(uint64_t a, uint64_t b, uint64_t g, uint64_t p);
 // g^x === a (mod p)
-uint64_t index_calculus_log(uint64_t a, uint64_t g, uint64_t p);
+uint64_t index_calculus_log(uint64_t g, uint64_t b, uint64_t p);
 
 // 有限循环群, 可以获取生成元, 目前的种类有
 // 1. Zn, 模N同余群, 有限循环群
@@ -218,6 +221,7 @@ public:
     explicit constexpr operator uint32_t() const { return n; }
 };
 
+template <int N> constexpr bool is_conjugate_identical(NMod<N>) { return true; }
 template <int N> constexpr bool is_commutative(NMod<N>) { return true; }
 template <int N> constexpr bool is_associative(NMod<N>) { return true; }
 template <int N> constexpr bool is_alternative(NMod<N>) { return true; }
@@ -298,11 +302,14 @@ template <int N> int legendre(NMod<N> x){
     return x == 0 ? 0 : pow(x.n, (N - 1) / 2, N) == 1 ? 1 : -1;
 }
 
+int legendre(uint64_t a, uint64_t p);
 int jacobi(uint64_t a, uint64_t n);
 
 template <int N> int jacobi(NMod<N> x){
     return jacobi(x.n, N);
 }
+
+void dirichlet_convolution(uint64_t a[], uint64_t b[], uint64_t c[], uint64_t n);
 
 template <typename T>
 class TMod {

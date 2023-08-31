@@ -4,7 +4,12 @@ constexpr bool is_power_of_2(uint32_t n){
     return n && ((n & (n - 1)) == 0);
 }
 
-void poly_rev(uint32_t poly[], uint32_t n){
+constexpr uint32_t ceil_power_of_2(uint32_t n){
+    uint32_t fst = 31 - __builtin_clz(n);
+    return (1 << fst) < n ? (1 << (fst + 1)) : (1 << fst);
+}
+
+void poly_rev_bit(uint32_t poly[], uint32_t n){
     assert(is_power_of_2(n));
     uint32_t* r = new uint32_t[n];
     r[0] = 0;
@@ -16,15 +21,15 @@ void poly_rev(uint32_t poly[], uint32_t n){
 }
 
 void poly_ntt(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod, bool intt){
-    poly_rev(poly, n);
+    poly_rev_bit(poly, n);
     assert((mod - 1) % n == 0);
     if (intt)
         g = pow(g, mod - 2, mod);
     for (uint32_t i = 1; (1u << i) <= n; i++){
         uint32_t h = (1 << (i - 1));
         for (uint32_t j = 0; j < (n >> i); j++){
-            uint32_t m = 1; // çÛÔª
-            uint32_t o = pow(g, (mod - 1) >> i, mod); // Éú³ÉÔªÓëÄæÔª
+            uint32_t m = 1; // å¹ºå…ƒ
+            uint32_t o = pow(g, (mod - 1) >> i, mod); // ç”Ÿæˆå…ƒä¸é€†å…ƒ
             for (uint32_t k = (j << i); k < (j << i) + h; k++){
                 uint32_t A = poly[k], B = (uint64_t)m * poly[k + h] % mod;
                 poly[k] = A + B >= mod ? A + B - mod : A + B;
@@ -48,6 +53,21 @@ void poly_sub(uint32_t poly1[], uint32_t poly2[], uint32_t n){
 void poly_add(uint32_t poly1[], uint32_t poly2[], uint32_t n){
     for (uint32_t i = 0; i < n; i++)
         poly1[i] += poly2[i];
+}
+
+uint32_t poly_deg(uint32_t poly[], uint32_t n){
+    for (uint32_t i = n - 1; i > 0; i--)
+        if (poly[i])
+            return i;
+    return 0;
+}
+
+void poly_rev(uint32_t poly[], uint32_t n){
+    for (uint32_t i = 0, j = n - 1; i < j; i++, j--){
+        uint32_t t = poly[i];
+        poly[i] = poly[j];
+        poly[j] = t;
+    }
 }
 
 void poly_fwt_or(uint32_t poly[], uint32_t n, bool inv){
@@ -86,7 +106,7 @@ void poly_fwt_xor(uint32_t poly[], uint32_t n, bool inv){
             }
 }
 
-// ¶àÏîÊ½³Ë·¨
+// å¤šé¡¹å¼ä¹˜æ³•
 // len(poly1) = 2n
 // len(poly2) = 2n
 // poly1 <= result
@@ -101,9 +121,10 @@ void poly_mul(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t g, uint32
     poly_ntt(poly1, len, g, mod, true);
 }
 
-// ¶àÏîÊ½ÇóÄæ
+// å¤šé¡¹å¼æ±‚é€†
 // len(poly) = 2n
 // len(tmp) = 2n
+// len(tmp2) = 2n
 // poly <= inv(poly)
 // tmp <= ntt(poly)
 void poly_inv(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t mod){
@@ -112,36 +133,55 @@ void poly_inv(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t 
         poly[0] = inv(poly[0], mod);
         return;
     }
-    poly_inv(poly, tmp, n >> 1, g, mod);
+    // G = A^(-1) (mod x^[n/2])
+    // B = A^(-1) (mod x^n)
+    // B - G = 0 (mod x^[n/2])
+    // (B - G)^2 = 0 (mod x^n)
+    // B^2 - 2BG + G^2 = 0 (mod x^n)
+    // AB^2 - 2ABG + AG^2 = 0 (mod x^n)
+    // B - 2G + AG^2 = 0 (mod x^n)
+    // B = 2G - AG^2 (mod x^n) = G(2 - AG) (mod x^n)
     uint32_t len = n << 1;
     memcpy(tmp, poly, sizeof(uint32_t) * n);
+    poly_inv(poly, tmp + n, n >> 1, g, mod);
     memset(tmp + n, 0, sizeof(uint32_t) * n);
+    memset(poly + n, 0, sizeof(uint32_t) * n);
     poly_ntt(tmp, len, g, mod, false);
     poly_ntt(poly, len, g, mod, false);
     for (uint32_t i = 0; i < len; i++)
-        poly[i] = (uint64_t)poly[i] * (mod + 2 - (uint64_t)tmp[i] * poly[i] % mod) % mod;
-    poly_ntt(poly, len, g, mod, true);
+        tmp[i] = (2 + mod - (uint64_t)poly[i] * tmp[i] % mod) * poly[i] % mod;
+    poly_ntt(tmp, len, g, mod, true);
+    memcpy(poly, tmp, sizeof(uint32_t) * n);
     memset(poly + n, 0, sizeof(uint32_t) * n);
 }
 
-// ¶àÏîÊ½³ı·¨
-// len(poly1) = 3n
-// len(poly2) = 2n
-// poly1 <= result
-// poly2 <= ntt(poly2)
-void poly_div(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t g, uint32_t mod){
+// å¤šé¡¹å¼é™¤æ³•
+// len(dividend) = 2n
+// len(divisor) = 2n
+// len(quotient) = 2n
+// dividend <= rev(dividend) * rev(divisor)^(-1) (mod x^n)
+// divisor <= ntt(rev(divisor)^_01) (mod x^n)
+// quotient <= result
+void poly_div(uint32_t dividend[], uint32_t divisor[], uint32_t quotient[], uint32_t n, uint32_t g, uint32_t mod){
     assert(is_power_of_2(n));
     uint32_t len = n << 1;
-    poly_inv(poly2, poly1 + n, n, g, mod);
-    poly_ntt(poly1, len, g, mod, false);
-    poly_ntt(poly2, len, g, mod, false);
-    for (uint32_t i = 0; i < len; i++)
-        poly1[i] = (uint64_t)poly1[i] * poly2[i] % mod;
-    poly_ntt(poly1, len, g, mod, true);
-    memset(poly1 + n, 0, sizeof(uint32_t) * n);
+    uint32_t deg_dividend = poly_deg(dividend, len);
+    uint32_t deg_divisor = poly_deg(divisor, len);
+    if (deg_dividend < deg_divisor){
+        memset(quotient, 0, sizeof(uint32_t) * n);
+        return;
+    }
+    uint32_t deg_quotient = deg_dividend - deg_divisor;
+    poly_rev(dividend, deg_dividend);
+    poly_rev(divisor, deg_divisor);
+    poly_inv(divisor, quotient, n, g, mod);
+    memset(quotient + n, 0, sizeof(uint32_t) * n);
+    poly_mul(dividend, divisor, n, g, mod);
+    memcpy(quotient, dividend, sizeof(uint32_t) * (deg_quotient + 1));
+    poly_rev(quotient, deg_quotient + 1);
 }
 
-// ¶àÏîÊ½¿ª¸ù
+// å¤šé¡¹å¼å¼€æ ¹
 // len(poly) = 2n
 // poly <= sqrt(poly)
 void poly_sqrt(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod, uint32_t inv2){
@@ -167,16 +207,16 @@ void poly_sqrt(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod, uint32_t i
     delete[] tmp;
 }
 
-// ¶àÏîÊ½Î¢·Ö
+// å¤šé¡¹å¼å¾®åˆ†
 // len(poly) = n
-// poly <= diff(poly)
-void poly_diff(uint32_t poly[], uint32_t n, uint32_t mod){
+// poly <= derivative(poly)
+void poly_deriv(uint32_t poly[], uint32_t n, uint32_t mod){
     for (uint32_t i = 1; i < n; i++)
         poly[i - 1] = (uint64_t)poly[i] * i % mod;
     poly[n - 1] = 0;
 }
 
-// ¶àÏîÊ½»ı·Ö
+// å¤šé¡¹å¼ç§¯åˆ†
 // len(poly) = n
 // invs = inv(0, 1, 2, ..., n - 1)
 // poly <= int(poly)
@@ -193,16 +233,18 @@ void poly_int(uint32_t poly[], uint32_t n, uint32_t mod){
     delete[] invs;
 }
 
-// ¶àÏîÊ½¶ÔÊı
+// å¤šé¡¹å¼å¯¹æ•°
 // len(poly) = 2n
 // len(tmp_diff) = 2n
-// len(tmp_inv) = n
+// len(tmp_inv) = 2n
 // poly <= log(poly)
 void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t tmp_inv[], uint32_t n, uint32_t g, uint32_t mod){
     assert(is_power_of_2(n));
+    assert(poly[0] == 1);
     uint32_t len = n << 1;
     memcpy(tmp_diff, poly, sizeof(uint32_t) * n);
-    poly_diff(tmp_diff, n, mod);
+    poly_deriv(tmp_diff, n, mod);
+    memset(tmp_diff + n, 0, sizeof(uint32_t) * n);
     poly_inv(poly, tmp_inv, n, g, mod);
     poly_ntt(poly, len, g, mod, false);
     poly_ntt(tmp_diff, len, g, mod, false);
@@ -214,25 +256,26 @@ void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t tmp_inv[], uint32_t
 }
 
 void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t n, uint32_t g, uint32_t mod){
-    uint32_t* tmp_inv = new uint32_t[n];
+    uint32_t* tmp_inv = new uint32_t[n << 1];
     poly_log(poly, tmp_diff, tmp_inv, n, g, mod);
     delete[] tmp_inv;
 }
 
 void poly_log(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod){
     uint32_t* tmp_diff = new uint32_t[n << 1];
-    uint32_t* tmp_inv = new uint32_t[n];
+    uint32_t* tmp_inv = new uint32_t[n << 1];
     poly_log(poly, tmp_diff, tmp_inv, n, g, mod);
     delete[] tmp_diff;
     delete[] tmp_inv;
 }
 
-// ¶àÏîÊ½Ö¸Êı
+// å¤šé¡¹å¼æŒ‡æ•°
 // len(poly) = 2n
 // len(tmp) = 2n
 // poly <= exp(poly)
 void poly_exp(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t mod){
     assert(is_power_of_2(n));
+    assert(poly[0] == 0);
     if (n == 1){
         poly[0] = 1;
         return;
@@ -243,6 +286,7 @@ void poly_exp(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t 
     for (uint32_t i = 0; i < n; i++)
         tmp[i] = (mod + poly[i] - tmp[i]) % mod;
     tmp[0] = (tmp[0] + 1) % mod;
+    memset(tmp + n, 0, sizeof(uint32_t) * n);
     poly_ntt(poly, len, g, mod, false);
     poly_ntt(tmp, len, g, mod, false);
     for (uint32_t i = 0; i < len; i++)
@@ -251,7 +295,7 @@ void poly_exp(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t 
     memset(poly + n, 0, sizeof(uint32_t) * n);
 }
 
-// ¶àÏîÊ½Ãİ
+// å¤šé¡¹å¼å¹‚
 // len(poly) = 2n
 // len(tmp) = 2n
 // poly <= pow(poly, k)

@@ -67,32 +67,36 @@ uint64_t egypt_sieve(uint64_t n, bool tag[], uint64_t prime[]){
     return cnt;
 }
 
-// min25筛 O(n^{2/3})
+// min25筛 O(n^{2/3}) | O(\frac{n^{3/4}}{\log n})
 
-// 杜教筛
+// 杜教筛 O(n^{2/3})
 // 求解 \sum_{i=1}^n f(i)
 // 输入 h = \sum{i=1}^n f * g
 // 默认 g = 1
 
+// 常用公式 f * g = h
 // \phi * 1 = id
-// \mu * 1 = \epsilon
-// \phi * \mu = id
+// \mu * 1 = \epsilon ([x == 1])
+// id_k * 1 = \sigma_k, \sigma_k * \mu = id_k
+// \phi * \sigma_0 = id * 1 = \sigma_1
 
-int64_t dujiao_sum(int64_t x, std::unordered_map<int64_t, int64_t>& cache, int64_t(*h)(int64_t)){
+// 莫比乌斯反演: f = 1 * g <=> g = \mu * f
+
+int64_t dujiao_sum(int64_t x, std::unordered_map<int64_t, int64_t>& cache, int64_t(*hsum)(int64_t)){
     if (cache.count(x)) return cache[x];
-    int64_t res = h(x);
+    int64_t res = hsum(x);
     for (int64_t l = 2, r; l <= x; l = r + 1){
         int64_t y = x / l;
         // r = x / (x / l), [x / n] == y 求出的n区间
         r = x / y;
-        res -= (r - l + 1) * dujiao_sum(y, cache, h);
+        res -= (r - l + 1) * dujiao_sum(y, cache, hsum); // 递归求解, r - l + 1 为函数 g 的区间和
     }
     return cache[x] = res;
 }
 
-int64_t dujiao_sieve(int64_t n, int64_t(*h)(int64_t)){
+int64_t dujiao_sieve(int64_t n, int64_t(*hsum)(int64_t)){
     std::unordered_map<int64_t, int64_t> cache;
-    return dujiao_sum(n, cache, h);
+    return dujiao_sum(n, cache, hsum);
 }
 
 // len(tmp) = pcnt + maxm + 4 * maxq

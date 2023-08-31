@@ -7,6 +7,14 @@ uint64_t factorial(uint64_t n, uint64_t mod){
     return res;
 }
 
+// \Pi [l, r]
+uint64_t factorial_interval(uint64_t l, uint64_t r, uint64_t mod){
+    uint64_t res = 1;
+    for (uint64_t i = l; i <= r; i++)
+        res = mul(res, i, mod);
+    return res;
+}
+
 void factorial(uint64_t vals[], uint64_t n, uint64_t mod){
     vals[0] = 1;
     for (uint64_t i = 1; i <= n; i++)
@@ -70,6 +78,15 @@ uint64_t stirling_number(uint64_t n, uint64_t k, uint64_t mod){
 
 uint64_t catalan_number(uint64_t n, uint64_t mod){
     return mul(binomial_coefficient(n << 1, n, mod), inv(n + 1, mod), mod);
+}
+
+// m >= n, 在出入栈问题中，n 为出栈次数，m 为入栈次数
+uint64_t catalan_number_ext(uint64_t n, uint64_t m, uint64_t mod){
+    if (n > m)
+        return 0;
+    uint64_t seq = binomial_coefficient(m + n, m, mod);
+    uint64_t seq2 = mul(mul(seq, n, mod), inv(m + 1, mod), mod);
+    return (seq - seq2 + mod) % mod;
 }
 
 uint64_t bell_number(uint64_t n, uint64_t mod){

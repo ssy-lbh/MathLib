@@ -1,6 +1,6 @@
 #include "number_theory.h"
-
 #include "sieves.h"
+#include "big_num.h"
 
 #include <algorithm>
 
@@ -11,7 +11,7 @@
 *    1.1. 筛出一定数量的素数, 确保 b 能被这些素数完全分解, 素数的上界一般取 e^{\frac{\sqrt(\log mod * \log \log mod)}{2} + 1}
 *    1.2. 这些素数依次编号为 p_i, 后文中令 e_i 为 p_i 的指数, a^{x_i} === p_i (mod p)
 * 2. 列举方程
-*    2.1. 令 t = randmod(0, p-1), 计算 a^t (mod p)
+*    2.1. 令 t = randmod(p-1), 计算 a^t (mod p)
 *    2.2. 以所有的 p 为基底, 对 a^t (mod p) 执行质因数分解, 得到 a^t (mod p) = \prod p_i^{e_i}, 如果无法分解为这些素数的乘积则舍去
 *    2.3. 所得方程 t = \sum e_i * x_i
 * 3. 解方程组
@@ -35,7 +35,7 @@ static uint32_t get_opti_value(uint64_t mod){
     return (uint32_t)exp(sqrt(lgmod * log(lgmod)) * 0.5 + 1.0);
 }
 
-uint32_t index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
+void index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
     uint64_t limit = get_opti_value(mod);
 
     uint64_t* tag = new uint64_t[limit];
@@ -58,8 +58,6 @@ uint32_t index_calculus_init1(IndexCalculusContext& ctx, uint64_t mod){
     
     for (uint64_t i = 0; i < cnt; i++)
         ctx.inv_prime[i] = inv(ctx.prime[i], mod);
-
-    return cnt;
 }
 
 bool gauss(IndexCalculusContext& ctx, uint64_t mod){
@@ -127,7 +125,7 @@ void index_calculus_init2(IndexCalculusContext& ctx, uint64_t g, uint64_t p){
         ctx.ind[i] = ctx.a[i][ctx.n];
 }
 
-inline uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g, uint64_t p){
+uint64_t index_calculus(IndexCalculusContext& ctx, uint64_t a, uint64_t g, uint64_t p){
     if (a <= 1)
         return a - 1;
     uint64_t phi = p - 1;
@@ -181,11 +179,177 @@ uint64_t index_calculus_log(uint64_t a, uint64_t b, uint64_t g, uint64_t p){
 }
 
 // g^x === a (mod p)
-uint64_t index_calculus_log(uint64_t a, uint64_t g, uint64_t p){
+uint64_t index_calculus_log(uint64_t g, uint64_t b, uint64_t p){
     IndexCalculusContext ctx;
     index_calculus_init1(ctx, p);
     index_calculus_init2(ctx, g, p);
-    uint64_t res = index_calculus(ctx, a, g, p);
+    uint64_t res = index_calculus(ctx, b, g, p);
+    index_calculus_free(ctx);
+    return res;
+}
+
+struct IndexCalculusContextEx {
+    BigInt** a;
+    uint64_t n;
+    uint64_t m;
+
+    uint64_t* prime;
+    BigInt* inv_prime;
+    BigInt* ind;
+};
+
+static uint64_t get_opti_value(BigInt mod){
+    BigFloat lgmod = log(BigFloat(mod));
+    return (uint64_t)(BigInt)exp(sqrt(lgmod * log(lgmod)) * 0.5 + 1.0);
+}
+
+void index_calculus_init1(IndexCalculusContextEx& ctx, BigInt mod){
+    uint64_t limit = get_opti_value(mod);
+
+    uint64_t* tag = new uint64_t[limit];
+    uint64_t* prime = new uint64_t[pi_limit(limit)];
+    memset(tag, 0, sizeof(uint64_t) * limit);
+    uint64_t cnt = (uint64_t)euler_sieve(limit, tag, prime);
+    delete[] tag;
+
+    ctx.prime = new uint64_t[cnt];
+    ctx.inv_prime = new BigInt[cnt];
+    ctx.ind = new BigInt[cnt];
+    memcpy(ctx.prime, prime, sizeof(uint64_t) * cnt);
+    delete[] prime;
+
+    ctx.n = cnt;
+    ctx.m = cnt * 3;
+    ctx.a = new BigInt*[ctx.m];
+    for (uint64_t i = 0; i < ctx.m; i++)
+        ctx.a[i] = new BigInt[cnt + 1];
+    
+    for (uint64_t i = 0; i < cnt; i++)
+        ctx.inv_prime[i] = inv(ctx.prime[i], mod);
+}
+
+bool gauss(IndexCalculusContextEx& ctx, BigInt mod){
+    for (uint64_t i = 0; i < ctx.n; i++){
+        if (gcd(ctx.a[i][i], mod) != 1){
+            uint64_t t = i;
+            for (uint64_t j = i + 1; j < ctx.m; j++){
+                if (gcd(ctx.a[j][i], mod) == 1){
+                    t = j;
+                    break;
+                }
+            }
+            if (i == t)
+                return false;
+            std::swap(ctx.a[i], ctx.a[t]);
+        }
+        BigInt cur_inv = inv(ctx.a[i][i], mod);
+        for (uint64_t j = i + 1; j < ctx.m; j++){
+            if (ctx.a[j][i]){
+                BigInt t = mul(cur_inv, ctx.a[j][i], mod);
+                for (uint64_t k = i; k <= ctx.n; k++){
+                    ctx.a[j][k] = (ctx.a[j][k] - mul(t, ctx.a[i][k], mod) + mod) % mod;
+                }
+            }
+        }
+    }
+    for (int64_t i = ctx.n - 1; i >= 0; i--){
+        for (uint64_t j = i + 1; j < ctx.n; j++){
+            ctx.a[i][ctx.n] = (ctx.a[i][ctx.n] - mul(ctx.a[i][j], ctx.a[j][ctx.n], mod) + mod) % mod;
+        }
+        ctx.a[i][ctx.n] = mul(ctx.a[i][ctx.n], inv(ctx.a[i][i], mod), mod);
+    }
+    return true;
+}
+
+void index_calculus_init2(IndexCalculusContextEx& ctx, BigInt g, BigInt p){
+    BigInt phi = p - 1;
+    uint64_t i = 0;
+    do {
+        for (BigInt j = randmod(phi), k = pow(g, j, p); i < ctx.m; j = randmod(phi), k = pow(g, j, p)){
+            for (BigInt l = k, x = 1; x < phi; l = mul(l, k, p), x++){
+                uint64_t t1 = l.scanbit1(0);
+                BigInt t2 = l >> t1, t3;
+                ctx.a[i][0] = t1;
+                uint64_t y;
+                for (y = 1; y < ctx.n && t2 > 1; y++){
+                    ctx.a[i][y] = 0;
+                    while (t2 % ctx.prime[y] == 0){
+                        t2 /= ctx.prime[y];
+                        ctx.a[i][y]++;
+                    }
+                }
+                if (t2 == 1){
+                    for (; y < ctx.n; y++)
+                        ctx.a[i][y] = 0;
+                    ctx.a[i][ctx.n] = mul(j, x, phi);
+                    i++;
+                    break;
+                }
+            }
+        }
+        i = ctx.n;
+    } while (!gauss(ctx, phi));
+    for (uint64_t i = 0; i < ctx.n; i++){
+        ctx.ind[i] = ctx.a[i][ctx.n];
+        assert(pow(g, ctx.ind[i], p) == ctx.prime[i]);
+    }
+}
+
+BigInt index_calculus(IndexCalculusContextEx& ctx, BigInt a, BigInt g, BigInt p){
+    if (a <= 1)
+        return a - 1;
+    BigInt phi = p - 1;
+    for (BigInt i = randmod(phi), j = pow(g, i, p); ; i = randmod(phi), j = pow(g, i, p)){
+        uint64_t t1;
+        BigInt t2 = mul(a, j, p), t3;
+        t1 = t2.scanbit1(0);
+        t2 >>= t1;
+        BigInt ans = (mul(t1, ctx.ind[0], phi) - i + phi) % phi;
+        for (uint64_t x = 1; x < ctx.n && t2 > 1; x++){
+            while (t2 % ctx.prime[x] == 0){
+                t2 /= ctx.prime[x];
+                ans = (ans + ctx.ind[x]) % phi;
+            }
+        }
+        if (t2 == 1){
+            return ans;
+        }
+    }
+}
+
+void index_calculus_free(IndexCalculusContextEx& ctx){
+    for (uint64_t i = 0; i < ctx.m; i++)
+        delete[] ctx.a[i];
+    delete[] ctx.a;
+    delete[] ctx.prime;
+    delete[] ctx.inv_prime;
+    delete[] ctx.ind;
+}
+
+// a^x === b (mod p)
+BigInt index_calculus_log(BigInt a, BigInt b, BigInt g, BigInt p){
+    IndexCalculusContextEx ctx;
+    index_calculus_init1(ctx, p);
+    index_calculus_init2(ctx, g, p);
+    if (b == 1)
+        return 0;
+    BigInt phi = p - 1;
+    BigInt x = index_calculus(ctx, a, g, p);
+    BigInt d = gcd(x, phi);
+    BigInt y = index_calculus(ctx, b, g, p);
+    index_calculus_free(ctx);
+    if (y % d != 0)
+        return -1;
+    phi /= d;
+    return mul(y / d, inv(x / d, phi), phi);
+}
+
+// g^x === a (mod p)
+BigInt index_calculus_log(BigInt g, BigInt b, BigInt p){
+    IndexCalculusContextEx ctx;
+    index_calculus_init1(ctx, p);
+    index_calculus_init2(ctx, g, p);
+    BigInt res = index_calculus(ctx, b, g, p);
     index_calculus_free(ctx);
     return res;
 }

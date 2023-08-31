@@ -4,6 +4,7 @@
 #include "math_base.h"
 
 #include <cstdint>
+#include <string>
 
 #include <gmp.h>
 #include <mpfr.h>
@@ -224,6 +225,9 @@ inline void BigInt::swap(BigInt& a, BigInt& b) { std::swap(a.n, b.n); }
 inline void print(const BigInt& x, int l) { x.print(); }
 inline void print(const BigInt& x, int radix, int l) { x.print(radix); }
 
+inline std::string to_string(const BigInt& x) { char* s = mpz_get_str(nullptr, 10, x.n); std::string t(s); free(s); return t; }
+inline std::string to_string(const BigInt& x, int radix) { char* s = mpz_get_str(nullptr, radix, x.n); std::string t(s); free(s); return t; }
+
 int sgn(const BigInt& x);
 BigInt abs(const BigInt& x);
 BigInt mul(const BigInt& x, const BigInt& y, const BigInt& mod);
@@ -414,6 +418,9 @@ inline void BigFrac::scan(int radix) { mpq_inp_str(n, stdin, radix); }
 inline void BigFrac::scan(FILE* file) { mpq_inp_str(n, file, 10); }
 inline void BigFrac::scan(FILE* file, int radix) { mpq_inp_str(n, file, radix); }
 
+inline std::string to_string(const BigFrac& x) { char* s = mpq_get_str(nullptr, 10, x.n); std::string t(s); free(s); return t; }
+inline std::string to_string(const BigFrac& x, int radix) { char* s = mpq_get_str(nullptr, radix, x.n); std::string t(s); free(s); return t; }
+
 inline void BigFrac::get_num(BigInt& num) { mpz_set(num.n, mpq_numref(n)); }
 inline void BigFrac::get_den(BigInt& den) { mpz_set(den.n, mpq_denref(n)); }
 
@@ -557,6 +564,9 @@ inline void BigFloat::swap(BigFloat& a, BigFloat& b) { mpfr_swap(a.n, b.n); }
 inline void print(const BigFloat& x, int l) { x.print(); }
 inline void print(const BigFloat& x, int radix, int l) { x.print(radix); }
 
+inline std::string to_string(const BigFloat& x) { char* s = mpfr_get_str(nullptr, nullptr, 10, 0, x.n, MPFR_RNDD); std::string t(s); free(s); return t; }
+inline std::string to_string(const BigFloat& x, int radix) { char* s = mpfr_get_str(nullptr, nullptr, radix, 0, x.n, MPFR_RNDD); std::string t(s); free(s); return t; }
+
 int sgn(const BigInt& x);
 BigFloat abs(const BigFloat& x);
 BigFloat pow(const BigFloat& x, unsigned long exp);
@@ -637,9 +647,19 @@ BigInt pollard_rho(BigInt n);
 uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len);
 uint64_t factorize(BigInt n, BigInt prime[], uint64_t exp[], uint64_t len, uint64_t filter);
 
+bool check_root(BigInt x, BigInt p, BigInt pm1_prime[], uint64_t cnt);
+BigInt find_root(BigInt p, BigInt pm1_prime[], uint64_t cnt);
+bool has_root(BigInt pm1_prime[], uint64_t exp[], uint64_t cnt);
+
 BigInt cpow(BigInt x, BigInt w2, BigInt n, BigInt mod);
 BigInt cipolla(BigInt x, BigInt mod);
 
 BigInt ecm_factorize(BigInt n);
+
+// a^x = b (mod p)
+BigInt bsgs(const BigInt& a, const BigInt& b, const BigInt& p);
+
+BigInt index_calculus_log(BigInt a, BigInt b, BigInt g, BigInt p);
+BigInt index_calculus_log(BigInt g, BigInt b, BigInt p);
 
 #endif
