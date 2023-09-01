@@ -488,10 +488,12 @@ void print(const TTensor<T, CL>& x, int l){
 template <typename T, int CL, int NL, int... L>
 void print(const TTensor<T, CL, NL, L...>& x, int l){
     int s = line(TTensor<T, NL, L...>());
+    int s2 = line(TTensor<T, CL, NL, L...>());
     int q = l / s, r = l % s;
-    putchar('[');
+    putchar(l == 0 ? '[' : ' ');
     print(x[q], r);
-    putchar(']');
+    if (l == s2 - 1)
+        putchar(']');
 }
 
 #endif /* TENSOR_H */

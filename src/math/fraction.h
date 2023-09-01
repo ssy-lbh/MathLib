@@ -28,14 +28,14 @@ template <typename T> constexpr bool is_dividable(TFraction<T>) { return true; }
 
 template <typename T> constexpr TFraction<T> sim(const TFraction<T>& x) { T t = gcd(abs(x.x), x.y); return TFraction<T>(x.x / t, x.y / t); }
 
-template <typename T> constexpr TFraction<T> operator+(const TFraction<T>& a, const TFraction<T>& b) { return TFraction<T>(a.x * b.y + b.x * a.y, a.y * b.y); }
-template <typename T> constexpr TFraction<T> operator+(const TFraction<T>& a, const T& b) { return TFraction<T>(a.x + b * a.y, a.y); }
-template <typename T> constexpr TFraction<T> operator-(const TFraction<T>& a, const TFraction<T>& b) { return TFraction<T>(a.x * b.y - b.x * a.y, a.y * b.y); }
-template <typename T> constexpr TFraction<T> operator-(const TFraction<T>& a, const T& b) { return TFraction<T>(a.x - b * a.y, a.y); }
-template <typename T> constexpr TFraction<T> operator*(const TFraction<T>& a, const TFraction<T>& b) { return TFraction<T>(a.x * b.x, a.y * b.y); }
-template <typename T> constexpr TFraction<T> operator*(const TFraction<T>& a, const T& b) { return TFraction<T>(a.x * b, a.y); }
+template <typename T> constexpr TFraction<T> operator+(const TFraction<T>& a, const TFraction<T>& b) { return sim(TFraction<T>(a.x * b.y + b.x * a.y, a.y * b.y)); }
+template <typename T> constexpr TFraction<T> operator+(const TFraction<T>& a, const T& b) { return sim(TFraction<T>(a.x + b * a.y, a.y)); }
+template <typename T> constexpr TFraction<T> operator-(const TFraction<T>& a, const TFraction<T>& b) { return sim(TFraction<T>(a.x * b.y - b.x * a.y, a.y * b.y)); }
+template <typename T> constexpr TFraction<T> operator-(const TFraction<T>& a, const T& b) { return sim(TFraction<T>(a.x - b * a.y, a.y)); }
+template <typename T> constexpr TFraction<T> operator*(const TFraction<T>& a, const TFraction<T>& b) { return sim(TFraction<T>(a.x * b.x, a.y * b.y)); }
+template <typename T> constexpr TFraction<T> operator*(const TFraction<T>& a, const T& b) { return sim(TFraction<T>(a.x * b, a.y)); }
 template <typename T> constexpr TFraction<T> operator/(const TFraction<T>& a, const TFraction<T>& b) { return inv(b) * a; }
-template <typename T> constexpr TFraction<T> operator/(const TFraction<T>& a, const T& b) { return TFraction<T>(a.x, a.y * b); }
+template <typename T> constexpr TFraction<T> operator/(const TFraction<T>& a, const T& b) { return sim(TFraction<T>(a.x, a.y * b)); }
 template <typename T> constexpr TFraction<T>& operator+=(TFraction<T>& a, const TFraction<T>& b) { return a = a + b; }
 template <typename T> constexpr TFraction<T>& operator+=(TFraction<T>& a, const T& b) { return a = a + b; }
 template <typename T> constexpr TFraction<T>& operator-=(TFraction<T>& a, const TFraction<T>& b) { return a = a - b; }

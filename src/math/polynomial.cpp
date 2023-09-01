@@ -1,14 +1,5 @@
 #include "polynomial.h"
 
-constexpr bool is_power_of_2(uint32_t n){
-    return n && ((n & (n - 1)) == 0);
-}
-
-constexpr uint32_t ceil_power_of_2(uint32_t n){
-    uint32_t fst = 31 - __builtin_clz(n);
-    return (1 << fst) < n ? (1 << (fst + 1)) : (1 << fst);
-}
-
 void poly_rev_bit(uint32_t poly[], uint32_t n){
     assert(is_power_of_2(n));
     uint32_t* r = new uint32_t[n];
@@ -45,14 +36,24 @@ void poly_ntt(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod, bool intt){
     }
 }
 
+void poly_add(uint32_t poly1[], uint32_t poly2[], uint32_t n){
+    for (uint32_t i = 0; i < n; i++)
+        poly1[i] += poly2[i];
+}
+
+void poly_add(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t mod){
+    for (uint32_t i = 0; i < n; i++)
+        poly1[i] = (poly1[i] + poly2[i]) % mod;
+}
+
 void poly_sub(uint32_t poly1[], uint32_t poly2[], uint32_t n){
     for (uint32_t i = 0; i < n; i++)
         poly1[i] -= poly2[i];
 }
 
-void poly_add(uint32_t poly1[], uint32_t poly2[], uint32_t n){
+void poly_sub(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t mod){
     for (uint32_t i = 0; i < n; i++)
-        poly1[i] += poly2[i];
+        poly1[i] = (poly1[i] + mod - poly2[i]) % mod;
 }
 
 uint32_t poly_deg(uint32_t poly[], uint32_t n){
@@ -68,6 +69,17 @@ void poly_rev(uint32_t poly[], uint32_t n){
         poly[i] = poly[j];
         poly[j] = t;
     }
+}
+
+void poly_multiply(uint32_t poly[], uint32_t n, uint32_t k, uint32_t mod){
+    for (uint32_t i = 0; i < n; i++)
+        poly[i] = (uint64_t)poly[i] * k % mod;
+}
+
+void poly_divide(uint32_t poly[], uint32_t n, uint32_t k, uint32_t mod){
+    uint32_t invk = inv(k, mod);
+    for (uint32_t i = 0; i < n; i++)
+        poly[i] = (uint64_t)poly[i] * invk % mod;
 }
 
 void poly_fwt_or(uint32_t poly[], uint32_t n, bool inv){
@@ -293,6 +305,30 @@ void poly_exp(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t 
         poly[i] = (uint64_t)poly[i] * tmp[i] % mod;
     poly_ntt(poly, len, g, mod, true);
     memset(poly + n, 0, sizeof(uint32_t) * n);
+}
+
+// 多项式正余弦
+// len(poly) = 2n
+// len(sinp) = 2n
+// len(cosp) = 2n
+void poly_sincos(const uint32_t poly[], uint32_t sinp[], uint32_t cosp[], uint32_t n, uint32_t g, uint32_t mod){
+    assert(is_power_of_2(n));
+    assert(poly[0] == 0);
+    uint32_t I = cipolla(-1, mod);
+    assert(I != -1);
+    uint32_t inv2 = inv(2, mod);
+    uint32_t* t1 = new uint32_t[n << 1];
+    memcpy(sinp, poly, sizeof(uint32_t) * n);
+    poly_multiply(sinp, n, I, mod);
+    poly_exp(sinp, cosp, n, g, mod);
+    memcpy(t1, sinp, sizeof(uint32_t) * n);
+    poly_inv(t1, cosp, n, g, mod);
+    memcpy(cosp, sinp, sizeof(uint32_t) * n);
+    poly_add(cosp, t1, n, mod);
+    poly_multiply(cosp, n, inv2, mod);
+    poly_sub(sinp, t1, n, mod);
+    poly_multiply(sinp, n, (uint64_t)inv2 * (mod - I) % mod, mod);
+    delete[] t1;
 }
 
 // 多项式幂

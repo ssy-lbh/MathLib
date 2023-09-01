@@ -28,6 +28,9 @@ void fft_rev(T poly[], int n){
     delete[] r;
 }
 
+// 要求T类型是环，满足幂等律，存在单位元和乘法循环子群
+// C - {0} = S_1 \times R^+ ==log=> S_1 \times R, [A, B] = 0
+// H - {0} = S_3 \times R^+ ==log=> S_2 \times S_1 \times R, [A, B] = ?
 template <typename T, int N>
 void fft(TTensor<T, N>& poly, bool ifft = false){
     static_assert(N == (N & -N), "N must be power of 2");
@@ -145,11 +148,8 @@ void fht(TTensor<T, N>& s, bool ifht = false){
             ck = t0; sk = t1;
         }
     }
-    if (ifht){
-        T t = inv(T(N));
-        for (int i = 0; i < N; i++)
-            s[i] *= t;
-    }
+    if (ifht)
+        s *= inv(T(N));
 }
 
 #endif /* FFT_H */
