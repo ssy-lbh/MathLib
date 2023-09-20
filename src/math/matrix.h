@@ -3,6 +3,7 @@
 
 #include "math_base.h"
 #include "tensor.h"
+#include "polynomial.h"
 
 #include <functional>
 
@@ -44,17 +45,21 @@ template <typename T, int L> constexpr TMatrix<T, L, L> ident(TMatrix<T, L, L>) 
     return m;
 }
 
-template <typename T, int L, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TMatrix<T, L, L>> num(const TMatrix<T, L, L>& x, U n) {
-    TMatrix<T, L, L> m;
-    for (int i = 0; i < L; i++)
-        for (int j = 0; j < L; j++)
-            m[i][j] = zero(T());
-    for (int i = 0; i < L; i++)
-        m[i][i] = num(x[i][i], n);
-    return m;
+template <typename T, int L, typename U> constexpr TMatrix<T, L, L> num(const TMatrix<T, L, L>& x, U n) {
+    if constexpr (std::is_same_v<TMatrix<T, L, L>, U>){
+        return n;
+    } else {
+        TMatrix<T, L, L> m;
+        for (int i = 0; i < L; i++)
+            for (int j = 0; j < L; j++)
+                m[i][j] = zero(T());
+        for (int i = 0; i < L; i++)
+            m[i][i] = num(x[i][i], n);
+        return m;
+    }
 }
 
-// 作用于除环上的矩阵
+// 作用于域上的逆矩阵
 template <typename T, int L> constexpr TMatrix<T, L, L> inv(const TMatrix<T, L, L>& x) {
     TMatrix<T, L, L> l, u;
     lu_decom(x, l, u);
@@ -391,5 +396,44 @@ template <typename T, int L> constexpr TMatrix<T, L, L> tanh(const TMatrix<T, L,
 template <typename T, int L> constexpr TMatrix<T, L, L> asinh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)asinh(x); })); }
 template <typename T, int L> constexpr TMatrix<T, L, L> acosh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)acosh(x); })); }
 template <typename T, int L> constexpr TMatrix<T, L, L> atanh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)atanh(x); })); }
+
+// @ref https://doi.com/10.1088/0253-6102/49/4/01
+template <typename T, int L> constexpr TPolynomial<T, L + 1> eigen_poly(const TMatrix<T, L, L>& X) {
+    TMatrix<T, L, L> x = X;
+    // A_0 = trace(X^0) = trace(I) = L
+    // A_1 = trace(X) = \Sigma \lambda_i
+    // A_2 = trace(X^2) = \Sigma \lambda_i^2
+    // ...
+    // F_0[A(L,0)] = 1
+    // F_1[A(L,1)] = A(0,0) * A_1
+    // F_2[A(L,2)] = A(1,0) * F_1 * A_1 - A(1,1) * A_2
+    // F_3[A(L,3)] = A(2,0) * F_2 * A_1 - A(2,1) * F_1 * A_2 + A(2,2) * A_3, L(L-1)(L-2) = L(L-1)L -2 LL +2 L
+    // F_4[A(L,4)] = A(3,0) * F_3 * A_1 - A(3,1) * F_2 * A_2 + A(3,2) * F_1 * A_3 - A(3,3) * A_4, L(L-1)(L-2)(L-3) = L(L-1)(L-2)L -3 L(L-1)L +6 LL -6 L
+    // ...
+    // 注意 F_i / i!
+    TTensor<T, L> A;
+    for (int i = 0; i < L; i++){
+        A[i] = trace(x);
+        x = x * X;
+    }
+    TTensor<T, L + 1> F;
+    TPolynomial<T, L + 1> R;
+    /* F[0] = */ R[L] = ident(T());
+    F[1] = A[0];
+    R[L - 1] = -A[0];
+    T FT = -ident(T());
+    for (int i = 2; i <= L; i++){
+        F[i] = zero(T());
+        T P = ident(T());
+        for (int j = 1; j < i; j++){
+            F[i] += P * F[i - j] * A[j - 1];
+            P *= num(P, j - i);
+        }
+        F[i] += P * A[i - 1];
+        FT *= num(FT, -i);
+        R[L - i] = F[i] / FT;
+    }
+    return R;
+}
 
 #endif /* MATRIX_H */

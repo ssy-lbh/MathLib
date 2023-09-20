@@ -9,8 +9,8 @@
 #include "math/montgomery_mul.h"
 
 void bignum_pow(){
-    BigFloat a = 23;
-    BigFloat b = 22;
+    BigFloat a = 23.;
+    BigFloat b = 22.;
     assert(pow(a, b) == "907846434775996175406740561329");
 }
 
@@ -24,7 +24,7 @@ void bignum_arith(){
 void bignum_eigen(){
     const BigFloat eps = 1e-20;
     
-    TMatrix<BigFloat, 2, 2> A = {{1, 1}, {1, 0}};
+    TMatrix<BigFloat, 2, 2> A = {{1., 1.}, {1., 0.}};
     TTensor<BigFloat, 2> E;
     TMatrix<BigFloat, 2, 2> V;
 

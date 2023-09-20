@@ -47,7 +47,7 @@ void poly_inv(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t 
 // len(poly2) = 2n
 // poly1 <= result
 // poly2 <= ntt(poly2)
-void poly_div(uint32_t poly1[], uint32_t poly2[], uint32_t n, uint32_t g, uint32_t mod);
+void poly_div(uint32_t dividend[], uint32_t divisor[], uint32_t quotient[], uint32_t n, uint32_t g, uint32_t mod);
 
 // 多项式开跟
 // len(poly) = 2n
@@ -72,6 +72,18 @@ void poly_int(uint32_t poly[], uint32_t n, uint32_t mod);
 void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t tmp_inv[], uint32_t n, uint32_t g, uint32_t mod);
 void poly_log(uint32_t poly[], uint32_t tmp_diff[], uint32_t n, uint32_t g, uint32_t mod);
 void poly_log(uint32_t poly[], uint32_t n, uint32_t g, uint32_t mod);
+
+// 多项式指数
+// len(poly) = 2n
+// len(tmp) = 2n
+// poly <= exp(poly)
+void poly_exp(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t g, uint32_t mod);
+
+// 多项式正余弦
+// len(poly) = 2n
+// len(sinp) = 2n
+// len(cosp) = 2n
+void poly_sincos(const uint32_t poly[], uint32_t sinp[], uint32_t cosp[], uint32_t n, uint32_t g, uint32_t mod);
 
 // 多项式幂
 // len(poly) = 2n
@@ -275,11 +287,11 @@ template <int N, typename T, int CL, int... L> constexpr TPolynomial<T, CL, L...
     }
 }
 
-template <int N, typename T, int CL, int... L> constexpr auto subs(const TPolynomial<T, CL, L...>& a, const T& x) {
+template <int N, typename T, typename V, int CL, int... L> constexpr auto subs(const TPolynomial<T, CL, L...>& a, const V& x) {
     if constexpr (N == 0){
-        T b = a[CL - 1];
+        V b = num(x, a[CL - 1]);
         for (int i = CL - 2; i >= 0; i--)
-            b = a[i] + b * x;
+            b = num(x, a[i]) + b * x;
         return b;
     } else {
         using I = decltype(subs<N - 1>(a[0], x));

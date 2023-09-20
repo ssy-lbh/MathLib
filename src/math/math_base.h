@@ -98,6 +98,7 @@ template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> ide
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> zero(T) { return 0; }
 template <typename T, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U> && std::is_arithmetic_v<T>, T> num(T x, U n) { return T(n); }
 template <typename T> constexpr std::enable_if_t<std::is_arithmetic_v<T>, T> conj(T x) { return x; }
+template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, T> inv(T x) { return T(1) / x; }
 template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> inv(T x) { return (T)(1.0 / x); }
 template <typename T> constexpr std::enable_if_t<std::is_integral_v<T>, T> norm(T x) { return abs(x); }
 template <typename T> constexpr std::enable_if_t<std::is_floating_point_v<T>, T> norm(T x) { return fabs(x); }
@@ -167,13 +168,20 @@ void println(const wchar_t (&x)[N]) {
     printf("%S\n", x);
 }
 
+template <typename T> constexpr T square(const T& x) { return x * x; }
+
 template <typename T, typename I> constexpr std::enable_if_t<std::is_integral_v<I>, T> pow(T x, I y){
-    T r = ident(x);
-    while (y){
+    if (y < 0){
+        x = inv(x);
+        y = -y;
+    }
+    if (y == 0)
+        return ident(x);
+    T r = (y & 1) ? x : ident(x);
+    while (y >>= 1){
+        x *= x;
         if (y & 1)
             r *= x;
-        x *= x;
-        y >>= 1;
     }
     return r;
 }
@@ -247,6 +255,21 @@ template <typename T1, typename T2> constexpr std::enable_if_t<std::is_scalar_v<
 
 inline bool rand(bool){
     return rand() & 1;
+}
+
+template <typename T>
+T clamp(T x, T l, T r){
+    if (x < l)
+        return l;
+    if (x > r)
+        return r;
+    return x;
+}
+
+template <typename T, typename F>
+T lerp(T x, T y, F f){
+    static_assert(std::is_floating_point_v<F>, "f must be floating point");
+    return x + (y - x) * f;
 }
 
 #endif /* MATH_BASE_H */

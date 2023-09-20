@@ -93,7 +93,7 @@ public:
     static void swap(BigInt& a, BigInt& b);
 
     int sgn() const;
-    BigInt abs();
+    BigInt abs() const;
     BigInt pow(unsigned long exp);
     BigInt pow(const BigInt& exp, const BigInt& mod);
     BigInt sqrt();
@@ -205,9 +205,10 @@ inline bool operator!=(const BigInt& a, long b) { return mpz_cmp_si(a.n, b) != 0
 inline BigInt ident(BigInt) { return BigInt::one; }
 inline BigInt zero(BigInt) { return BigInt::zero; }
 template <typename U> std::enable_if_t<std::is_arithmetic_v<U>, BigInt> num(BigInt, U n) { return BigInt(n); }
-inline BigInt conj(BigInt x) { return x; }
-inline BigInt norm(BigInt x) { return x.abs(); }
-inline BigInt norm2(BigInt x) { return x * x; }
+inline BigInt conj(const BigInt& x) { return x; }
+inline BigInt inv(const BigInt& x) { return BigInt::one / x; }
+inline BigInt norm(const BigInt& x) { return x.abs(); }
+inline BigInt norm2(const BigInt& x) { return x * x; }
 inline int line(BigInt) { return 1; }
 
 inline void BigInt::print() const { mpz_out_str(stdout, 10, n); }
@@ -292,6 +293,7 @@ public:
     BigFrac(const int& x);
     BigFrac(const unsigned int& x);
     BigFrac(const long& x);
+    BigFrac(const long& x, const long& y);
     BigFrac(const unsigned long& x);
     BigFrac(const long long& x);
     BigFrac(const unsigned long long& x);
@@ -327,15 +329,18 @@ public:
 
     void get_num(BigInt& num);
     void get_den(BigInt& den);
+    void get_num_den(BigInt& num, BigInt& den);
+
+    uint64_t get_den_size() const;
 
     void swap(BigFrac& b);
     static void swap(BigFrac& a, BigFrac& b);
 
     int sgn() const;
-    BigFrac abs();
-    BigFrac inv();
-    BigFrac pow(unsigned long exp);
-    BigFrac pow(const BigInt& exp, const BigInt& mod);
+    BigFrac abs() const;
+    BigFrac inv() const;
+    BigFrac pow(unsigned long exp) const;
+    BigFrac pow(const BigInt& exp, const BigInt& mod) const;
 
     BigFrac& simplify();
 };
@@ -357,6 +362,7 @@ inline BigFrac::BigFrac(const char* s, int radix) { mpq_init(n); mpq_set_str(n, 
 inline BigFrac::BigFrac(const int& x) { mpq_init(n); mpq_set_si(n, x, 1); }
 inline BigFrac::BigFrac(const unsigned int& x) { mpq_init(n); mpq_set_ui(n, x, 1); }
 inline BigFrac::BigFrac(const long& x) { mpq_init(n); mpq_set_si(n, x, 1); }
+inline BigFrac::BigFrac(const long& x, const long& y) { mpq_init(n); mpq_set_si(n, x, y); }
 inline BigFrac::BigFrac(const unsigned long& x) { mpq_init(n); mpq_set_ui(n, x, 1); }
 inline BigFrac::BigFrac(const long long& x) { mpq_init(n); mpq_set_si(n, x, 1); }
 inline BigFrac::BigFrac(const unsigned long long& x) { mpq_init(n); mpq_set_ui(n, x, 1); }
@@ -403,10 +409,10 @@ inline BigFrac::operator long double() const { return mpq_get_d(n); }
 inline BigFrac ident(BigFrac) { return BigFrac::one; }
 inline BigFrac zero(BigFrac) { return BigFrac::zero; }
 template <typename U> std::enable_if_t<std::is_arithmetic_v<U>, BigFrac> num(BigFrac, U n) { return BigFrac(n); }
-inline BigFrac conj(BigFrac x) { return x; }
-inline BigFrac inv(BigFrac x) { return x.inv(); }
-inline BigFrac norm(BigFrac x) { BigFrac t = x; t.abs(); return t; }
-inline BigFrac norm2(BigFrac x) { return x * x; }
+inline BigFrac conj(const BigFrac& x) { return x; }
+inline BigFrac inv(const BigFrac& x) { return x.inv(); }
+inline BigFrac norm(const BigFrac& x) { BigFrac t = x; t.abs(); return t; }
+inline BigFrac norm2(const BigFrac& x) { return x * x; }
 inline int line(BigFrac) { return 1; }
 
 inline void BigFrac::print() const { mpq_out_str(stdout, 10, n); }
@@ -423,18 +429,15 @@ inline std::string to_string(const BigFrac& x, int radix) { char* s = mpq_get_st
 
 inline void BigFrac::get_num(BigInt& num) { mpz_set(num.n, mpq_numref(n)); }
 inline void BigFrac::get_den(BigInt& den) { mpz_set(den.n, mpq_denref(n)); }
+inline void BigFrac::get_num_den(BigInt& num, BigInt& den) { mpz_set(num.n, mpq_numref(n)); mpz_set(den.n, mpq_denref(n)); }
+
+inline uint64_t BigFrac::get_den_size() const { return mpz_sizeinbase(mpq_denref(n), 2); }
 
 inline void BigFrac::swap(BigFrac& b) { mpq_swap(n, b.n); }
 inline void BigFrac::swap(BigFrac& a, BigFrac& b) { mpq_swap(a.n, b.n); }
 
 inline void print(const BigFrac& x, int l) { x.print(); }
 inline void print(const BigFrac& x, int radix, int l) { x.print(radix); }
-
-int sgn(const BigFrac& x);
-BigFrac abs(const BigFrac& x);
-BigFrac inv(const BigFrac& x);
-BigFrac pow(const BigFrac& x, unsigned long exp);
-BigFrac pow(const BigFrac& x, const BigInt& exp, const BigInt& mod);
 
 class BigFloat {
 public:
@@ -454,6 +457,7 @@ public:
     BigFloat(const BigFloat& b);
     BigFloat(const BigInt& x);
     BigFloat(const BigFrac& x);
+    BigFloat(const BigFrac& x, mpfr_prec_t prec);
     BigFloat(const char* s);
     BigFloat(const char* s, int radix);
     BigFloat(const int& x);
@@ -465,6 +469,9 @@ public:
     BigFloat(const float& x);
     BigFloat(const double& x);
     BigFloat(const long double& x);
+    BigFloat(const float& x, mpfr_prec_t prec);
+    BigFloat(const double& x, mpfr_prec_t prec);
+    BigFloat(const long double& x, mpfr_prec_t prec);
     ~BigFloat();
     BigFloat& operator=(const BigFloat& b);
     BigFloat& operator=(const char* s);
@@ -494,6 +501,9 @@ public:
     explicit operator double() const;
     explicit operator long double() const;
 
+    void set_prec(mpfr_prec_t prec);
+    mpfr_prec_t get_prec() const;
+
     void print() const;
     void print(int radix) const;
     void print(FILE* file) const;
@@ -502,6 +512,11 @@ public:
     void scan(int radix);
     void scan(FILE* file);
     void scan(FILE* file, int radix);
+
+    void print(mpfr_prec_t prec) const;
+    void print(mpfr_prec_t prec, int radix) const;
+    void print(mpfr_prec_t prec, FILE* file) const;
+    void print(mpfr_prec_t prec, FILE* file, int radix) const;
 
     void swap(BigFloat& b);
     static void swap(BigFloat& a, BigFloat& b);
@@ -530,13 +545,13 @@ inline BigFloat& operator/=(BigFloat& a, const BigFloat& b) { mpfr_div(a.n, a.n,
 inline BigFloat& operator%=(BigFloat& a, const BigFloat& b) { mpfr_fmod(a.n, a.n, b.n, MPFR_RNDD); return a; }
 inline BigFloat& operator<<=(BigFloat& a, const unsigned long& b) { mpfr_mul_2exp(a.n, a.n, b, MPFR_RNDD); return a; }
 inline BigFloat& operator>>=(BigFloat& a, const unsigned long& b) { mpfr_div_2exp(a.n, a.n, b, MPFR_RNDD); return a; }
-inline BigFloat operator+(const BigFloat& a, const BigFloat& b) { BigFloat t; mpfr_add(t.n, a.n, b.n, MPFR_RNDD); return t; }
-inline BigFloat operator-(const BigFloat& a, const BigFloat& b) { BigFloat t; mpfr_sub(t.n, a.n, b.n, MPFR_RNDD); return t; }
-inline BigFloat operator*(const BigFloat& a, const BigFloat& b) { BigFloat t; mpfr_mul(t.n, a.n, b.n, MPFR_RNDD); return t; }
-inline BigFloat operator/(const BigFloat& a, const BigFloat& b) { BigFloat t; mpfr_div(t.n, a.n, b.n, MPFR_RNDD); return t; }
-inline BigFloat operator%(const BigFloat& a, const BigFloat& b) { BigFloat t; mpfr_fmod(t.n, a.n, b.n, MPFR_RNDD); return t; }
-inline BigFloat operator<<(const BigFloat& a, const unsigned long& b) { BigFloat t; mpfr_mul_2exp(t.n, a.n, b, MPFR_RNDD); return t; }
-inline BigFloat operator>>(const BigFloat& a, const unsigned long& b) { BigFloat t; mpfr_div_2exp(t.n, a.n, b, MPFR_RNDD); return t; }
+inline BigFloat operator+(const BigFloat& a, const BigFloat& b) { BigFloat t; t.set_prec(std::max(a.get_prec(), b.get_prec())); mpfr_add(t.n, a.n, b.n, MPFR_RNDD); return t; }
+inline BigFloat operator-(const BigFloat& a, const BigFloat& b) { BigFloat t; t.set_prec(std::max(a.get_prec(), b.get_prec())); mpfr_sub(t.n, a.n, b.n, MPFR_RNDD); return t; }
+inline BigFloat operator*(const BigFloat& a, const BigFloat& b) { BigFloat t; t.set_prec(std::max(a.get_prec(), b.get_prec())); mpfr_mul(t.n, a.n, b.n, MPFR_RNDD); return t; }
+inline BigFloat operator/(const BigFloat& a, const BigFloat& b) { BigFloat t; t.set_prec(std::max(a.get_prec(), b.get_prec())); mpfr_div(t.n, a.n, b.n, MPFR_RNDD); return t; }
+inline BigFloat operator%(const BigFloat& a, const BigFloat& b) { BigFloat t; t.set_prec(std::max(a.get_prec(), b.get_prec())); mpfr_fmod(t.n, a.n, b.n, MPFR_RNDD); return t; }
+inline BigFloat operator<<(const BigFloat& a, const unsigned long& b) { BigFloat t(a); mpfr_mul_2exp(t.n, t.n, b, MPFR_RNDD); return t; }
+inline BigFloat operator>>(const BigFloat& a, const unsigned long& b) { BigFloat t(a); mpfr_div_2exp(t.n, t.n, b, MPFR_RNDD); return t; }
 inline bool operator<(const BigFloat& a, const BigFloat& b) { return mpfr_cmp(a.n, b.n) < 0; }
 inline bool operator>(const BigFloat& a, const BigFloat& b) { return mpfr_cmp(a.n, b.n) > 0; }
 inline bool operator<=(const BigFloat& a, const BigFloat& b) { return mpfr_cmp(a.n, b.n) <= 0; }
@@ -549,8 +564,8 @@ inline BigFloat::operator float() const { return mpfr_get_d(n, MPFR_RNDD); }
 inline BigFloat::operator double() const { return mpfr_get_d(n, MPFR_RNDD); }
 inline BigFloat::operator long double() const { return mpfr_get_d(n, MPFR_RNDD); }
 
-inline BigFloat ident(BigFloat) { return BigFloat::one; }
-inline BigFloat zero(BigFloat) { return BigFloat::zero; }
+inline BigFloat ident(const BigFloat& x) { return BigFloat(1.0, x.get_prec()); }
+inline BigFloat zero(const BigFloat& x) { return BigFloat(0.0, x.get_prec()); }
 template <typename U> std::enable_if_t<std::is_arithmetic_v<U>, BigFloat> num(BigFloat, U n) { return BigFloat(n); }
 inline BigFloat conj(const BigFloat& x) { return x; }
 inline BigFloat inv(const BigFloat& x) { return BigFloat::one / x; }
@@ -561,8 +576,11 @@ inline int line(BigFloat) { return 1; }
 inline void BigFloat::swap(BigFloat& b) { mpfr_swap(n, b.n); }
 inline void BigFloat::swap(BigFloat& a, BigFloat& b) { mpfr_swap(a.n, b.n); }
 
-inline void print(const BigFloat& x, int l) { x.print(); }
-inline void print(const BigFloat& x, int radix, int l) { x.print(radix); }
+inline void print(const BigFloat& x, int l = 0) { x.print(); }
+inline void print(const BigFloat& x, int radix, int l = 0) { x.print(radix); }
+
+inline void print(mpfr_prec_t prec, const BigFloat& x) { x.print(prec); }
+inline void print(mpfr_prec_t prec, const BigFloat& x, int radix) { x.print(prec, radix); }
 
 inline std::string to_string(const BigFloat& x) { char* s = mpfr_get_str(nullptr, nullptr, 10, 0, x.n, MPFR_RNDD); std::string t(s); free(s); return t; }
 inline std::string to_string(const BigFloat& x, int radix) { char* s = mpfr_get_str(nullptr, nullptr, radix, 0, x.n, MPFR_RNDD); std::string t(s); free(s); return t; }
@@ -573,9 +591,15 @@ BigFloat pow(const BigFloat& x, unsigned long exp);
 BigFloat pow(const BigFloat& x, const BigFloat& exp);
 BigFloat sqrt(const BigFloat& x);
 BigFloat cbrt(const BigFloat& x);
+BigFloat root(const BigFloat& x, unsigned long exp);
 BigInt floor(const BigFloat& x);
 BigInt ceil(const BigFloat& x);
 BigInt trunc(const BigFloat& x);
+
+BigFloat get_pi();
+BigFloat get_e();
+BigFloat get_pi(mpfr_prec_t prec);
+BigFloat get_e(mpfr_prec_t prec);
 
 BigFloat exp(const BigFloat& x);
 BigFloat exp2(const BigFloat& x);

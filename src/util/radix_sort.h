@@ -15,15 +15,20 @@ void radix_sort(T* start, T* end, T* temp, uint32_t key_size = sizeof(T)) {
     T* temp_end = temp + len;
     T* i;
     uint8_t* j;
-    for (uint32_t k = 0; k < key_size; k += 2){
+    for (uint32_t k = 0; k < key_size; k++){
         memset(bucket, 0, sizeof(bucket));
         j = (uint8_t*)start + k; while (j < (uint8_t*)end) { bucket[*j]++; j += sizeof(T); }
         i = bucket_end - 2; while (i >= bucket) { *i += *(i+1); i--; }
         i = start; while (i < end) { temp[--bucket[*(uint8_t*)i + k]] = *i; i++; }
+        k++;
+        if (k == key_size){
+            memcpy(start, temp, sizeof(T) * len);
+            break;
+        }
         memset(bucket, 0, sizeof(bucket));
-        j = (uint8_t*)temp + k + 1; while (j < (uint8_t*)temp_end) { bucket[*j]++; j += sizeof(T); }
+        j = (uint8_t*)temp + k; while (j < (uint8_t*)temp_end) { bucket[*j]++; j += sizeof(T); }
         i = bucket + 1; while (i < bucket_end) { *i += *(i-1); i++; }
-        i = temp; while (i < temp_end) { start[--bucket[*((uint8_t*)i + k + 1)]] = *i; i++; }
+        i = temp; while (i < temp_end) { start[--bucket[*((uint8_t*)i + k)]] = *i; i++; }
     }
 }
 

@@ -108,7 +108,9 @@ constexpr uint64_t inv(uint64_t x, uint64_t mod){
     return (uint64_t)(y < 0 ? y + mod : y);
 }
 
+// 需要大量计算且保证mod为素数时，可以改使用费马小定理
 template <typename T> constexpr T inv(T x, T mod){
+    // return pow(x, mod - 2, mod);
     T y = 0, z = 0;
     if (exgcd(x, mod, y, z) != 1)
         return -1;

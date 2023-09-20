@@ -7,7 +7,7 @@ const BigInt BigInt::zero(0);
 const BigInt BigInt::one(1);
 
 int BigInt::sgn() const { return mpz_sgn(n); }
-BigInt BigInt::abs() { BigInt t; mpz_abs(t.n, n); return t; }
+BigInt BigInt::abs() const { BigInt t; mpz_abs(t.n, n); return t; }
 BigInt BigInt::pow(unsigned long exp) { BigInt t; mpz_pow_ui(t.n, n, exp); return t; }
 BigInt BigInt::pow(const BigInt& exp, const BigInt& mod) { BigInt t; mpz_powm(t.n, n, exp.n, mod.n); return t; }
 BigInt BigInt::sqrt() { BigInt t; mpz_sqrt(t.n, n); return t; }
@@ -97,26 +97,27 @@ const BigFrac BigFrac::zero(0);
 const BigFrac BigFrac::one(1);
 
 int BigFrac::sgn() const { return mpq_sgn(n); }
-BigFrac BigFrac::abs() { BigFrac t; mpq_abs(t.n, n); return t; }
-BigFrac BigFrac::inv() { BigFrac t; mpq_inv(t.n, n); return t; }
-BigFrac BigFrac::pow(unsigned long exp) { BigFrac t; mpz_pow_ui(mpq_numref(t.n), mpq_numref(n), exp); mpz_pow_ui(mpq_denref(t.n), mpq_denref(n), exp); return t; }
-BigFrac BigFrac::pow(const BigInt& exp, const BigInt& mod) { BigFrac t; mpz_powm(mpq_numref(t.n), mpq_numref(n), exp.n, mod.n); mpz_powm(mpq_denref(t.n), mpq_denref(n), exp.n, mod.n); return t; }
+BigFrac BigFrac::abs() const { BigFrac t; mpq_abs(t.n, n); return t; }
+BigFrac BigFrac::inv() const { BigFrac t; mpq_inv(t.n, n); return t; }
+BigFrac BigFrac::pow(unsigned long exp) const { BigFrac t; mpz_pow_ui(mpq_numref(t.n), mpq_numref(n), exp); mpz_pow_ui(mpq_denref(t.n), mpq_denref(n), exp); return t; }
+BigFrac BigFrac::pow(const BigInt& exp, const BigInt& mod) const { BigFrac t; mpz_powm(mpq_numref(t.n), mpq_numref(n), exp.n, mod.n); mpz_powm(mpq_denref(t.n), mpq_denref(n), exp.n, mod.n); return t; }
 
 BigFrac& BigFrac::simplify() { mpq_canonicalize(n); return *this; }
 
 constexpr mpfr_prec_t precision = 100;
 constexpr size_t outprec = 20;
 
-const BigFloat BigFloat::zero(0);
-const BigFloat BigFloat::one(1);
+const BigFloat BigFloat::zero(0.0);
+const BigFloat BigFloat::one(1.0);
 
 const BigFloat BigFloat::pi(PI);
 const BigFloat BigFloat::e(E);
 
 BigFloat::BigFloat() { mpfr_init2(n, precision); }
-BigFloat::BigFloat(const BigFloat& b) { mpfr_init2(n, precision); mpfr_set(n, b.n, MPFR_RNDD); }
+BigFloat::BigFloat(const BigFloat& b) { mpfr_init2(n, mpfr_get_prec(b.n)); mpfr_set(n, b.n, MPFR_RNDD); }
 BigFloat::BigFloat(const BigInt& x) { mpfr_init2(n, precision); mpfr_set_z(n, x.n, MPFR_RNDD); }
 BigFloat::BigFloat(const BigFrac& x) { mpfr_init2(n, precision); mpfr_set_q(n, x.n, MPFR_RNDD); }
+BigFloat::BigFloat(const BigFrac& x, mpfr_prec_t prec) { mpfr_init2(n, prec); mpfr_set_q(n, x.n, MPFR_RNDD); }
 BigFloat::BigFloat(const char* s) { mpfr_init2(n, precision); mpfr_set_str(n, s, 10, MPFR_RNDD); }
 BigFloat::BigFloat(const char* s, int radix) { mpfr_init2(n, precision); mpfr_set_str(n, s, radix, MPFR_RNDD); }
 BigFloat::BigFloat(const int& x) { mpfr_init2(n, precision); mpfr_set_si(n, x, MPFR_RNDD); }
@@ -128,8 +129,11 @@ BigFloat::BigFloat(const unsigned long long& x) { mpfr_init2(n, precision); mpfr
 BigFloat::BigFloat(const float& x) { mpfr_init2(n, precision); mpfr_set_d(n, x, MPFR_RNDD); }
 BigFloat::BigFloat(const double& x) { mpfr_init2(n, precision); mpfr_set_d(n, x, MPFR_RNDD); }
 BigFloat::BigFloat(const long double& x) { mpfr_init2(n, precision); mpfr_set_d(n, x, MPFR_RNDD); }
+BigFloat::BigFloat(const float& x, mpfr_prec_t prec) { mpfr_init2(n, prec); mpfr_set_d(n, x, MPFR_RNDD); }
+BigFloat::BigFloat(const double& x, mpfr_prec_t prec) { mpfr_init2(n, prec); mpfr_set_d(n, x, MPFR_RNDD); }
+BigFloat::BigFloat(const long double& x, mpfr_prec_t prec) { mpfr_init2(n, prec); mpfr_set_d(n, x, MPFR_RNDD); }
 BigFloat::~BigFloat() { mpfr_clear(n); }
-BigFloat& BigFloat::operator=(const BigFloat& b) { mpfr_set(n, b.n, MPFR_RNDD); return *this; }
+BigFloat& BigFloat::operator=(const BigFloat& b) { mpfr_set_prec(n, mpfr_get_prec(b.n)); mpfr_set(n, b.n, MPFR_RNDD); return *this; }
 BigFloat& BigFloat::operator=(const char* s) { mpfr_set_str(n, s, 10, MPFR_RNDD); return *this; }
 BigFloat& BigFloat::operator=(const int& x) { mpfr_set_si(n, x, MPFR_RNDD); return *this; }
 BigFloat& BigFloat::operator=(const unsigned int& x) { mpfr_set_ui(n, x, MPFR_RNDD); return *this; }
@@ -152,6 +156,9 @@ BigFloat BigFloat::operator--(int) { BigFloat t = *this; mpfr_sub_ui(n, n, 1, MP
 BigFloat BigFloat::operator-() const { BigFloat t = *this; mpfr_neg(t.n, t.n, MPFR_RNDD); return t; }
 BigFloat BigFloat::operator+() const { return *this; }
 
+void BigFloat::set_prec(mpfr_prec_t prec) { mpfr_set_prec(n, prec); }
+mpfr_prec_t BigFloat::get_prec() const { return mpfr_get_prec(n); }
+
 void BigFloat::print() const { mpfr_out_str(stdout, 10, outprec, n, MPFR_RNDD); }
 void BigFloat::print(int radix) const { mpfr_out_str(stdout, radix, outprec, n, MPFR_RNDD); }
 void BigFloat::print(FILE* file) const { mpfr_out_str(file, 10, outprec, n, MPFR_RNDD); }
@@ -161,45 +168,56 @@ void BigFloat::scan(int radix) { mpfr_inp_str(n, stdin, radix, MPFR_RNDD); }
 void BigFloat::scan(FILE* file) { mpfr_inp_str(n, file, 10, MPFR_RNDD); }
 void BigFloat::scan(FILE* file, int radix) { mpfr_inp_str(n, file, radix, MPFR_RNDD); }
 
+void BigFloat::print(mpfr_prec_t prec) const { mpfr_out_str(stdout, 10, prec, n, MPFR_RNDD); }
+void BigFloat::print(mpfr_prec_t prec, int radix) const { mpfr_out_str(stdout, radix, prec, n, MPFR_RNDD); }
+void BigFloat::print(mpfr_prec_t prec, FILE* file) const { mpfr_out_str(file, 10, prec, n, MPFR_RNDD); }
+void BigFloat::print(mpfr_prec_t prec, FILE* file, int radix) const { mpfr_out_str(file, radix, prec, n, MPFR_RNDD); }
+
 int BigFloat::sgn() const { return mpfr_sgn(n); }
-BigFloat BigFloat::abs() { BigFloat t; mpfr_abs(t.n, n, MPFR_RNDD); return t; }
+BigFloat BigFloat::abs() { BigFloat t(*this); mpfr_abs(t.n, t.n, MPFR_RNDD); return t; }
 BigFloat BigFloat::pow(unsigned long exp) { BigFloat t; mpfr_pow_ui(t.n, n, exp, MPFR_RNDD); return t; }
-BigFloat BigFloat::sqrt() { BigFloat t; mpfr_sqrt(t.n, n, MPFR_RNDD); return t; }
-BigInt BigFloat::floor() { BigFloat t; mpfr_floor(t.n, n); return BigInt(t); }
-BigInt BigFloat::ceil() { BigFloat t; mpfr_ceil(t.n, n); return BigInt(t); }
-BigInt BigFloat::trunc() { BigFloat t; mpfr_trunc(t.n, n); return BigInt(t); }
+BigFloat BigFloat::sqrt() { BigFloat t(*this); mpfr_sqrt(t.n, t.n, MPFR_RNDD); return t; }
+BigInt BigFloat::floor() { BigFloat t(*this); mpfr_floor(t.n, t.n); return BigInt(t); }
+BigInt BigFloat::ceil() { BigFloat t(*this); mpfr_ceil(t.n, t.n); return BigInt(t); }
+BigInt BigFloat::trunc() { BigFloat t(*this); mpfr_trunc(t.n, t.n); return BigInt(t); }
 
 int sgn(const BigFloat& x) { return mpfr_sgn(x.n); }
-BigFloat abs(const BigFloat& x) { BigFloat t; mpfr_abs(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat pow(const BigFloat& x, unsigned long exp) { BigFloat t; mpfr_pow_ui(t.n, x.n, exp, MPFR_RNDD); return t; }
-BigFloat pow(const BigFloat& x, const BigFloat& exp) { BigFloat t; mpfr_pow(t.n, x.n, exp.n, MPFR_RNDD); return t; }
-BigFloat sqrt(const BigFloat& x) { BigFloat t; mpfr_sqrt(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat cbrt(const BigFloat& x) { BigFloat t; mpfr_cbrt(t.n, x.n, MPFR_RNDD); return t; }
-BigInt floor(const BigFloat& x) { BigFloat t; mpfr_floor(t.n, x.n); return BigInt(t); }
-BigInt ceil(const BigFloat& x) { BigFloat t; mpfr_ceil(t.n, x.n); return BigInt(t); }
-BigInt trunc(const BigFloat& x) { BigFloat t; mpfr_trunc(t.n, x.n); return BigInt(t); }
+BigFloat abs(const BigFloat& x) { BigFloat t(x); mpfr_abs(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat pow(const BigFloat& x, unsigned long exp) { BigFloat t(x); mpfr_pow_ui(t.n, t.n, exp, MPFR_RNDD); return t; }
+BigFloat pow(const BigFloat& x, const BigFloat& exp) { BigFloat t(x); mpfr_pow(t.n, t.n, exp.n, MPFR_RNDD); return t; }
+BigFloat sqrt(const BigFloat& x) { BigFloat t(x); mpfr_sqrt(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat cbrt(const BigFloat& x) { BigFloat t(x); mpfr_cbrt(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat root(const BigFloat& x, unsigned long exp) { BigFloat t(x); mpfr_root(t.n, t.n, exp, MPFR_RNDD); return t; }
+BigInt floor(const BigFloat& x) { BigFloat t(x); mpfr_floor(t.n, t.n); return BigInt(t); }
+BigInt ceil(const BigFloat& x) { BigFloat t(x); mpfr_ceil(t.n, t.n); return BigInt(t); }
+BigInt trunc(const BigFloat& x) { BigFloat t(x); mpfr_trunc(t.n, t.n); return BigInt(t); }
 
-BigFloat exp(const BigFloat& x) { BigFloat t; mpfr_exp(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat exp2(const BigFloat& x) { BigFloat t; mpfr_exp2(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat exp10(const BigFloat& x) { BigFloat t; mpfr_exp10(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat expm1(const BigFloat& x) { BigFloat t; mpfr_expm1(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat log(const BigFloat& x) { BigFloat t; mpfr_log(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat log2(const BigFloat& x) { BigFloat t; mpfr_log2(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat log10(const BigFloat& x) { BigFloat t; mpfr_log10(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat log1p(const BigFloat& x) { BigFloat t; mpfr_log1p(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat sin(const BigFloat& x) { BigFloat t; mpfr_sin(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat cos(const BigFloat& x) { BigFloat t; mpfr_cos(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat tan(const BigFloat& x) { BigFloat t; mpfr_tan(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat sinh(const BigFloat& x) { BigFloat t; mpfr_sinh(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat cosh(const BigFloat& x) { BigFloat t; mpfr_cosh(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat tanh(const BigFloat& x) { BigFloat t; mpfr_tanh(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat asin(const BigFloat& x) { BigFloat t; mpfr_asin(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat acos(const BigFloat& x) { BigFloat t; mpfr_acos(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat atan(const BigFloat& x) { BigFloat t; mpfr_atan(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat asinh(const BigFloat& x) { BigFloat t; mpfr_asinh(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat acosh(const BigFloat& x) { BigFloat t; mpfr_acosh(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat atanh(const BigFloat& x) { BigFloat t; mpfr_atanh(t.n, x.n, MPFR_RNDD); return t; }
+BigFloat get_pi() { BigFloat t; mpfr_const_pi(t.n, MPFR_RNDD); return t; }
+BigFloat get_e() { BigFloat t = 1.; mpfr_exp(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat get_pi(mpfr_prec_t prec) { BigFloat t; mpfr_set_prec(t.n, prec); mpfr_const_pi(t.n, MPFR_RNDD); return t; }
+BigFloat get_e(mpfr_prec_t prec) { BigFloat t(1., prec); mpfr_exp(t.n, t.n, MPFR_RNDD); return t; }
+
+BigFloat exp(const BigFloat& x) { BigFloat t(x); mpfr_exp(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat exp2(const BigFloat& x) { BigFloat t(x); mpfr_exp2(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat exp10(const BigFloat& x) { BigFloat t(x); mpfr_exp10(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat expm1(const BigFloat& x) { BigFloat t(x); mpfr_expm1(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat log(const BigFloat& x) { BigFloat t(x); mpfr_log(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat log2(const BigFloat& x) { BigFloat t(x); mpfr_log2(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat log10(const BigFloat& x) { BigFloat t(x); mpfr_log10(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat log1p(const BigFloat& x) { BigFloat t(x); mpfr_log1p(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat sin(const BigFloat& x) { BigFloat t(x); mpfr_sin(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat cos(const BigFloat& x) { BigFloat t(x); mpfr_cos(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat tan(const BigFloat& x) { BigFloat t(x); mpfr_tan(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat sinh(const BigFloat& x) { BigFloat t(x); mpfr_sinh(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat cosh(const BigFloat& x) { BigFloat t(x); mpfr_cosh(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat tanh(const BigFloat& x) { BigFloat t(x); mpfr_tanh(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat asin(const BigFloat& x) { BigFloat t(x); mpfr_asin(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat acos(const BigFloat& x) { BigFloat t(x); mpfr_acos(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat atan(const BigFloat& x) { BigFloat t(x); mpfr_atan(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat asinh(const BigFloat& x) { BigFloat t(x); mpfr_asinh(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat acosh(const BigFloat& x) { BigFloat t(x); mpfr_acosh(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat atanh(const BigFloat& x) { BigFloat t(x); mpfr_atanh(t.n, t.n, MPFR_RNDD); return t; }
 BigFloat atan2(const BigFloat& y, const BigFloat& x) { BigFloat t; mpfr_atan2(t.n, y.n, x.n, MPFR_RNDD); return t; }
-BigFloat erf(const BigFloat& x) { BigFloat t; mpfr_erf(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat gamma(const BigFloat& x) { BigFloat t; mpfr_gamma(t.n, x.n, MPFR_RNDD); return t; }
-BigFloat zeta(const BigFloat& x) { BigFloat t; mpfr_zeta(t.n, x.n, MPFR_RNDD); return t; }
+BigFloat erf(const BigFloat& x) { BigFloat t(x); mpfr_erf(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat gamma(const BigFloat& x) { BigFloat t(x); mpfr_gamma(t.n, t.n, MPFR_RNDD); return t; }
+BigFloat zeta(const BigFloat& x) { BigFloat t(x); mpfr_zeta(t.n, t.n, MPFR_RNDD); return t; }

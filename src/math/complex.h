@@ -122,7 +122,7 @@ template <typename T> constexpr TComplex<T> operator^(const TComplex<T>& x, int 
 
 template <typename T> constexpr TComplex<T> ident(const TComplex<T>& x) { return TComplex<T>(ident(x.w), zero(x.i)); }
 template <typename T> constexpr TComplex<T> zero(const TComplex<T>& x) { return TComplex<T>(zero(x.w), zero(x.i)); }
-template <typename T, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TComplex<T>> num(const TComplex<T>& x, U n) { return TComplex<T>(num(x.w, n), zero(x.w)); }
+template <typename T, typename U> constexpr TComplex<T> num(const TComplex<T>& x, U n) { if constexpr (std::is_same_v<TComplex<T>, U>) return n; else return TComplex<T>(num(x.w, n), zero(x.w)); }
 template <int N, typename T> constexpr TComplex<T> gen(const TComplex<T>& x){ return TComplex<T>(num(x, cos(2.0 * PI / N)), num(x, sin(2.0 * PI / N))); }
 template <typename T> constexpr TComplex<T> gen(const TComplex<T>& x, int n){ return TComplex<T>(num(x, cos(2.0 * PI / n)), num(x, sin(2.0 * PI / n))); }
 template <typename T> constexpr TComplex<T> conj(const TComplex<T>& x) { return TComplex<T>(conj(x.w), -x.i); }

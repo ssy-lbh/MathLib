@@ -6,6 +6,7 @@
 #include "math/fft.h"
 #include "math/fraction.h"
 #include "math/complex.h"
+#include "math/polynomial.h"
 
 void algo_fftmul(){
     TTensor<NMod<998244353>, 8> a = {5, 6, 1, 9, 0, 0, 0, 0};
@@ -79,10 +80,27 @@ void algo_frac_inv(){
     assert(L * U == A);
 }
 
+void algo_eigen_poly(){
+    constexpr int N = 8;
+    constexpr default_type eps = 1e-6;
+    TMatrix<Complex, N, N> A;
+    for (int t = 0; t < 10; t++){
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++){
+                A[i][j][0] = ((int)randmod(64u) - 32) / 32.0;
+                A[i][j][1] = ((int)randmod(64u) - 32) / 32.0;
+            }
+        println(A);
+        println(eigen_poly(A));
+        assert(norm2(subs<0>(eigen_poly(A), A)) < eps);
+    }
+}
+
 int main(){
     algo_fftmul();
     algo_matacc();
     algo_eigen();
     algo_frac_inv();
+    algo_eigen_poly();
     return 0;
 }

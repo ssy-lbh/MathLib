@@ -283,14 +283,22 @@ template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> zero(cons
 }
 
 template <typename T, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TTensor<T>> num(const TTensor<T>& x, U n) {
-    return TTensor<T>(num<T>(x.n, n));
+    if constexpr (std::is_same_v<TTensor<T>, U>){
+        return n;
+    } else {
+        return TTensor<T>(num<T>(x.n, n));
+    }
 }
 
-template <typename T, int CL, int... L, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>, TTensor<T, CL, L...>> num(const TTensor<T, CL, L...>& x, U n) {
-    TTensor<T, CL, L...> t;
-    for (int i = 0; i < CL; i++)
-        t[i] = num<T>(x[i], n);
-    return t;
+template <typename T, int CL, int... L, typename U> constexpr TTensor<T, CL, L...> num(const TTensor<T, CL, L...>& x, U n) {
+    if constexpr (std::is_same_v<TTensor<T, CL, L...>, U>){
+        return n;
+    } else {
+        TTensor<T, CL, L...> t;
+        for (int i = 0; i < CL; i++)
+            t[i] = num<T>(x[i], n);
+        return t;
+    }
 }
 
 template <int N2, typename T> constexpr TTensor<T> gen(const TTensor<T>& x) {
@@ -344,7 +352,8 @@ template <typename T> constexpr auto norm2(const TTensor<T>& x) {
 }
 
 template <typename T, int CL, int... L> constexpr auto norm2(const TTensor<T, CL, L...>& x) {
-    decltype(norm2(T())) n = 0;
+    decltype(norm2(T())) n;
+    n = zero(n);
     for (int i = 0; i < CL; i++)
         n += norm2(x[i]);
     return n;
