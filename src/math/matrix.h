@@ -112,7 +112,7 @@ template <typename T, int L> constexpr TMatrix<T, L, L> gauss_field_inv(TMatrix<
     return ix;
 }
 
-template <typename T, int L> constexpr TMatrix<T, L, L> gauss_ring_inv(TMatrix<T, L, L> x) {
+template <typename T, int L> constexpr TMatrix<T, L, L> gauss_commutative_ring_inv(TMatrix<T, L, L> x) {
     TMatrix<T, L, L> ix = ident(TMatrix<T, L, L>());
     for (int i = 0; i < L; i++){
         if (isnan(inv(x[i][i]))){

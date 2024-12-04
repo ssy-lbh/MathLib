@@ -110,7 +110,7 @@ void algo_crt(){
 
 void algo_solve3x3(){
     TMatrix<NMod<4>, 3, 3> A = {{1, 1, 0}, {1, 1, 1}, {0, 1, 1}};
-    TMatrix<NMod<4>, 3, 3> IA = gauss_ring_inv(A);
+    TMatrix<NMod<4>, 3, 3> IA = gauss_commutative_ring_inv(A);
     TMatrix<NMod<4>, 9, 9> B = nest(IA);
     TTensor<NMod<4>, 9> b = {0, 1, 3, 0, 2, 3, 1, 0, 2};
     print(B * b);
@@ -123,7 +123,7 @@ void algo_solve4x4(){
         {0, 1, 1, 1},
         {0, 0, 1, 1}
     };
-    TMatrix<NMod<4>, 4, 4> IA = gauss_ring_inv(A);
+    TMatrix<NMod<4>, 4, 4> IA = gauss_commutative_ring_inv(A);
     TMatrix<NMod<4>, 16, 16> B = nest(IA);
     TTensor<NMod<4>, 16> b = {1, 3, 2, 3, 1, 2, 1, 0, 3, 2, 2, 2, 0, 2, 1, 3};
     print(B * b);
