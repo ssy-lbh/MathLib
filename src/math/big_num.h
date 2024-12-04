@@ -577,7 +577,7 @@ inline void BigFloat::swap(BigFloat& b) { mpfr_swap(n, b.n); }
 inline void BigFloat::swap(BigFloat& a, BigFloat& b) { mpfr_swap(a.n, b.n); }
 
 inline void print(const BigFloat& x, int l = 0) { x.print(); }
-inline void print(const BigFloat& x, int radix, int l = 0) { x.print(radix); }
+inline void print(const BigFloat& x, int radix, int l) { x.print(radix); }
 
 inline void print(mpfr_prec_t prec, const BigFloat& x) { x.print(prec); }
 inline void print(mpfr_prec_t prec, const BigFloat& x, int radix) { x.print(prec, radix); }
@@ -677,8 +677,6 @@ bool has_root(BigInt pm1_prime[], uint64_t exp[], uint64_t cnt);
 
 BigInt cpow(BigInt x, BigInt w2, BigInt n, BigInt mod);
 BigInt cipolla(BigInt x, BigInt mod);
-
-BigInt ecm_factorize(BigInt n);
 
 // a^x = b (mod p)
 BigInt bsgs(const BigInt& a, const BigInt& b, const BigInt& p);

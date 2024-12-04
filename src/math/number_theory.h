@@ -10,6 +10,24 @@
 using default_int = int64_t;
 using default_uint = uint64_t;
 
+constexpr uint32_t add(uint32_t a, uint32_t b, uint32_t mod){
+    uint32_t c = a + b;
+    return c >= mod ? c - mod : c;
+}
+
+constexpr uint64_t add(uint64_t a, uint64_t b, uint64_t mod){
+    uint64_t c = a + b;
+    return c >= mod ? c - mod : c;
+}
+
+constexpr uint32_t sub(uint32_t a, uint32_t b, uint32_t mod){
+    return a < b ? a + mod - b : a - b;
+}
+
+constexpr uint64_t sub(uint64_t a, uint64_t b, uint64_t mod){
+    return a < b ? a + mod - b : a - b;
+}
+
 constexpr uint32_t mul(uint32_t a, uint32_t b, uint32_t mod){
     return (uint32_t)((uint64_t)a * b % mod);
 }
@@ -280,7 +298,7 @@ template <int N, typename U> constexpr std::enable_if_t<std::is_arithmetic_v<U>,
 template <int N2, int N> constexpr NMod<N> gen(NMod<N>) { static_assert((N - 1) % N2 == 0, "root number not compatible"); return pow(NModRoot<N>::G, (N - 1) / N2, N); }
 template <int N> constexpr NMod<N> gen(NMod<N>, uint32_t n) { assert((N - 1) % n == 0 && "root number not compatible"); return pow(NModRoot<N>::G, (N - 1) / n, N); }
 template <int N> constexpr NMod<N> conj(NMod<N> x) { return x; }
-template <int N> constexpr NMod<N> inv(NMod<N> x) { return pow(x.n, (uint32_t)N - 2, (uint32_t)N); }
+template <int N> constexpr NMod<N> inv(NMod<N> x) { uint32_t y = inv(x.n, N); return y == -1 ? nan(NMod<N>()) : y; }
 template <int N> constexpr NMod<N> norm(NMod<N> x) { return x; }
 template <int N> constexpr NMod<N> norm2(NMod<N> x) { return x * x; }
 template <int N> constexpr int line(NMod<N>) { return 1; }
@@ -297,6 +315,10 @@ template <int N> constexpr NMod<N> sqrt(const NMod<N>& x) {
 
 template <int N> void print(const NMod<N>& x, int) { printf("%d", x.n); }
 template <int N> void print(const NMod<N>& x) { printf("%d\n", x.n); }
+
+template <int N1, int N2> constexpr void convert(NMod<N1>& x, const NMod<N2>& y) { x = y.n; }
+template <int N, typename I> constexpr std::enable_if_t<std::is_integral_v<I>, void> convert(NMod<N>& x, const I& y) { x = y; }
+template <int N, typename I> constexpr std::enable_if_t<std::is_integral_v<I>, void> convert(I& x, const NMod<N>& y) { x = y.n; }
 
 template <int N> NMod<N> rand(NMod<N>) { return NMod<N>(randmod((uint32_t)N)); }
 

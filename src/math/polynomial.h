@@ -92,7 +92,10 @@ void poly_sincos(const uint32_t poly[], uint32_t sinp[], uint32_t cosp[], uint32
 void poly_pow(uint32_t poly[], uint32_t tmp[], uint32_t n, uint32_t k, uint32_t g, uint32_t mod);
 
 template <typename T, int... L>
-class TPolynomial : public TTensor<T, L...> {};
+class TPolynomial : public TTensor<T, L...> {
+public:
+    using TTensor<T, L...>::TTensor;
+};
 
 template <int... L>
 using Polynomial = TPolynomial<default_type, L...>;

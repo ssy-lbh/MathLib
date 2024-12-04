@@ -89,6 +89,15 @@ template <typename T, int... L> constexpr bool is_alternative(TTensor<T, L...>) 
 template <typename T, int... L> constexpr bool is_unital(TTensor<T, L...>) { return sizeof...(L) == 2 && tensor_dim_equal_v<TTensor<T, L...>> && is_unital(T()); }
 template <typename T, int... L> constexpr bool is_dividable(TTensor<T, L...>) { return sizeof...(L) <= 2 && is_dividable(T()); }
 
+template <typename T1, typename T2> constexpr void convert(TTensor<T1>& x, const TTensor<T2>& y) {
+    x.n = y.n;
+}
+
+template <typename T1, typename T2, int CL, int... L> constexpr void convert(TTensor<T1, CL, L...>& x, const TTensor<T2, CL, L...>& y) {
+    for (int i = 0; i < CL; i++)
+        convert(x[i], y[i]);
+}
+
 // tensor, 张量
 template <typename T> constexpr TTensor<T> operator+(const TTensor<T>& x, const TTensor<T>& y) {
     return TTensor<T>(x.n + y.n);
@@ -410,16 +419,16 @@ template <typename T, int CL, int... L> constexpr T area(const TTensor<T, CL, L.
     return sqrt(dot(x, x) * dot(y, y) - sqr(dot(x, y)));
 }
 
-template <typename T> constexpr T hadamard(const T& x, const T& y) {
+template <typename T1, typename T2> constexpr auto hadamard(const T1& x, const T2& y) {
     return x * y;
 }
 
-template <typename T> constexpr T hadamard(const TTensor<T>& x, const TTensor<T>& y) {
-    return TTensor<T>(x.n * y.n);
+template <typename T1, typename T2> constexpr auto hadamard(const TTensor<T1>& x, const TTensor<T2>& y) {
+    return TTensor<decltype(T1() * T2())>(x.n * y.n);
 }
 
-template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> hadamard(const TTensor<T, CL, L...>& x, const TTensor<T, CL, L...>& y) {
-    TTensor<T, CL, L...> t;
+template <typename T1, typename T2, int CL, int... L> constexpr auto hadamard(const TTensor<T1, CL, L...>& x, const TTensor<T2, CL, L...>& y) {
+    TTensor<decltype(T1() * T2()), CL, L...> t;
     for (int i = 0; i < CL; i++)
         t[i] = hadamard(x[i], y[i]);
     return t;
@@ -450,25 +459,33 @@ template <typename T, int... L1, int... L2> constexpr auto exterior(const TTenso
     return direct(x, y) - direct(y, x);
 }
 
-template <typename T> constexpr TTensor<T> apply(const TTensor<T>& x, const std::function<T(T)>& f) {
+template <typename T, typename S> constexpr T apply_ten(const S& x, const std::function<T(S)>& f) {
+    return f(x);
+}
+
+template <typename T, typename S> constexpr TTensor<T> apply_ten(const TTensor<S>& x, const std::function<T(S)>& f) {
     return TTensor<T>(f(x.n));
 }
 
-template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> apply(const TTensor<T, CL, L...>& x, const std::function<T(T)>& f) {
+template <typename T, typename S, int CL, int... L> constexpr TTensor<T, CL, L...> apply_ten(const TTensor<S, CL, L...>& x, const std::function<T(S)>& f) {
     TTensor<T, CL, L...> t;
     for (int i = 0; i < CL; i++)
-        t[i] = apply(x[i], f);
+        t[i] = apply_ten(x[i], f);
     return t;
 }
 
-template <typename T> constexpr TTensor<T> apply(const TTensor<T>& x, const TTensor<T> y, const std::function<T(T, T)>& f) {
+template <typename T, typename S1, typename S2> constexpr T apply_ten(const S1& x, const S2& y, const std::function<T(S1, S2)>& f) {
+    return f(x, y);
+}
+
+template <typename T, typename S1, typename S2> constexpr TTensor<T> apply_ten(const TTensor<S1>& x, const TTensor<S2> y, const std::function<T(S1, S2)>& f) {
     return TTensor<T>(f(x.n, y.n));
 }
 
-template <typename T, int CL, int... L> constexpr TTensor<T, CL, L...> apply(const TTensor<T, CL, L...>& x, const TTensor<T, CL, L...>& y, const std::function<T(T, T)>& f) {
+template <typename T, typename S1, typename S2, int CL, int... L> constexpr TTensor<T, CL, L...> apply_ten(const TTensor<S1, CL, L...>& x, const TTensor<S2, CL, L...>& y, const std::function<T(S1, S2)>& f) {
     TTensor<T, CL, L...> t;
     for (int i = 0; i < CL; i++)
-        t[i] = apply(x[i], y[i], f);
+        t[i] = apply_ten(x[i], y[i], f);
     return t;
 }
 

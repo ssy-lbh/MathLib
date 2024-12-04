@@ -5,6 +5,11 @@
 
 #include <algorithm>
 
+#include "math/big_num.h"
+#include "math/ecm_factorize.h"
+
+#include <ctime>
+
 constexpr uint32_t N = 20;
 
 void test_factorize(){
@@ -54,15 +59,15 @@ void test_index_calculus_log(){
 }
 
 void test_dujiao_sieve(){
-    int64_t n = 4729389;
+    uint64_t n = 4729389;
     // mobius function
-    int64_t res = dujiao_sieve(n, [](int64_t x) -> int64_t { return 1; });
+    int64_t res = dujiao_sieve(n, [](uint64_t x) -> int64_t { return 1; });
     assert(res == 61);
     // unit function
-    res = dujiao_sieve(n, [](int64_t x) -> int64_t { return x; });
+    res = dujiao_sieve(n, [](uint64_t x) -> int64_t { return x; });
     assert(res == 1);
     // euler function
-    res = dujiao_sieve(n, [](int64_t x) -> int64_t { return x * (x + 1) / 2; });
+    res = dujiao_sieve(n, [](uint64_t x) -> int64_t { return x * (x + 1) / 2; });
     assert(res == 6798790501158ll);
 }
 
@@ -71,5 +76,8 @@ int main(){
     test_pohlig_hellman_log();
     test_index_calculus_log();
     test_dujiao_sieve();
+
+    //print(ecm_factorize(BigInt("10933096180346127695081099708243448444467282953548374941920090181459099156162822929023598405197953653590303042837761938376403948824104176832254366232665989")));
+
     return 0;
 }

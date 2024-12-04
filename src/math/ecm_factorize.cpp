@@ -6,7 +6,7 @@
 
 #include <cstdlib>
 
-static TTensor<uint64_t, 2> compute_bounds(BigInt n){
+static TTensor<uint64_t, 2> compute_bounds(const BigInt& n){
     uint64_t log_n = sizeinbase(n, 10);
     if (log_n <= 30)
         return {2000, 147396};
@@ -23,7 +23,7 @@ static TTensor<uint64_t, 2> compute_bounds(BigInt n){
     return {430000000, 20000000000};
 }
  
-static Point2<BigInt> point_add(Point2<BigInt> p, Point2<BigInt> q, Point2<BigInt> r, BigInt n){
+static Point2<BigInt> point_add(const Point2<BigInt>& p, const Point2<BigInt>& q, const Point2<BigInt>& r, const BigInt& n){
     BigInt u = (p[0] - p[1]) * (q[0] + q[1]);
     BigInt v = (p[0] + p[1]) * (q[0] - q[1]);
     BigInt upv = u + v;
@@ -33,7 +33,7 @@ static Point2<BigInt> point_add(Point2<BigInt> p, Point2<BigInt> q, Point2<BigIn
     return {x, z};
 }
 
-static Point2<BigInt> point_double(Point2<BigInt> p, BigInt n, BigInt a24){
+static Point2<BigInt> point_double(const Point2<BigInt>& p, const BigInt& n, const BigInt& a24){
     BigInt u = p[0] + p[1];
     BigInt v = p[0] - p[1];
     BigInt u2 = u * u;
@@ -44,7 +44,7 @@ static Point2<BigInt> point_double(Point2<BigInt> p, BigInt n, BigInt a24){
     return {x, z};
 }
 
-static Point2<BigInt> scalar_multiply(BigInt k, Point2<BigInt> p, BigInt n, BigInt a24){
+static Point2<BigInt> scalar_multiply(const BigInt& k, const Point2<BigInt>& p, const BigInt& n, const BigInt& a24){
     uint64_t lk = sizeinbase(k, 2);
     Point2<BigInt> q = p;
     Point2<BigInt> r = point_double(p, n, a24);
@@ -65,7 +65,7 @@ static Point2<BigInt> scalar_multiply(BigInt k, Point2<BigInt> p, BigInt n, BigI
 const uint64_t MAX_CURVES_ECM = 10000;
 const uint64_t MAX_RND_ECM = 0x8000000000000000ULL;
 
-BigInt ecm_factorize(BigInt n){
+BigInt ecm_factorize(const BigInt& n){
     if (n <= 1 || miller_prime_proof(n))
         return n;
 
@@ -104,7 +104,7 @@ BigInt ecm_factorize(BigInt n){
         BigInt u = ((sigma * sigma) - 5) % n;
         BigInt v = (sigma << 2) % n;
         BigInt vmu = v - u;
-        BigInt A = ((vmu * vmu * vmu) * (3 * u + v) / (4 * u * u * u * v) - 2) % n;
+        BigInt A = ((vmu * vmu * vmu) * (3 * u + v) / ((u * u * u * v) << 2) - 2) % n;
         if (A < 0) A += n;
         BigInt a24 = (A + 2) >> 2;
  

@@ -24,15 +24,15 @@ using RowVector = TRowVector<default_type, L>;
 template <typename T, int L> constexpr TVector<T, L> cross(const TVector<T, L>& x, const TVector<T, L>& y){
     static_assert((L & (L + 1)) == 0, "cross is not defined unless dimension is 2^n-1");
     TVector<T, L> r;
-    typename lg2_nth_complex<T, (L + 1)>::type x1, y1;
+    lg2_nth_complex_t<T, (L + 1)> x1, y1;
     x1[0] = 0; y1[0] = 0;
     for (int i = 0; i < L; i++) {
-        x1[i+1] = x[i];
-        y1[i+1] = y[i];
+        x1[i + 1] = x[i];
+        y1[i + 1] = y[i];
     }
     auto r1 = x1 * y1;
     for (int i = 0; i < L; i++)
-        r[i] = r1[i+1];
+        r[i] = r1[i + 1];
     return r;
 }
 

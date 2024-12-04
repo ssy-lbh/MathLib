@@ -106,7 +106,7 @@ template <typename T1, typename T2> constexpr TComplex<T1> operator/(const TComp
 template <typename T> constexpr TComplex<T>& operator+=(TComplex<T>& x, const TComplex<T>& y) { x.w += y.w; x.i += y.i; return x; }
 template <typename T> constexpr TComplex<T>& operator-=(TComplex<T>& x, const TComplex<T>& y) { x.w -= y.w; x.i -= y.i; return x; }
 template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const TComplex<T>& y) { x = y * x; return x; }
-template <typename T> constexpr TComplex<T>& operator*=(TComplex<T>& x, const T& y) { x.w *= y; x.i *= y; return x; }
+template <typename T1, typename T2> constexpr TComplex<T1>& operator*=(TComplex<T1>& x, const T2& y) { x = y * x; return x; }
 template <typename T> constexpr TComplex<T>& operator/=(TComplex<T>& x, const TComplex<T>& y) { return x = x / y; }
 template <typename T1, typename T2> constexpr TComplex<T1>& operator/=(TComplex<T1>& x, const T2& y) { return x = x / y; }
 template <typename T> constexpr TComplex<T> operator+(const TComplex<T>& x) { return x; }
@@ -123,11 +123,11 @@ template <typename T> constexpr TComplex<T> operator^(const TComplex<T>& x, int 
 template <typename T> constexpr TComplex<T> ident(const TComplex<T>& x) { return TComplex<T>(ident(x.w), zero(x.i)); }
 template <typename T> constexpr TComplex<T> zero(const TComplex<T>& x) { return TComplex<T>(zero(x.w), zero(x.i)); }
 template <typename T, typename U> constexpr TComplex<T> num(const TComplex<T>& x, U n) { if constexpr (std::is_same_v<TComplex<T>, U>) return n; else return TComplex<T>(num(x.w, n), zero(x.w)); }
-template <int N, typename T> constexpr TComplex<T> gen(const TComplex<T>& x){ return TComplex<T>(num(x, cos(2.0 * PI / N)), num(x, sin(2.0 * PI / N))); }
-template <typename T> constexpr TComplex<T> gen(const TComplex<T>& x, int n){ return TComplex<T>(num(x, cos(2.0 * PI / n)), num(x, sin(2.0 * PI / n))); }
+template <int N, typename T> constexpr TComplex<T> gen(const TComplex<T>& x){ return TComplex<T>(num(x.w, cos(2.0 * PI / N)), num(x.i, sin(2.0 * PI / N))); }
+template <typename T> constexpr TComplex<T> gen(const TComplex<T>& x, int n){ return TComplex<T>(num(x.w, cos(2.0 * PI / n)), num(x.i, sin(2.0 * PI / n))); }
 template <typename T> constexpr TComplex<T> conj(const TComplex<T>& x) { return TComplex<T>(conj(x.w), -x.i); }
 template <typename T> constexpr TComplex<T> inv(const TComplex<T>& x) { return conj(x) / norm2(x); }
-template <typename T> constexpr auto norm(const TComplex<T>& x) { return sqrt(norm2(x)); }
+template <typename T> constexpr auto norm(const TComplex<T>& x) -> decltype(norm2(x)) { return sqrt(norm2(x)); }
 template <typename T> constexpr auto norm2(const TComplex<T>& x) { return norm2(x.w) + norm2(x.i); }
 template <typename T> constexpr int line(TComplex<T>) { return line(T()); }
 
@@ -178,11 +178,13 @@ template <typename T> constexpr TComplex<T> pow(const TComplex<T>& x, int y){
 // 十六元数及以下符合幂结合性(power associativity)，可以使用多项式
 template <typename T> constexpr TComplex<T> exp(const TComplex<T>& x) {
     constexpr int nth = is_nth_complex_v<T>;
-    if (nth > 0){
+    if constexpr (nth > 0){
         TComplex<T> t = x;
-        T w = t[0]; t[0] = zero(w);
+        auto w = t[0]; t[0] = zero(w);
         auto n = norm(t);
-        t *= sin(n) / n; t[0] = cos(n) * ident(w);
+        if (n > zero(n))
+            t = ((decltype(n))sin(n) / n) * t;
+        t[0] = cos(n) * ident(w);
         return (T)exp(w) * t;
     }
     return (T)exp(x.w) * TComplex<T>(cos(x.i), sin(x.i));
@@ -190,12 +192,14 @@ template <typename T> constexpr TComplex<T> exp(const TComplex<T>& x) {
 
 template <typename T> constexpr TComplex<T> log(const TComplex<T>& x) {
     constexpr int nth = is_nth_complex_v<T>;
-    if (nth > 0){
+    if constexpr (nth > 0){
         TComplex<T> t = x;
-        T w = t[0]; t[0] = zero(w);
+        auto w = t[0]; t[0] = zero(w);
         auto n2 = norm2(t);
         decltype(n2) n = sqrt(n2);
-        t *= (decltype(n2))atan2(n, w) / n; t[0] = (log(norm2(w) + n2) * 0.5) * ident(w);
+        if (n > zero(n))
+            t *= (decltype(n2))atan2(n, w) / n;
+        t[0] = (log(norm2(w) + n2) * 0.5) * ident(w);
         return t;
     }
     return TComplex<T>(log(norm2(x)) * 0.5, atan2(x.i, x.w));

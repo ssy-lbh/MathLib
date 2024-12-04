@@ -59,8 +59,7 @@ template <typename T, int L, typename U> constexpr TMatrix<T, L, L> num(const TM
     }
 }
 
-// 作用于域上的逆矩阵
-template <typename T, int L> constexpr TMatrix<T, L, L> inv(const TMatrix<T, L, L>& x) {
+template <typename T, int L> constexpr TMatrix<T, L, L> lu_field_inv(const TMatrix<T, L, L>& x) {
     TMatrix<T, L, L> l, u;
     lu_decom(x, l, u);
     TMatrix<T, L, L> m = zero(TMatrix<T, L, L>());
@@ -72,10 +71,86 @@ template <typename T, int L> constexpr TMatrix<T, L, L> inv(const TMatrix<T, L, 
         for (int j = L - 1; j >= 0; j--){
             for (int k = L - 1; k > j; k--)
                 m[j][i] -= u[j][k] * m[k][i];
-            m[j][i] /= u[j][j];
+            m[j][i] *= inv(u[j][j]);
         }
     }
     return m;
+}
+
+template <typename T, int L> constexpr TMatrix<T, L, L> gauss_field_inv(TMatrix<T, L, L> x) {
+    TMatrix<T, L, L> ix = ident(TMatrix<T, L, L>());
+    for (int i = 0; i < L; i++){
+        if (x[i][i] == zero(T())){
+            bool found = false;
+            for (int j = i + 1; j < L; j++){
+                if (x[j][i] != zero(T())){
+                    // 交换行
+                    TTensor<T, L> t = x[i]; x[i] = x[j]; x[j] = t;
+                    t = ix[i]; ix[i] = ix[j]; ix[j] = t;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return zero(TMatrix<T, L, L>());
+        }
+        T finv = inv(x[i][i]);
+        x[i][i] = ident(T());
+        ix[i] *= finv;
+        for (int j = 0; j < L; j++)
+            x[i][j] *= finv;
+        for (int j = 0; j < L; j++){
+            if (j == i)
+                continue;
+            T f = x[j][i];
+            if (f == zero(T()))
+                continue;
+            x[j] -= x[i] * f;
+            ix[j] -= ix[i] * f;
+        }
+    }
+    return ix;
+}
+
+template <typename T, int L> constexpr TMatrix<T, L, L> gauss_ring_inv(TMatrix<T, L, L> x) {
+    TMatrix<T, L, L> ix = ident(TMatrix<T, L, L>());
+    for (int i = 0; i < L; i++){
+        if (isnan(inv(x[i][i]))){
+            bool found = false;
+            for (int j = i + 1; j < L; j++){
+                if (!isnan(inv(x[j][i]))){
+                    // 交换行
+                    TTensor<T, L> t;
+                    t = x[i]; x[i] = x[j]; x[j] = t;
+                    t = ix[i]; ix[i] = ix[j]; ix[j] = t;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                return zero(TMatrix<T, L, L>());
+        }
+        T finv = inv(x[i][i]);
+        x[i][i] = ident(T());
+        ix[i] *= finv;
+        for (int j = 0; j < L; j++)
+            x[i][j] *= finv;
+        for (int j = 0; j < L; j++){
+            if (j == i)
+                continue;
+            T f = x[j][i];
+            if (f == zero(T()))
+                continue;
+            x[j] -= x[i] * f;
+            ix[j] -= ix[i] * f;
+        }
+    }
+    return ix;
+}
+
+// 作用于域上的逆矩阵
+template <typename T, int L> constexpr TMatrix<T, L, L> inv(const TMatrix<T, L, L>& x) {
+    return gauss_field_inv(x);
 }
 
 // pseudo-inverse, 伪逆矩阵, 逆矩阵不存在时使用
@@ -130,27 +205,31 @@ template <typename T, int L> constexpr void qr_decom(const TMatrix<T, L, L>& x, 
 
 template <typename T, int H, int W> constexpr int gauss_elim(TMatrix<T, H, W>& x) {
     static_assert(is_dividable(T()), "items in matrix must be dividable");
-    bool tag[H] = {false};
     int cnt = 0;
-    TTensor<T, W> row;
     for (int i = 0; i < W; i++){
-        for (int j = 0; j < H; j++){
-            if (!tag[j] && x[j][i] != zero(T())){
-                tag[j] = true;
-                cnt++;
-                T finv = inv(x[j][i]);
-                for (int k = i + 1; k < W; k++)
-                    row[k] = finv * x[j][k];
-                for (int k = 0; k < H; k++){
-                    if (!tag[k] && x[k][i] != zero(T())){
-                        for (int l = i + 1; l < W; l++)
-                            x[k][l] -= x[k][i] * row[l];
-                        x[k][i] = zero(T());
-                    }
+        if (x[cnt][i] == zero(T())){
+            bool found = false;
+            for (int j = cnt + 1; j < H; j++){
+                if (x[j][i] != zero(T())){
+                    x[i] += x[j];
+                    found = true;
                 }
-                break;
+            }
+            if (!found)
+                continue;
+        }
+        T finv = inv(x[cnt][i]);
+        x[cnt][i] = ident(T());
+        for (int j = i + 1; j < W; j++)
+            x[cnt][j] *= finv;
+        for (int j = cnt + 1; j < H; j++){
+            if (x[j][i] != zero(T())){
+                for (int k = i + 1; k < W; k++)
+                    x[j][k] -= x[j][i] * x[cnt][k];
+                x[j][i] = zero(T());
             }
         }
+        cnt++;
     }
     return cnt;
 }
@@ -165,6 +244,11 @@ template <typename T, int L> constexpr T trace(const TMatrix<T, L, L>& x) {
     for (int i = 0; i < L; i++)
         res += x[i][i];
     return res;
+}
+
+// tr(AB) = tr(BA)
+template <typename T, int N, int L> constexpr T trace(const TMatrix<T, N, L>& x, const TMatrix<T, L, N>& y) {
+    return sum(hadamard(x, transpose(y)));
 }
 
 template <typename T, int L> constexpr TTensor<T, L> diag(const TMatrix<T, L, L>& x) {
@@ -213,6 +297,7 @@ template <typename T> constexpr T det(const TMatrix<T, 3, 3>& x){
 * @param max_iter	max_iter number of iterations
 * @return
 */
+// 求解实对称矩阵的特征值和特征向量
 // 无法解决复数矩阵的特征值问题
 template <typename T, int L>
 constexpr void jacobi_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, const decltype(norm2(T()))& precision, int max_iter){
@@ -319,6 +404,18 @@ constexpr void qr_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, int max_iter){
 }
 
 template <typename T, int L>
+constexpr void qr_eigen(TMatrix<T, L, L> X, TTensor<T, L>& E, TMatrix<T, L, L>& V, int max_iter){
+    V = ident(X);
+    for (int i = 0; i < max_iter; i++){
+        TMatrix<T, L, L> q, r;
+        qr_decom(X, q, r);
+        X = r * q;
+        V = V * q;
+    }
+    E = diag(X);
+}
+
+template <typename T, int L>
 constexpr void calc_eigen(const TMatrix<T, L, L>& A, TTensor<T, L>& E, TMatrix<T, L, L>& V) {
     jacobi_eigen(A, E, V);
 }
@@ -397,9 +494,8 @@ template <typename T, int L> constexpr TMatrix<T, L, L> asinh(const TMatrix<T, L
 template <typename T, int L> constexpr TMatrix<T, L, L> acosh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)acosh(x); })); }
 template <typename T, int L> constexpr TMatrix<T, L, L> atanh(const TMatrix<T, L, L>& X) { return apply_mat(X, std::function<T(T)>([](T x){ return (T)atanh(x); })); }
 
-// @ref https://doi.com/10.1088/0253-6102/49/4/01
+// @ref https://doi.org/10.1088/0253-6102/49/4/01
 template <typename T, int L> constexpr TPolynomial<T, L + 1> eigen_poly(const TMatrix<T, L, L>& X) {
-    TMatrix<T, L, L> x = X;
     // A_0 = trace(X^0) = trace(I) = L
     // A_1 = trace(X) = \Sigma \lambda_i
     // A_2 = trace(X^2) = \Sigma \lambda_i^2
@@ -412,28 +508,65 @@ template <typename T, int L> constexpr TPolynomial<T, L + 1> eigen_poly(const TM
     // ...
     // 注意 F_i / i!
     TTensor<T, L> A;
-    for (int i = 0; i < L; i++){
-        A[i] = trace(x);
-        x = x * X;
+    if constexpr (L >= 4){
+        // 空间换时间
+        // 空间复杂度 O(L^2) -> O(L^2 \sqrt L)
+        // 时间复杂度 O(L^4) -> O(L^3 \sqrt L)
+        int L2 = (int)ceil(sqrt(L - 0.5));
+        TMatrix<T, L, L>* Xs = new TMatrix<T, L, L>[L2];
+        TMatrix<T, L, L>* Fs = new TMatrix<T, L, L>[L2];
+        Xs[0] = Fs[0] = ident(TMatrix<T, L, L>());
+        Xs[1] = X;
+        for (int i = 2; i < L2; i++)
+            Xs[i] = Xs[i - 1] * X;
+        Fs[1] = Xs[L2 - 1] * X;
+        for (int i = 2; i < L2; i++)
+            Fs[i] = Fs[i - 1] * Fs[1];
+        for (int i = 0, rem = 1, idx = 0; i < L; i++, rem++){
+            if (rem == L2){
+                rem = 0;
+                idx++;
+            }
+            A[i] = trace(Xs[rem], Fs[idx]);
+        }
+        delete[] Xs;
+        delete[] Fs;
+    } else {
+        TMatrix<T, L, L> x = X;
+        for (int i = 0; i < L; i++){
+            A[i] = trace(x);
+            x = x * X;
+        }
     }
-    TTensor<T, L + 1> F;
+    TTensor<T, L> F;
     TPolynomial<T, L + 1> R;
-    /* F[0] = */ R[L] = ident(T());
-    F[1] = A[0];
+    R[L] = ident(T());
+    F[0] = A[0];
     R[L - 1] = -A[0];
     T FT = -ident(T());
-    for (int i = 2; i <= L; i++){
+    for (int i = 1; i < L; i++){
         F[i] = zero(T());
         T P = ident(T());
-        for (int j = 1; j < i; j++){
-            F[i] += P * F[i - j] * A[j - 1];
+        for (int j = 0; j < i; j++){
+            F[i] += P * F[i - j - 1] * A[j];
             P *= num(P, j - i);
         }
-        F[i] += P * A[i - 1];
-        FT *= num(FT, -i);
-        R[L - i] = F[i] / FT;
+        F[i] += P * A[i];
+        FT *= num(FT, -i - 1);
+        R[L - i - 1] = F[i] / FT;
     }
     return R;
+}
+
+// 矩阵自嵌套
+template <typename T, int L> constexpr TMatrix<T, L * L, L * L> nest(const TMatrix<T, L, L>& x) {
+    TMatrix<T, L * L, L * L> m;
+    for (int i = 0; i < L; i++)
+        for (int j = 0; j < L; j++)
+            for (int k = 0; k < L; k++)
+                for (int l = 0; l < L; l++)
+                    m[i * L + k][j * L + l] = x[i][j] * x[k][l];
+    return m;
 }
 
 #endif /* MATRIX_H */

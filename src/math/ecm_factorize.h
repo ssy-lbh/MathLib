@@ -4,6 +4,6 @@
 #include "math_base.h"
 #include "big_num.h"
 
-BigInt ecm_factorize(BigInt n);
+BigInt ecm_factorize(const BigInt& n);
 
 #endif

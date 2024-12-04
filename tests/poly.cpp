@@ -73,20 +73,20 @@ void test_high_order_fft(){
                 assert(C[i][j][k] == (i == 1 && j == 3 && k == 3));
 }
 
-/*
 // PET/CT 图像重建
 void test_image_reconstruction(){
     // from 0 to \pi
     constexpr uint32_t AN = 1 << 10;
     constexpr uint32_t N = 1 << 14;
 
-    TTensor<double, AN, N> DATA;
+    TTensor<double, AN, N> PROJ_DATA;
+    TTensor<TComplex<double>, AN, N> DATA;
 
     // 取出遮挡系数，默认无遮挡情况下为1
-    std::function<double(double)> f = [](double x){
+    std::function<TComplex<double>(double)> f = [](double x){
         return -log(x);
     };
-    DATA = apply(DATA, f);
+    DATA = apply_ten(PROJ_DATA, f);
 
     // 傅里叶变换
     for (uint32_t i = 0; i < AN; i++)
@@ -105,8 +105,8 @@ void test_image_reconstruction(){
     TTensor<TComplex<double>, N, N> IMAGE;
     for (uint32_t i = 0; i < N; i++)
         for (uint32_t j = 0; j < N; j++){
-            double x = (i - (N >> 1) + 0.5) / N;
-            double y = (j - (N >> 1) + 0.5) / N;
+            double x = (i - (N >> 1) + 0.5);
+            double y = (j - (N >> 1) + 0.5);
             double angle = atan2(y, x);
             double radius = sqrt(x * x + y * y);
             if (y < 0)
@@ -116,8 +116,8 @@ void test_image_reconstruction(){
             uint32_t nxt = (idx == AN - 1) ? 0 : idx + 1;
             double ratio = (angle - idx * PI / AN) / (PI / AN); // [0, 1)，角度插值比例
             
-            uint32_t rpos = radius / 2 + (N >> 1);
-            double rratio = radius / 2 - rpos + (N >> 1); // [0, 1)，半径插值比例
+            uint32_t rpos = radius + (N >> 1);
+            double rratio = radius - rpos + (N >> 1); // [0, 1)，半径插值比例
 
             if (rpos < 0 || rpos >= N - 1){
                 IMAGE[i][j] = 0;
@@ -131,7 +131,6 @@ void test_image_reconstruction(){
     // 傅里叶逆变换
     fft(IMAGE, true);
 }
-*/
 
 int main(){
     test_poly_mul();
