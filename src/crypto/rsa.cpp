@@ -28,6 +28,11 @@ RSACipherData RSAPublicKey::encrypt(RSAPlainData& data) const {
     return {C};
 }
 
+RSAPlainData RSAPublicKey::verify(const RSACipherData& message) const {
+    BigInt M = pow(message.C, key, mod);
+    return {M};
+}
+
 bool RSAPublicKey::operator==(const RSAPublicKey& other) const {
     return mod == other.mod && key == other.key;
 }
@@ -43,6 +48,11 @@ RSAPrivateKey::~RSAPrivateKey() {}
 RSAPlainData RSAPrivateKey::decrypt(const RSACipherData& message) const {
     BigInt M = pow(message.C, key, mod);
     return {M};
+}
+
+RSACipherData RSAPrivateKey::sign(const RSAPlainData& data) const {
+    BigInt C = pow(data.M, key, mod);
+    return {C};
 }
 
 bool RSAPrivateKey::operator==(const RSAPrivateKey& other) const {

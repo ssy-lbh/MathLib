@@ -42,6 +42,7 @@ public:
     ~RSAPublicKey();
 
     RSACipherData encrypt(RSAPlainData& data) const;
+    RSAPlainData verify(const RSACipherData& message) const;
 
     bool operator==(const RSAPublicKey& other) const;
     bool operator!=(const RSAPublicKey& other) const;
@@ -59,6 +60,7 @@ public:
     ~RSAPrivateKey();
 
     RSAPlainData decrypt(const RSACipherData& message) const;
+    RSACipherData sign(const RSAPlainData& data) const;
 
     bool operator==(const RSAPrivateKey& other) const;
     bool operator!=(const RSAPrivateKey& other) const;
